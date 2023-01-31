@@ -1,0 +1,70 @@
+import { useCallback, type ReactEventHandler } from "react";
+import Link from "next/link";
+import { useForm } from "react-hook-form";
+
+import { Button } from "../components/Button";
+import { Input } from "../components/Input";
+import { Welcome } from "../components/Welcome";
+
+type LoginForm = {
+  username: string,
+  password: string,
+}
+
+export default function Login() {
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>({ defaultValues: {
+    username: '',
+    password: '',
+  }})
+
+  const onSubmit = useCallback<ReactEventHandler>(
+    (event) =>
+      handleSubmit(console.log)(event).catch((error) => {
+        console.log(error);
+      }),
+    []
+  );
+
+  return (
+    <div className="h-full flex items-center justify-center">
+      <div>
+        <Welcome />
+        <div className="flex items-center justify-center">
+          <form 
+          className="flex flex-col gap-5 rounded-lg bg-purple-900 py-5 px-4 shadow-[0px_0px_20px_5px] shadow-zinc-600/50"
+          onSubmit={onSubmit}>
+            <Input
+              id="username"
+              label="Username:"
+              error={errors.username?.message}
+              {...register('username', {
+                required: 'You should type you username'
+              })}
+            />
+            <Input
+              id="password"
+              label="Password:"
+              type="password"
+              error={errors.password?.message}
+              {...register('password', {
+                required: 'You should enter password'
+              })}
+            />
+            <Button type="submit">
+              Log In
+            </Button>
+            <span>
+              Don&apos;t have account?
+              <Link
+                href="/registration"
+                className="ml-1 text-blue-300 underline hover:text-yellow-400"
+              >
+                Create one!
+              </Link>
+            </span>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+}
