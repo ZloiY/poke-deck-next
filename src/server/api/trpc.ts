@@ -18,9 +18,12 @@
  */
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
+import { PokemonClient } from "pokenode-ts";
 
 import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
+
+const pokemonApi = new PokemonClient();
 
 type CreateContextOptions = {
   session: Session | null;
@@ -39,6 +42,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
+    pokemonApi
   };
 };
 

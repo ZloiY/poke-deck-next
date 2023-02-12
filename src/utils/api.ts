@@ -50,7 +50,20 @@ export const api = createTRPCNext<AppRouter>({
    * Whether tRPC should await queries when server rendering pages
    * @see https://trpc.io/docs/nextjs#ssr-boolean-default-false
    */
-  ssr: false,
+  ssr: true,
+  responseMeta({ clientErrors, ctx }) {
+    if (clientErrors.length) {
+      // propagate first http error from API calls
+      return {
+        status: 500,
+      };
+    }
+    // cache full page for 1 day + revalidate once every second
+    const ONE_DAY_IN_SECONDS = 60 * 60 * 24;
+    return {
+      'Cache-Control': `s-maxage=604800, stale-while-revalidate=${ONE_DAY_IN_SECONDS}`,
+    };
+  },
 });
 
 /**

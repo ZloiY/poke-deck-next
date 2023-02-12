@@ -1,5 +1,8 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
+import CredentialsProvider from "next-auth/providers/credentials";
+import sha256 from 'crypto-js/sha256';
+import { z } from "zod";
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
@@ -8,12 +11,20 @@ import { prisma } from "../../../server/db";
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
+  session: {
+    strategy: 'jwt',
+  },
   callbacks: {
-    session({ session, user }) {
+    async session({ session, token }) {
       if (session.user) {
-        session.user.id = user.id;
+        session.user.name = token.name;
+        session.user.id = token.sub as string;
       }
       return session;
+    },
+    async jwt({ token, user }) {
+        token.id = user?.id 
+        return token;
     },
   },
   pages: {
@@ -22,10 +33,28 @@ export const authOptions: NextAuthOptions = {
   // Configure one or more authentication providers
   adapter: PrismaAdapter(prisma),
   providers: [
-    DiscordProvider({
-      clientId: env.DISCORD_CLIENT_ID,
-      clientSecret: env.DISCORD_CLIENT_SECRET,
-    }),
+    CredentialsProvider({
+      type: 'credentials',
+      credentials: {},
+      authorize: async (credentials, req) => {
+        const { username, password } = z.object({
+          username: z.string().min(3),
+          password: z.string().regex( /[\w(@|#|$|&)+]{6}/g),
+        }).parse(credentials);
+        try {
+          const user = await prisma.user.findUniqueOrThrow({ where: { name: username }});
+          if (user.hash == sha256(`${password}${user.salt}`).toString()) {
+            return user;
+          } else {
+            console.log('Wrong password');
+            throw new Error('Invalid credentials')
+          }
+        } catch(prismaError) {
+          console.log('User create error: ', prismaError);
+          throw new Error('Server error')
+        }
+      }
+    })
     /**
      * ...add more providers here
      *

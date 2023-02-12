@@ -57,11 +57,5 @@ export const authRouter = createTRPCRouter({
             cause: prismaError
          })
       }
-    }),
-  // signIn: publicProcedure
-  //   .input(z.object({
-  //     username: z.string().min(3),
-  //     password: z.string().regex(passwordRegEx)
-  //   }))
-  //   .query()
+    })
 })
