@@ -12,14 +12,16 @@ export const PreviewCard = ({ name }: { name: string }) => {
     return (
       <div
         className="
+          flex items-center justify-center
           relative
           rounded-xl
           bg-purple-900
+          h-[440px]
           px-2
           py-1 text-yellow-500
           hover:shadow-[0_0_15px_4px] hover:shadow-orange-500"
       >
-        <div className="animate-spin-slow h-6 w-6">
+        <div className="animate-spin-slow h-10 w-10">
           <Loader />
         </div>
       </div>
