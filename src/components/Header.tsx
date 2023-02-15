@@ -1,5 +1,5 @@
 import { signOut, useSession } from "next-auth/react";
-import LogoutIcon from "../../public/logout.svg";
+import LogoutIcon from "@icons/logout.svg";
 import Link from "next/link";
 
 export const Header = () => {

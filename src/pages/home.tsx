@@ -1,14 +1,16 @@
-import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
+import { twMerge } from "tailwind-merge";
 
-import Loader from "../../public/loader.svg";
+import Flip from "@icons/flip.svg";
+import Loader from "@icons/loader.svg";
+
+import { FlipCard } from "../components/Cards/FlipCard";
 import { Layout } from "../components/Layout";
-import { DetailsCard } from "../components/DetailsCard";
 import { api } from "../utils/api";
-
 import { NextPageWithLayout } from "./_app";
 
 const Home: NextPageWithLayout = () => {
+  const [cardsFlipped, toggle] = useState<boolean>(false);
   const { data, isLoading } = api.pokemon.getPokemonList.useQuery({
     limit: 18,
     offset: 0,
@@ -25,10 +27,21 @@ const Home: NextPageWithLayout = () => {
   }
 
   return (
-    <div className="grid gap-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2">
-      {data?.map(({ name }) => (
-        <DetailsCard name={name} />
-      ))}
+    <div className="flex flex-col">
+      <div className="flex justify-end -mt-5">
+        <Flip 
+        className={twMerge(
+          "h-10 w-10 text-white transition-transform duration-200 hover:text-yellow-500 cursor-pointer",
+          cardsFlipped && "text-purple-900 rotate-180"
+          )}
+        onClick={() => toggle(state => !state)} />
+      </div>
+      <div className="grid gap-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
+      mt-5">
+        {data?.map(({ name }) => (
+          <FlipCard key={name} name={name} keepFlipped={cardsFlipped} />
+        ))}
+      </div>
     </div>
   );
 };
