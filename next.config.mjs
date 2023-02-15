@@ -9,6 +9,14 @@
 const config = {
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+      }
+    ]
+  },
   i18n: {
     locales: ["en"],
     defaultLocale: "en",

@@ -7,6 +7,9 @@ module.exports = {
         coiny: ['var(--font-coiny)'],
         modak: ['var(--font-modak)'],
         fredoka: ['var(--font-fredoka)']
+      },
+      animation: {
+        'spin-slow': 'spin 1.5s linear infinite'
       }
     },
   },
