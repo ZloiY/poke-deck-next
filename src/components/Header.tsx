@@ -6,7 +6,7 @@ export const Header = () => {
   const { data } = useSession();
 
   return (
-    <div className="flex items-center justify-between bg-purple-900 px-3 py-5 text-4xl shadow-lg shadow-white/50">
+    <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75">
       <div className="flex gap-10 items-center">
         <Link
           href="/home"
