@@ -1,10 +1,11 @@
 import { useSpring, a } from "@react-spring/web";
+import { Pokemon } from "pokenode-ts";
 import { memo, useEffect, useState } from "react";
 
 import { DetailsCard } from "./DetailsCard";
 import { PreviewCard } from "./PreviewCard";
 
-export const FlipCard = memo(({ name, keepFlipped = false }: { name: string, keepFlipped?: boolean }) => {
+export const FlipCard = memo(({ pokemon, keepFlipped = false }: { pokemon: Pokemon, keepFlipped?: boolean }) => {
   const [isHovered, toggleHovered] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,14 +29,14 @@ export const FlipCard = memo(({ name, keepFlipped = false }: { name: string, kee
     onMouseEnter={() => toggleHovered(true)}
     onMouseLeave={unHover}>
       <a.div className="z-10" style={{ opacity: opacity.to(o => 1 - o), transform }}>
-        <PreviewCard name={name} />
+        <PreviewCard pokemon={pokemon} />
       </a.div>
       <a.div className="absolute top-0 z-30" style={{
           opacity,
           transform,
           rotateY: '180deg',
         }}>
-        <DetailsCard name={name} />
+        <DetailsCard pokemon={pokemon} />
       </a.div>
   </div>)
 });

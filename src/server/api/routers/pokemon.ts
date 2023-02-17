@@ -11,13 +11,14 @@ export const pokemonRouter = createTRPCRouter({
       searchQuery: z.string().nullable().optional(),
     })
   ).query(async ({ input, ctx }) => {
+    let pokemons: NamedAPIResource[];
     if (input.searchQuery) {
-      const pokemons: NamedAPIResource[] = await (await ctx.pokemonApi.listPokemons(0, 2000)).results;
-      return pokemons.filter(({ name }) => name.includes(input.searchQuery!))
+      pokemons = await (await ctx.pokemonApi.listPokemons(0, 2000)).results;
+      pokemons = pokemons.filter(({ name }) => name.includes(input.searchQuery!))
     } else {
-      const pokemons = await (await ctx.pokemonApi.listPokemons(input.offset, input.limit)).results;
-      return pokemons;
+      pokemons = await (await ctx.pokemonApi.listPokemons(input.offset, input.limit)).results;
     }
+    return await Promise.all(pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)))
   }),
   getPokemonInfo: protectedProcedure.input(
     z.object({
@@ -27,9 +28,4 @@ export const pokemonRouter = createTRPCRouter({
     const pokemon = await ctx.pokemonApi.getPokemonByName(input.name);
     return pokemon;
   }),
-  searchPokemonByName: protectedProcedure.input(
-    z.string().min(2)
-  ).query(async ({ input, ctx }) => {
-
-  })
 })

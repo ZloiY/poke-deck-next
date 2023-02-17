@@ -6,7 +6,7 @@ export const Loader = ({
   isLoading,
   children,
 }: {
-  isLoading: boolean;
+  isLoading?: boolean;
   children: ReactElement;
 }) =>
   isLoading ? (

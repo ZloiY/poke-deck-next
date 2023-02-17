@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 type TransitionState = 'Hold' | 'Right Extend' | 'Right Move' | 'Right Shrink' | 'Left Extend' | 'Left Move' | 'Left Shrink';
@@ -15,7 +15,7 @@ type SelectDots<T> = T extends { id: string, index: number } ? T : never;
 
 type Dot = SelectDots<typeof dots[keyof typeof dots]>;
 
-export const Switcher = ({
+export const Switcher = memo(({
   onNext,
   onPrev
 }: {
@@ -24,7 +24,7 @@ export const Switcher = ({
 }) => {
   const [transitionState, toggleTransition] = useState<TransitionState>('Hold');
 
-  const changeDot = useCallback((dot: Dot) => () => {
+  const changeDot = (dot: Dot) => () => {
     switch(dot.id) {
       case "left": {
         onPrev && onPrev();
@@ -38,7 +38,7 @@ export const Switcher = ({
       }
       default: return;
     }
-  }, []);
+  };
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -106,4 +106,4 @@ export const Switcher = ({
       ))}
     </div>
   )
-};
+});
