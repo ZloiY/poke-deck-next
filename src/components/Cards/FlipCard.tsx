@@ -27,10 +27,10 @@ export const FlipCard = memo(({ name, keepFlipped = false }: { name: string, kee
     className="relative"
     onMouseEnter={() => toggleHovered(true)}
     onMouseLeave={unHover}>
-      <a.div style={{ opacity: opacity.to(o => 1 - o), transform }}>
+      <a.div className="z-10" style={{ opacity: opacity.to(o => 1 - o), transform }}>
         <PreviewCard name={name} />
       </a.div>
-      <a.div className="absolute top-0" style={{
+      <a.div className="absolute top-0 z-30" style={{
           opacity,
           transform,
           rotateY: '180deg',

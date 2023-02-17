@@ -6,7 +6,7 @@ module.exports = {
   "trailingComma": "all",
   "singleQuote": false,
   "semi": true,
-  "importOrder": ["^@icons/(.*)$", "^[./]"],
+  "importOrder": ["^!@.*/(.*)$", "^@.*/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
 };

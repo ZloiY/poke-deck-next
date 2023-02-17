@@ -8,7 +8,7 @@ export const pokemonRouter = createTRPCRouter({
     z.object({
       offset: z.number(),
       limit: z.number(),
-      searchQuery: z.string().nullable(),
+      searchQuery: z.string().nullable().optional(),
     })
   ).query(async ({ input, ctx }) => {
     if (input.searchQuery) {

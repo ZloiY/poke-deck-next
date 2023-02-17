@@ -102,7 +102,7 @@ export const DetailsCard = ({ name }: DetailsCardProps) => {
           <span className="text-xl">Abilities:</span>
           <div className="flex flex-wrap justify-between gap-1">
             {pokemon?.abilities.map((ability) => (
-              <span className="text-lg capitalize text-yellow-500">
+              <span key={ability.ability.name} className="text-lg capitalize text-yellow-500">
                 {ability.ability.name}
               </span>
             ))}
@@ -112,7 +112,7 @@ export const DetailsCard = ({ name }: DetailsCardProps) => {
           <span className="text-xl">Stats:</span>
           <div className="grid grid-cols-3 items-end gap-x-6 gap-y-4">
             {pokemon?.stats.map((stat) => (
-              <div>
+              <div key={stat.stat.name}>
                 <span>{stat.stat.name}</span>
                 <div
                   className={twMerge(
