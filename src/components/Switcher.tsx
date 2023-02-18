@@ -81,24 +81,24 @@ export const Switcher = memo(({
   }, [transitionState]);
 
   return (
-    <div className={twMerge("relative flex gap-3 justify-between items-center rounded-full bg-purple-700 opacity-50 p-1 hover:opacity-100")}>
+    <div className={twMerge("relative flex gap-3 justify-between items-center rounded-full bg-purple-700 p-1")}>
       {dots.map((dot) => (
         <div
           key={dot.id}
-          className={twMerge("rounded-full h-5 w-5 bg-white hover:bg-orange-500 active:bg-yellow-500 active:scale-90 duration-500",
+          className={twMerge("rounded-full h-5 w-5 bg-white hover:bg-orange-500 active:bg-yellow-500 active:scale-90 duration-500 cursor-pointer",
           dot.id == 'central'    && "bg-yellow-500",
           dot.id == 'central'    && transitionState == 'Right Extend' && 'absolute w-[53px] left-[40%] transition-all rounded-3xl',
           dot.id == 'central'    && transitionState == 'Right Move'   && 'absolute w-[53px] transition-all left-[3px] duration-300',
           dot.id == 'central'    && transitionState == 'Right Shrink' && 'absolute transition-all w-5 left-[40%] duration-700',
           (dot.id == 'swap_left' || dot.id == 'swap_right') && 'opacity-0 absolute -z-10',
-          dot.id == 'swap_right' && transitionState == 'Right Extend' && 'opacity-100 static bg-yellow-500 z-auto',
-          dot.id == 'swap_right' && transitionState == 'Right Move'   && 'opacity-0 static z-auto',
+          dot.id == 'swap_right' && transitionState == 'Right Extend' && 'opacity-0 static',
+          dot.id == 'swap_right' && transitionState == 'Right Move'   && 'opacity-0 static',
           dot.id == 'swap_right' && transitionState == 'Right Shrink' && 'opacity-100 static transition-opacity z-auto',
           dot.id == 'central'    && transitionState == 'Left Extend'  && 'absolute w-[53px] -translate-x-8 left-[40%] transition-all rounded-3xl',
           dot.id == 'central'    && transitionState == 'Left Move'    && 'absolute w-[53px] transition-all right-[3px] duration-300',
           dot.id == 'central'    && transitionState == 'Left Shrink'  && 'absolute transition-all w-5 left-[39%] duration-700',
-          dot.id == 'swap_left'  && transitionState == 'Left Extend'  && 'opacity-100 static bg-yellow-500 z-auto',
-          dot.id == 'swap_left'  && transitionState == 'Left Move'    && 'opacity-0 static z-auto',
+          dot.id == 'swap_left'  && transitionState == 'Left Extend'  && 'opacity-0 static',
+          dot.id == 'swap_left'  && transitionState == 'Left Move'    && 'opacity-0 static',
           dot.id == 'swap_left'  && transitionState == 'Left Shrink'  && 'opacity-100 static transition-opacity z-auto',
       )}
           onClick={changeDot(dot)}

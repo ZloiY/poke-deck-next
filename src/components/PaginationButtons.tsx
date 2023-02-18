@@ -1,14 +1,10 @@
-
 import Arrow from "@icons/arrow-left.svg";
 
-import { Switcher } from "./Switcher";
-
-export const PaginationButtons = ({ onNextPage, onPrevPage, showNext, showPrev, hideSwitcher }: Partial<{
+export const PaginationButtons = ({ onNextPage, onPrevPage, showNext, showPrev }: Partial<{
   onNextPage: () => void,
   onPrevPage: () => void,
   showNext: boolean,
   showPrev: boolean,
-  hideSwitcher: boolean
 }>) => (
   <>
     {showPrev && (
@@ -38,14 +34,6 @@ export const PaginationButtons = ({ onNextPage, onPrevPage, showNext, showPrev, 
           >
             <Arrow className="fill-white h-20 w-20 rotate-180" />
           </div>
-        </div>
-      )}
-      {showNext && showPrev && !hideSwitcher && (
-        <div className="fixed bottom-20 -left-1 flex justify-center w-full z-20 hover:z-50">
-          <Switcher
-            onNext={onNextPage}
-            onPrev={onPrevPage}
-          />
         </div>
       )}
   </>

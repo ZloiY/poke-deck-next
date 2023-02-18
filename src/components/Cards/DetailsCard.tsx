@@ -1,15 +1,15 @@
 import Image from "next/image";
+import { Pokemon } from "pokenode-ts";
 import { useCallback, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import Add from "@icons/add.svg";
 import Swap from "@icons/swap.svg";
 
+import { Switcher } from "../Switcher";
 import { BlankCard } from "./BlankCard";
-import { Pokemon } from "pokenode-ts";
 
 export const DetailsCard = ({ pokemon }: { pokemon: Pokemon }) => {
-
   const sprites = useMemo(
     () =>
       [
@@ -25,14 +25,26 @@ export const DetailsCard = ({ pokemon }: { pokemon: Pokemon }) => {
   );
   const [spriteKey, setSpriteKey] = useState<number>(0);
 
-  const switchSprite = useCallback(() => {
-    const newKey = spriteKey + 1;
-    if (newKey >= sprites.length) {
-      setSpriteKey(0);
-    } else {
-      setSpriteKey(newKey);
-    }
-  }, [sprites, spriteKey]);
+  const switchSprite = useCallback(
+    (direction: "prev" | "next") => () => {
+      if (direction == "next") {
+        const newKey = spriteKey + 1;
+        if (newKey >= sprites.length) {
+          setSpriteKey(0);
+        } else {
+          setSpriteKey(newKey);
+        }
+      } else {
+        const newKey = spriteKey - 1;
+        if (newKey < 0) {
+          setSpriteKey(sprites.length - 1)
+        } else {
+          setSpriteKey(newKey);
+        }
+      }
+    },
+    [sprites, spriteKey],
+  );
 
   const currentSprite = useMemo(() => sprites[spriteKey], [sprites, spriteKey]);
 
@@ -46,10 +58,12 @@ export const DetailsCard = ({ pokemon }: { pokemon: Pokemon }) => {
               <Image src={currentSprite!} alt={`${pokemon.name} image`} fill />
               <div
                 className="absolute bottom-0 right-0
-            text-white"
-                onClick={switchSprite}
+            text-white scale-75"
               >
-                <Swap className="h-5 w-5 cursor-pointer fill-white hover:fill-yellow-500" />
+                <Switcher
+                  onNext={switchSprite("next")}
+                  onPrev={switchSprite("prev")}
+                />
               </div>
             </div>
             <div className="flex flex-col items-center text-center gap-7">
@@ -57,11 +71,15 @@ export const DetailsCard = ({ pokemon }: { pokemon: Pokemon }) => {
               <div className="flex flex-col gap-5">
                 <span className="text-xl">
                   Height:{" "}
-                  <span className="text-yellow-500">{pokemon.height ?? '...'}</span>
+                  <span className="text-yellow-500">
+                    {pokemon.height ?? "..."}
+                  </span>
                 </span>
                 <span className="text-xl">
                   Weight:{" "}
-                  <span className="text-yellow-500">{pokemon.weight ?? '...'}</span>
+                  <span className="text-yellow-500">
+                    {pokemon.weight ?? "..."}
+                  </span>
                 </span>
               </div>
             </div>

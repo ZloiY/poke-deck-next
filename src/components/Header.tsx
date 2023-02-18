@@ -47,10 +47,10 @@ export const Header = () => {
     <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75 sticky top-0 z-50">
       <div
         className={twMerge(
-          "absolute h-[3px] left-0 top-0 bg-yellow-500 shadow-[0_0_15px_2px] shadow-yellow-300 transition-all",
+          "absolute h-[3px] left-0 top-0 bg-yellow-500 shadow-[0_0_15px_2px] shadow-yellow-300 transition-all ",
           loadingState == "Hold" && "w-0",
-          loadingState == "Started" && "w-1/3 duration-1000",
-          loadingState == "Finished" && "w-full duration-500",
+          loadingState == "Started" && "w-1/3 duration-1000 ease-in",
+          loadingState == "Finished" && "w-full duration-500 ease-out",
         )}
       ></div>
       <div className="flex gap-10 items-center">
