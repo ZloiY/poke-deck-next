@@ -5,43 +5,11 @@ import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import LogoutIcon from "@icons/logout.svg";
-
-type LoadingState = "Started" | "Finished" | "Hold";
+import { useLoadingState } from "../hooks/useLoadingState";
 
 export const Header = () => {
   const { data } = useSession();
-  const router = useRouter();
-  const [loadingState, setLoadingState] = useState<LoadingState>("Hold");
-
-  useEffect(() => {
-    const loadStarted = () => {
-      setLoadingState("Started");
-    };
-    const loadCompleted = () => {
-      setLoadingState("Finished");
-    };
-
-    router.events.on("routeChangeStart", loadStarted);
-    router.events.on("routeChangeError", loadCompleted);
-    router.events.on("routeChangeComplete", loadCompleted);
-    return () => {
-      router.events.off("routeChangeStart", loadStarted);
-      router.events.off("routeChangeError", loadCompleted);
-      router.events.off("routeChangeComplete", loadCompleted);
-    };
-  }, [router]);
-
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    if (loadingState == "Finished") {
-      timeoutId = setTimeout(() => {
-        setLoadingState("Hold");
-      }, 500);
-    }
-    return () => {
-      timeoutId && clearTimeout(timeoutId);
-    };
-  }, [loadingState]);
+  const loadingState = useLoadingState();
 
   return (
     <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75 sticky top-0 z-50">
