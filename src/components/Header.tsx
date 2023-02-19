@@ -9,7 +9,7 @@ import { useLoadingState } from "../hooks/useLoadingState";
 import { HighlightedLink } from "./HiglightedLink";
 import { FlipButton } from "./FlipButton";
 
-export const Header = () => {
+export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const { data } = useSession();
   const loadingState = useLoadingState();
 
@@ -41,7 +41,7 @@ export const Header = () => {
         </HighlightedLink>
       </div>
       <div className="flex gap-4 items-center">
-        <FlipButton/>
+        {showFlip && <FlipButton/>}
         <span>Hello, {data?.user?.name}!</span>
         <LogoutIcon
           onClick={() => signOut()}

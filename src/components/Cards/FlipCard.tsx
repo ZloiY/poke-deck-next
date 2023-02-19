@@ -19,7 +19,7 @@ export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview' }: { pokemon: P
   })
 
   const unHover = () => {
-    if (!keepFlipped) {
+    if (keepFlipped != 'Details') {
       toggleHovered('Preview');
     }
   }

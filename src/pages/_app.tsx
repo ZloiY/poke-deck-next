@@ -42,7 +42,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
-    <main
+    <main id="main"
       className={`${coiny.variable} ${modak.variable} ${fredoka.variable} font-fredoka text-white`}
     >
         <SessionProvider session={session}>

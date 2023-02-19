@@ -2,9 +2,9 @@ import { NextPage } from "next";
 
 import { Header } from "./Header";
 
-export const Layout: NextPage<{ children: React.ReactElement }, React.ReactElement> = ({ children }: { children: React.ReactElement}): React.ReactElement => (
+export const Layout: NextPage<{ children: React.ReactElement, showFlip?: boolean }, React.ReactElement> = ({ children, showFlip = true }: { children: React.ReactElement, showFlip?: boolean }): React.ReactElement => (
   <>
-    <Header/>
+    <Header showFlip={showFlip} />
     <div className="pt-10 pb-5 px-5 flex-grow">
       {children}
     </div>

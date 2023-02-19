@@ -32,7 +32,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     });
     const result = z
       .object({
-        search: z.string().optional(),
+        search: z.string().optional().transform(value => value ?? null),
         page: z.string().optional().transform(Number),
       })
       .safeParse(context.query);
