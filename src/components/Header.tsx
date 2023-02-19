@@ -5,13 +5,15 @@ import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import LogoutIcon from "@icons/logout.svg";
+
 import { useLoadingState } from "../hooks/useLoadingState";
-import { HighlightedLink } from "./HiglightedLink";
 import { FlipButton } from "./FlipButton";
+import { HighlightedLink } from "./HiglightedLink";
 
 export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const { data } = useSession();
   const loadingState = useLoadingState();
+  const router = useRouter();
 
   return (
     <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75 sticky top-0 z-50">
@@ -25,23 +27,32 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
       ></div>
       <div className="flex gap-10 items-center">
         <HighlightedLink
-          href="/home"
+          href={{
+            pathname: "/home",
+            query: router.query,
+          }}
         >
           Home
         </HighlightedLink>
         <HighlightedLink
-          href="/decks"
+          href={{
+            pathname: "/decks",
+            query: router.query,
+          }}
         >
           Decks
         </HighlightedLink>
         <HighlightedLink
-          href="/pokemons"
+          href={{
+            pathname: "/pokemons",
+            query: router.query,
+          }}
         >
           Pókemons
         </HighlightedLink>
       </div>
       <div className="flex gap-4 items-center">
-        {showFlip && <FlipButton/>}
+        {showFlip && <FlipButton />}
         <span>Hello, {data?.user?.name}!</span>
         <LogoutIcon
           onClick={() => signOut()}

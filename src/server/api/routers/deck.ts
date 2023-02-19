@@ -20,5 +20,27 @@ export const deckRouter = createTRPCRouter({
     } catch (err) {
       console.log('deck creation error', err)
     }
+  }),
+  getUserDecks: protectedProcedure.input(z.string().nullable().optional().transform(value => value ?? null)).query(async ({ input, ctx }) => {
+    if (input) {
+      return [await ctx.prisma.deck.findFirstOrThrow({ where: { id: input } })];
+    } else {
+      const userId = ctx.session.user.id;
+      const decks = await ctx.prisma.deck.findMany({
+        where: {
+          userId
+        }
+      });
+      return decks;
+    }
+  }),
+  removeUserDeck: protectedProcedure.input(
+    z.string()
+  ).mutation(async ({ input, ctx }) => {
+    await ctx.prisma.deck.delete({
+      where: {
+        id: input,
+      }
+    })
   })
 })

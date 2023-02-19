@@ -7,7 +7,7 @@ export const Loader = ({
   children,
 }: {
   isLoading?: boolean;
-  children: ReactElement;
+  children?: ReactElement;
 }) =>
   isLoading ? (
     <div className="flex items-center justify-center h-full">
@@ -16,5 +16,5 @@ export const Loader = ({
       </div>
     </div>
   ) : (
-    children
+    children ?? null
   );

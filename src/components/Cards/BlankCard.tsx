@@ -1,14 +1,15 @@
-import { ReactElement } from "react";
+import { ReactNode } from "react";
 
 import Loader from "@icons/loader.svg";
 import { twMerge } from "tailwind-merge";
 
 export const BlankCard = ({
   isLoading = false,
+  notInteractive = false,
   className,
   onClick,
   children,
-}: Partial<{ isLoading: boolean; className?: string; onClick?: () => void; children: ReactElement }>) => (
+}: Partial<{ isLoading: boolean; className?: string; onClick?: () => void; children: ReactNode; notInteractive: boolean }>) => (
   <div
     className={twMerge(`
     flex items-center justify-center
@@ -18,7 +19,7 @@ export const BlankCard = ({
     h-[500px] min-w-[300px] max-w-xs
     p-4
     text-white
-    hover:shadow-[0_0_15px_4px] hover:shadow-orange-500`, className)}
+    hover:shadow-[0_0_15px_4px] hover:shadow-orange-500`, notInteractive && 'pointer-events-none select-none', className)}
     onClick={onClick}
   >
     {" "}

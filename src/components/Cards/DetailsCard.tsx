@@ -9,7 +9,7 @@ import Swap from "@icons/swap.svg";
 import { Switcher } from "../Switcher";
 import { BlankCard } from "./BlankCard";
 
-export const DetailsCard = ({ pokemon }: { pokemon: Pokemon }) => {
+export const DetailsCard = ({ pokemon, addCard }: { pokemon: Pokemon, addCard?: (pokemon: Pokemon) => void }) => {
   const sprites = useMemo(
     () =>
       [
@@ -51,7 +51,7 @@ export const DetailsCard = ({ pokemon }: { pokemon: Pokemon }) => {
   return (
     <BlankCard>
       <div className="relative h-full pb-4">
-        <Add className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10" />
+        <Add className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10" onClick={() => addCard?.(pokemon)} />
         <div className="flex h-full flex-col items-stretch justify-between gap-4 mt-2">
           <div className="flex gap-7">
             <div className="relative h-40 basis-40">

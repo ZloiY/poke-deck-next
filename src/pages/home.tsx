@@ -1,12 +1,15 @@
+import { atom, useAtom } from "jotai";
 import { useRouter } from "next/router";
 import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next/types";
-import { useCallback } from "react";
+import { Pokemon } from "pokenode-ts";
+import { useCallback, useState } from "react";
 import superjson from "superjson";
 import { z } from "zod";
 
+import Check from "@icons/check.svg";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
 import { CardsGrid } from "../components/CardsGrid";
@@ -14,13 +17,40 @@ import { Layout } from "../components/Layout";
 import { Loader } from "../components/Loader";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
+import { useFlipState } from "../hooks";
 import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
-import { useFlipState } from "../hooks";
+import { AddDeckCard } from "../components/Cards";
+import { AddCards } from "../components/Modals";
+import { useModalState } from "../hooks/useModalState";
+
+const FixedButton = ({
+  pokemons,
+  onClick,
+}: {
+  pokemons: Pokemon[];
+  onClick: () => void;
+}) => {
+  const [entered, toggleEnter] = useState(false);
+
+  return (
+    pokemons.length > 0 ? <div
+      onMouseEnter={() => toggleEnter(true)}
+      onMouseLeave={() => toggleEnter(false)}
+      className={`fixed right-2 bottom-2
+      flex justify-center items-center rounded-full h-16 w-16 bg-white text-purple-900 text-2xl cursor-pointer
+      hover:bg-green-500 hover:text-white transition-all z-50
+      shadow-xl`}
+      onClick={onClick}
+    >
+      {entered ? <Check className="opacity-0 text-white hover:opacity-100 h-full w-full m-2" /> : <p>{pokemons.length}</p>}
+    </div> : null
+  );
+};
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
@@ -32,7 +62,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     });
     const result = z
       .object({
-        search: z.string().optional().transform(value => value ?? null),
+        search: z
+          .string()
+          .optional()
+          .transform((value) => value ?? null),
+        deckId: z
+          .string()
+          .optional()
+          .transform((value) => value ?? null),
         page: z.string().optional().transform(Number),
       })
       .safeParse(context.query);
@@ -47,6 +84,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           trpcState: ssg.dehydrate(),
           search: result.data.search,
           page: result.data.page,
+          deckId: result.data.deckId,
         },
       };
     }
@@ -56,9 +94,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
+const addedPokemonsAtom = atom<Pokemon[]>([]);
+const pushPokemonAtom = atom(null, (get, set, update: Pokemon) =>
+  set(addedPokemonsAtom, [...get(addedPokemonsAtom), update]),
+);
+
 const Home: NextPageWithLayout = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
+  const [addedPokemons, setAddedPokemons] = useAtom(addedPokemonsAtom);
+  const [_, pushPokemon] = useAtom(pushPokemonAtom);
+  const [__, showModal] = useModalState();
   const route = useRouter();
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
@@ -82,6 +128,8 @@ const Home: NextPageWithLayout = (
 
   return (
     <div className="flex flex-col h-full">
+      <AddCards deckId={props.deckId} pokemon={addedPokemons} />
+      <FixedButton pokemons={addedPokemons} onClick={showModal}/>
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>
@@ -92,7 +140,11 @@ const Home: NextPageWithLayout = (
         onPrevPage={pagination.goToPrevPage}
       />
       <Loader isLoading={isLoading}>
-        <CardsGrid pokemons={pokemons} cardsFlipped={flipState} />
+        <CardsGrid
+          addCard={pushPokemon}
+          pokemons={pokemons}
+          cardsFlipped={flipState}
+        />
       </Loader>
     </div>
   );

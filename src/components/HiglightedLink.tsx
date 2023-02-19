@@ -2,8 +2,9 @@ import Link from "next/link";
 import { useRouter } from "next/router"
 import { ReactNode } from "react";
 import { twMerge } from "tailwind-merge";
+import { Url } from "url";
 
-export const HighlightedLink = ({ href, children }: { href: string, children: ReactNode }) => {
+export const HighlightedLink = ({ href, children }: { href: string | Partial<Url>, children: ReactNode }) => {
   const route = useRouter();
 
   return <Link

@@ -3,9 +3,9 @@ import { Pokemon } from "pokenode-ts";
 
 import { BlankCard } from "./BlankCard";
 
-export const PreviewCard = ({ pokemon }: { pokemon: Pokemon }) => {
+export const PreviewCard = ({ pokemon, notInteractive = false }: { pokemon: Pokemon; notInteractive?: boolean }) => {
   return (
-    <BlankCard>
+    <BlankCard notInteractive={notInteractive}>
       <div
         className="
           flex
