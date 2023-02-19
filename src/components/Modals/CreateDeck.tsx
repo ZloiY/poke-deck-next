@@ -6,15 +6,17 @@ import { Button } from "../Button";
 import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
 
-type DeckParams = {
+export type CreateDeckParams = {
   name: string;
   private: boolean;
 };
 
 export const CreateDeck = ({
   create,
+  closeModal,
 }: {
-  create?: (params: DeckParams) => void;
+  create?: (params: CreateDeckParams) => void;
+  closeModal: () => void;
 }) => {
   const {
     handleSubmit,
@@ -29,10 +31,10 @@ export const CreateDeck = ({
   });
 
   const onSubmit = useCallback<ReactEventHandler>((event) => handleSubmit(async (form) => {
-    console.log('form', form);
+    create?.(form);
   })(event).catch((error) => {
     console.log(error);
-  }), [])
+  }).finally(closeModal), [])
 
   return (
     <div className="gap-5 ">
