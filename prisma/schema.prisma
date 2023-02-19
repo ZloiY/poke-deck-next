@@ -25,6 +25,8 @@ model User {
 model Deck {
     id            String    @id @default(cuid())
     deck          Pokemon[]
+    name          String
+    private       Boolean
     user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId        String    @unique
 }
