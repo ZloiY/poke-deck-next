@@ -6,6 +6,8 @@ import { twMerge } from "tailwind-merge";
 
 import LogoutIcon from "@icons/logout.svg";
 import { useLoadingState } from "../hooks/useLoadingState";
+import { HighlightedLink } from "./HiglightedLink";
+import { FlipButton } from "./FlipButton";
 
 export const Header = () => {
   const { data } = useSession();
@@ -22,26 +24,24 @@ export const Header = () => {
         )}
       ></div>
       <div className="flex gap-10 items-center">
-        <Link
+        <HighlightedLink
           href="/home"
-          className="font-modak hover:text-yellow-400 active:text-yellow-500"
         >
           Home
-        </Link>
-        <Link
+        </HighlightedLink>
+        <HighlightedLink
           href="/decks"
-          className="font-modak hover:text-yellow-400 active:text-yellow-500"
         >
           Decks
-        </Link>
-        <Link
+        </HighlightedLink>
+        <HighlightedLink
           href="/pokemons"
-          className="font-modak hover:text-yellow-400 active:text-yellow-500"
         >
           Pókemons
-        </Link>
+        </HighlightedLink>
       </div>
       <div className="flex gap-4 items-center">
+        <FlipButton/>
         <span>Hello, {data?.user?.name}!</span>
         <LogoutIcon
           onClick={() => signOut()}

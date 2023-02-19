@@ -9,10 +9,10 @@ import { FlipCard } from "./Cards";
 
 export const CardsGrid = ({
   pokemons,
-  cardsFlipped = false,
+  cardsFlipped = 'Preview',
 }: {
   pokemons?: Pokemon[];
-  cardsFlipped?: boolean;
+  cardsFlipped?: FlipState;
 }) => {
   const loadingState = useLoadingState();
   const paginationState = usePaginationState();

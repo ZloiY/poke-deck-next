@@ -3,12 +3,10 @@ import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next/types";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import superjson from "superjson";
-import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
-import Flip from "@icons/flip.svg";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
 import { CardsGrid } from "../components/CardsGrid";
@@ -22,6 +20,7 @@ import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
+import { useFlipState } from "../hooks";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
@@ -61,9 +60,8 @@ const Home: NextPageWithLayout = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
   const route = useRouter();
-
+  const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
-  const [cardsFlipped, toggle] = useState(false);
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
@@ -86,13 +84,6 @@ const Home: NextPageWithLayout = (
     <div className="flex flex-col h-full">
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
-        <Flip
-          className={twMerge(
-            "h-10 w-10 text-white transition-transform duration-200 hover:text-yellow-500 cursor-pointer absolute right-0 z-50",
-            cardsFlipped && "text-purple-900 rotate-180",
-          )}
-          onClick={() => toggle((state) => !state)}
-        />
       </div>
       <PaginationButtons
         showNext={pagination.hasNextPage}
@@ -101,7 +92,7 @@ const Home: NextPageWithLayout = (
         onPrevPage={pagination.goToPrevPage}
       />
       <Loader isLoading={isLoading}>
-        <CardsGrid pokemons={pokemons} cardsFlipped={cardsFlipped} />
+        <CardsGrid pokemons={pokemons} cardsFlipped={flipState} />
       </Loader>
     </div>
   );

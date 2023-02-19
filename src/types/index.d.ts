@@ -1,0 +1,1 @@
+type FlipState = 'Preview' | 'Details';
