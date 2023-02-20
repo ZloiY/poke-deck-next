@@ -5,7 +5,7 @@ import { memo, useEffect, useState } from "react";
 import { DetailsCard } from "./DetailsCard";
 import { PreviewCard } from "./PreviewCard";
 
-export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview', addCard }: { pokemon: Pokemon, keepFlipped?: FlipState, addCard?: (pokemon: Pokemon) => void }) => {
+export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview' }: { pokemon: Pokemon, keepFlipped?: FlipState }) => {
   const [isHovered, toggleHovered] = useState<FlipState>(keepFlipped);
 
   useEffect(() => {
@@ -15,7 +15,7 @@ export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview', addCard }: { p
   const { transform, opacity } = useSpring({
     opacity: isHovered == 'Details' ? 1 : 0,
     transform: `perspective(600px) rotateY(${isHovered == 'Details' ? 180 : 0}deg)`,
-    config: { mass: 5, tension: 500, friction: 80 },
+    config: { mass: 8, tension: 550, friction: 80 },
   })
 
   const unHover = () => {
@@ -36,7 +36,7 @@ export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview', addCard }: { p
           transform,
           rotateY: '180deg',
         }}>
-        <DetailsCard addCard={addCard} pokemon={pokemon} />
+        <DetailsCard pokemon={pokemon} />
       </a.div>
   </div>)
 });

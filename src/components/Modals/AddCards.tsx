@@ -1,5 +1,6 @@
 import { Pokemon } from "pokenode-ts";
 
+import { useSelectPokemons } from "../../hooks";
 import { api } from "../../utils/api";
 import { Button } from "../Button";
 import { PreviewCard } from "../Cards";
@@ -7,15 +8,9 @@ import { EmptyDeckCard } from "../Cards/Deck/EmptyDeckCard";
 import { Loader } from "../Loader";
 import { ModalContainer } from "./ModalContainer";
 
-export const AddCards = ({
-  deckId,
-  pokemon,
-}: {
-  deckId?: string | null;
-  pokemon: Pokemon[];
-}) => {
+export const AddCards = ({ deckId }: { deckId?: string | null }) => {
   const { data: decks, isLoading } = api.deck.getUserDecks.useQuery(deckId);
-
+  const { pokemons } = useSelectPokemons();
   return (
     <ModalContainer title="Add cards to the decks">
       {(onClose) => (
@@ -35,7 +30,7 @@ export const AddCards = ({
             </Loader>
           </div>
           <div className="flex flex-wrap gap-3">
-            {pokemon.map((pokemon) => (
+            {pokemons.map((pokemon) => (
               <PreviewCard pokemon={pokemon} notInteractive={true} />
             ))}
           </div>

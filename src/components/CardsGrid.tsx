@@ -10,11 +10,9 @@ import { FlipCard } from "./Cards";
 export const CardsGrid = ({
   pokemons,
   cardsFlipped = 'Preview',
-  addCard
 }: {
   pokemons?: Pokemon[];
   cardsFlipped?: FlipState;
-  addCard?: (pokemon: Pokemon) => void
 }) => {
   const loadingState = useLoadingState();
   const paginationState = usePaginationState();
@@ -85,7 +83,6 @@ mt-5"
         {pokemons?.map((pokemon) => (
           <FlipCard
             key={pokemon?.name}
-            addCard={addCard}
             pokemon={pokemon}
             keepFlipped={cardsFlipped}
           />

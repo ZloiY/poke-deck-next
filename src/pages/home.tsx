@@ -4,7 +4,6 @@ import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next/types";
-import { Pokemon } from "pokenode-ts";
 import { useCallback, useState } from "react";
 import superjson from "superjson";
 import { z } from "zod";
@@ -17,25 +16,23 @@ import { Layout } from "../components/Layout";
 import { Loader } from "../components/Loader";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
-import { useFlipState } from "../hooks";
+import { useFlipState, useSelectPokemons } from "../hooks";
 import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
-import { AddDeckCard } from "../components/Cards";
 import { AddCards } from "../components/Modals";
 import { useModalState } from "../hooks/useModalState";
 
 const FixedButton = ({
-  pokemons,
   onClick,
 }: {
-  pokemons: Pokemon[];
   onClick: () => void;
 }) => {
   const [entered, toggleEnter] = useState(false);
+  const { pokemons } = useSelectPokemons();
 
   return (
     pokemons.length > 0 ? <div
@@ -70,7 +67,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           .string()
           .optional()
           .transform((value) => value ?? null),
-        page: z.string().optional().transform(Number),
+        page: z.string().optional().transform(value => value ? +value : 0),
       })
       .safeParse(context.query);
     if (result.success) {
@@ -94,17 +91,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const addedPokemonsAtom = atom<Pokemon[]>([]);
-const pushPokemonAtom = atom(null, (get, set, update: Pokemon) =>
-  set(addedPokemonsAtom, [...get(addedPokemonsAtom), update]),
-);
-
 const Home: NextPageWithLayout = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
-  const [addedPokemons, setAddedPokemons] = useAtom(addedPokemonsAtom);
-  const [_, pushPokemon] = useAtom(pushPokemonAtom);
-  const [__, showModal] = useModalState();
+  const [_, showModal] = useModalState();
   const route = useRouter();
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
@@ -128,8 +118,8 @@ const Home: NextPageWithLayout = (
 
   return (
     <div className="flex flex-col h-full">
-      <AddCards deckId={props.deckId} pokemon={addedPokemons} />
-      <FixedButton pokemons={addedPokemons} onClick={showModal}/>
+      <AddCards deckId={props.deckId} />
+      <FixedButton onClick={showModal}/>
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>
@@ -141,7 +131,6 @@ const Home: NextPageWithLayout = (
       />
       <Loader isLoading={isLoading}>
         <CardsGrid
-          addCard={pushPokemon}
           pokemons={pokemons}
           cardsFlipped={flipState}
         />
