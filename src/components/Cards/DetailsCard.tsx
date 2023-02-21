@@ -5,13 +5,26 @@ import { twMerge } from "tailwind-merge";
 
 import Add from "@icons/add.svg";
 import Remove from "@icons/close-circle.svg";
+import { Pokemon as PrismaPokemon } from "@prisma/client";
 
+import { useSelectPokemons } from "../../hooks";
 import { Switcher } from "../Switcher";
 import { BlankCard } from "./BlankCard";
-import { useSelectPokemons } from "../../hooks";
 
-export const DetailsCard = ({ pokemon, isSelected = false }: { pokemon: Pokemon, isSelected?: boolean }) => {
+export const DetailsCard = ({
+  pokemon,
+  isSelected = false,
+  pokemonsInDeck = [],
+}: {
+  pokemon: Pokemon;
+  pokemonsInDeck?: PrismaPokemon[];
+  isSelected?: boolean;
+}) => {
   const { pushPokemon, removePokemon } = useSelectPokemons();
+  const pokemonInCurrentDeck = useMemo(
+    () => !!pokemonsInDeck?.find(({ name }) => name == pokemon.name),
+    [pokemonsInDeck, pokemon],
+  );
 
   const sprites = useMemo(
     () =>
@@ -40,7 +53,7 @@ export const DetailsCard = ({ pokemon, isSelected = false }: { pokemon: Pokemon,
       } else {
         const newKey = spriteKey - 1;
         if (newKey < 0) {
-          setSpriteKey(sprites.length - 1)
+          setSpriteKey(sprites.length - 1);
         } else {
           setSpriteKey(newKey);
         }
@@ -52,11 +65,26 @@ export const DetailsCard = ({ pokemon, isSelected = false }: { pokemon: Pokemon,
   const currentSprite = useMemo(() => sprites[spriteKey], [sprites, spriteKey]);
 
   return (
-    <BlankCard className={twMerge('transition-transform', isSelected && 'shadow-[0_0_15px_4px] shadow-orange-500 scale-105')}>
+    <BlankCard
+      className={twMerge(
+        "transition-transform",
+        isSelected && "shadow-[0_0_15px_4px] shadow-orange-500 scale-105",
+      )}
+    >
       <div className="relative h-full pb-4">
-        {isSelected
-        ? <Remove className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-red-500 hover:text-red-400 z-10" onClick={() => removePokemon(pokemon)} />
-        : <Add className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10" onClick={() => pushPokemon(pokemon)} />}
+        {isSelected ? (
+          !pokemonInCurrentDeck && (
+            <Remove
+              className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-red-500 hover:text-red-400 z-10"
+              onClick={() => removePokemon(pokemon)}
+            />
+          )
+        ) : (
+          <Add
+            className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10"
+            onClick={() => pushPokemon(pokemon)}
+          />
+        )}
         <div className="flex h-full flex-col items-stretch justify-between gap-4 mt-2">
           <div className="flex gap-7">
             <div className="relative h-40 basis-40">

@@ -18,7 +18,7 @@ import { Loader } from "../components/Loader";
 import { AddCards } from "../components/Modals";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
-import { useFlipState, useSelectPokemons, setNewSelectedPokemonStorage } from "../hooks";
+import { useFlipState, useSelectPokemons, setNewSelectedPokemonStorage, useGetPokemonsFromDeck } from "../hooks";
 import { useModalState } from "../hooks/useModalState";
 import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
@@ -105,6 +105,7 @@ const Home: NextPageWithLayout = (
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
   const { pokemons: selectedPokemons } = useSelectPokemons();
+  const pokemonsInDeck = useGetPokemonsFromDeck();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
@@ -144,6 +145,7 @@ const Home: NextPageWithLayout = (
         <CardsGrid
           pokemons={pokemons}
           selectedPokemons={selectedPokemons}
+          pokemonsInDeck={pokemonsInDeck}
           cardsFlipped={flipState}
         />
       </Loader>

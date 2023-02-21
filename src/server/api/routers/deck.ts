@@ -34,6 +34,11 @@ export const deckRouter = createTRPCRouter({
       return decks;
     }
   }),
+  getPokemonsByDeckId: protectedProcedure
+    .input(z.string())
+    .query(async ({input, ctx}) => {
+      return await ctx.prisma.pokemon.findMany({ where: { deckId: input }})
+    }),
   removeUserDeck: protectedProcedure.input(
     z.string()
   ).mutation(async ({ input, ctx }) => {
@@ -42,5 +47,20 @@ export const deckRouter = createTRPCRouter({
         id: input,
       }
     })
+  }),
+  addCardsToDecks: protectedProcedure.input(
+    z.object({
+      decksIds: z.string().array(),
+      cards: z.object({
+        name: z.string(),
+        imageUrl: z.string(),
+      }).array(),
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await Promise.all(input.decksIds.map(async (deckId) => await ctx.prisma.deck.update({ where: {
+      id: deckId,
+    }, data: {
+      deck: { create: input.cards }
+    }})))
   })
 })

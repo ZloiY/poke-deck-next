@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Remove from "@icons/close-circle.svg";
+import { Deck } from "@prisma/client";
 import { a, config, useTransition } from "@react-spring/web";
 
 import { useSelectPokemons } from "../../hooks";
@@ -10,12 +11,14 @@ import { Button } from "../Button";
 import { PreviewCard } from "../Cards";
 import { EmptyDeckCard } from "../Cards/Deck/EmptyDeckCard";
 import { Loader } from "../Loader";
-import { ModalContainer } from "./ModalContainer";
 import { Select } from "../Select";
+import { ModalContainer } from "./ModalContainer";
 
 export const AddCards = ({ deckId }: { deckId?: string | null }) => {
   const { data: decks, isLoading } = api.deck.getUserDecks.useQuery(deckId);
-  const { pokemons, removePokemon } = useSelectPokemons();
+  const [selectedDeck, setSelectedDeck] = useState(decks?.[0]);
+  const addCardsToDecks = api.deck.addCardsToDecks.useMutation();
+  const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
   const [parent] = useAutoAnimate();
   const transitions = useTransition(pokemons, {
     trail: 400 / pokemons.length,
@@ -24,6 +27,26 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
     enter: { opacity: 1, scale: 1 },
     config: config.stiff,
   });
+
+  useEffect(() => {
+    if (decks) {
+      setSelectedDeck(decks[0])
+    }
+  }, [decks])
+
+  const updateDeck = (onClose: () => void) => () => {
+    if (selectedDeck) {
+      addCardsToDecks.mutateAsync({
+        decksIds: [selectedDeck.id],
+        cards: pokemons.map((pokemon) => ({
+          name: pokemon.name,
+          imageUrl: pokemon.sprites.other?.["official-artwork"].front_default ?? pokemon.sprites.front_default ?? '' 
+        }))
+      })
+      .then(resetPokemons)
+      .then(onClose)
+    }
+  };
 
   return (
     <ModalContainer title="Add cards to the decks">
@@ -34,7 +57,7 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
               <>
                 <div className="flex flex-grow justify-start items-center">
                   {decks?.map((deck) => (
-                  <EmptyDeckCard
+                    <EmptyDeckCard
                       key={deck.id}
                       className="w-32 h-52 border-yellow-500 border-2"
                       notResponsive={true}
@@ -45,7 +68,14 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
                 <div className="flex justify-start items-center">
                   <div className="flex gap-5 flex-col">
                     <p className="font-coiny text-2xl">Select deck:</p>
-                  <Select className="w-64" defaultValue={decks?.[0]} getOptionLabel={(deck) => deck.name} isOptionSelected={(deck) => deck.id == deckId} options={decks}/>
+                    <Select
+                      className="w-64"
+                      defaultValue={selectedDeck}
+                      onChange={(value) => setSelectedDeck(value as Deck)}
+                      getOptionLabel={(deck) => deck.name}
+                      isOptionSelected={(deck) => deck.id == deckId}
+                      options={decks}
+                    />
                   </div>
                 </div>
               </>
@@ -53,7 +83,7 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
           </div>
           <div ref={parent} className="flex flex-wrap justify-center gap-3">
             {transitions((style, pokemon) => (
-              <a.div key={pokemon.name} style={style} className="relative">
+              <a.div style={style} className="relative">
                 <PreviewCard
                   className="w-32 h-52 text-sm border-yellow-500 border-2"
                   pokemon={pokemon}
@@ -66,7 +96,7 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
               </a.div>
             ))}
           </div>
-          <Button className="bg-green-500 w-full">Add Cards!</Button>
+          <Button className="bg-green-500 w-full" disabled={!selectedDeck} onClick={updateDeck(onClose)}>Add Cards!</Button>
         </div>
       )}
     </ModalContainer>

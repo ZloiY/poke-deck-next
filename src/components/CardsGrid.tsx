@@ -1,4 +1,5 @@
 import { Pokemon } from "pokenode-ts";
+import { Pokemon as PrismaPokemon } from "@prisma/client";
 import { useEffect, useRef } from "react";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -10,10 +11,12 @@ import { FlipCard } from "./Cards";
 export const CardsGrid = ({
   pokemons = [],
   selectedPokemons = [],
+  pokemonsInDeck = [],
   cardsFlipped = 'Preview',
 }: {
   pokemons?: Pokemon[];
   selectedPokemons?: Pokemon[]
+  pokemonsInDeck?: PrismaPokemon[],
   cardsFlipped?: FlipState;
 }) => {
   const loadingState = useLoadingState();
@@ -86,6 +89,7 @@ mt-5"
           <FlipCard
             key={pokemon?.name}
             selectedPokemons={selectedPokemons}
+            pokemonsInDeck={pokemonsInDeck}
             pokemon={pokemon}
             keepFlipped={cardsFlipped}
           />
