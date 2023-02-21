@@ -34,10 +34,11 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
               <>
                 <div className="flex flex-grow justify-start items-center">
                   {decks?.map((deck) => (
-                    <EmptyDeckCard
+                  <EmptyDeckCard
+                      key={deck.id}
                       className="w-32 h-52 border-yellow-500 border-2"
                       notResponsive={true}
-                      deck={deck!}
+                      deck={deck}
                     />
                   ))}
                 </div>
@@ -52,7 +53,7 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
           </div>
           <div ref={parent} className="flex flex-wrap justify-center gap-3">
             {transitions((style, pokemon) => (
-              <a.div style={style} className="relative">
+              <a.div key={pokemon.name} style={style} className="relative">
                 <PreviewCard
                   className="w-32 h-52 text-sm border-yellow-500 border-2"
                   pokemon={pokemon}

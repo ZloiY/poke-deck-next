@@ -4,7 +4,8 @@ import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next/types";
-import { useCallback, useState } from "react";
+import { Pokemon } from "pokenode-ts";
+import { useCallback, useEffect, useState } from "react";
 import superjson from "superjson";
 import { z } from "zod";
 
@@ -14,28 +15,24 @@ import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 import { CardsGrid } from "../components/CardsGrid";
 import { Layout } from "../components/Layout";
 import { Loader } from "../components/Loader";
+import { AddCards } from "../components/Modals";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
-import { useFlipState, useSelectPokemons } from "../hooks";
+import { useFlipState, useSelectPokemons, setNewSelectedPokemonStorage } from "../hooks";
+import { useModalState } from "../hooks/useModalState";
 import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
-import { AddCards } from "../components/Modals";
-import { useModalState } from "../hooks/useModalState";
 
-const FixedButton = ({
-  onClick,
-}: {
-  onClick: () => void;
-}) => {
+const FixedButton = ({ onClick }: { onClick: () => void }) => {
   const [entered, toggleEnter] = useState(false);
   const { pokemons } = useSelectPokemons();
 
-  return (
-    pokemons.length > 0 ? <div
+  return pokemons.length > 0 ? (
+    <div
       onMouseEnter={() => toggleEnter(true)}
       onMouseLeave={() => toggleEnter(false)}
       className={`fixed right-2 bottom-2
@@ -44,9 +41,13 @@ const FixedButton = ({
       shadow-xl`}
       onClick={onClick}
     >
-      {entered ? <Check className="opacity-0 text-white hover:opacity-100 h-full w-full m-2" /> : <p>{pokemons.length}</p>}
-    </div> : null
-  );
+      {entered ? (
+        <Check className="opacity-0 text-white hover:opacity-100 h-full w-full m-2" />
+      ) : (
+        <p>{pokemons.length}</p>
+      )}
+    </div>
+  ) : null;
 };
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -67,7 +68,10 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
           .string()
           .optional()
           .transform((value) => value ?? null),
-        page: z.string().optional().transform(value => value ? +value : 0),
+        page: z
+          .string()
+          .optional()
+          .transform((value) => (value ? +value : 0)),
       })
       .safeParse(context.query);
     if (result.success) {
@@ -91,6 +95,8 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
+const homePageSelectedPokemons = atom<Pokemon[]>([]);
+
 const Home: NextPageWithLayout = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
@@ -103,6 +109,10 @@ const Home: NextPageWithLayout = (
     searchQuery: props?.search,
     ...pagination.currentPageParams,
   });
+
+  useEffect(() => {
+    setNewSelectedPokemonStorage(homePageSelectedPokemons);
+  }, [])
 
   const updateQuery = useCallback(
     (search: string) => {
@@ -120,7 +130,7 @@ const Home: NextPageWithLayout = (
   return (
     <div className="flex flex-col h-full">
       <AddCards deckId={props.deckId} />
-      <FixedButton onClick={showModal}/>
+      <FixedButton onClick={showModal} />
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>
