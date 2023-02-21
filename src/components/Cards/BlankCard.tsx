@@ -16,7 +16,7 @@ export const BlankCard = ({
     relative
     rounded-xl
     bg-purple-900
-    h-[500px] min-w-[300px] max-w-xs
+    h-[500px] w-[300px] max-w-xs
     p-4
     text-white
     hover:shadow-[0_0_15px_4px] hover:shadow-orange-500`, notInteractive && 'pointer-events-none select-none', className)}

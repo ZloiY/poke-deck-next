@@ -98,6 +98,7 @@ const Home: NextPageWithLayout = (
   const route = useRouter();
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
+  const { pokemons: selectedPokemons } = useSelectPokemons();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
@@ -132,6 +133,7 @@ const Home: NextPageWithLayout = (
       <Loader isLoading={isLoading}>
         <CardsGrid
           pokemons={pokemons}
+          selectedPokemons={selectedPokemons}
           cardsFlipped={flipState}
         />
       </Loader>

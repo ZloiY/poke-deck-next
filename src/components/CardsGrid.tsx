@@ -8,10 +8,12 @@ import { useLoadingState, usePaginationState } from "../hooks";
 import { FlipCard } from "./Cards";
 
 export const CardsGrid = ({
-  pokemons,
+  pokemons = [],
+  selectedPokemons = [],
   cardsFlipped = 'Preview',
 }: {
   pokemons?: Pokemon[];
+  selectedPokemons?: Pokemon[]
   cardsFlipped?: FlipState;
 }) => {
   const loadingState = useLoadingState();
@@ -77,12 +79,13 @@ export const CardsGrid = ({
       <a.div
         style={{ position: position as unknown as "static", left }}
         ref={parent}
-        className="w-full grid gap-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
+        className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
 mt-5"
       >
         {pokemons?.map((pokemon) => (
           <FlipCard
             key={pokemon?.name}
+            selectedPokemons={selectedPokemons}
             pokemon={pokemon}
             keepFlipped={cardsFlipped}
           />

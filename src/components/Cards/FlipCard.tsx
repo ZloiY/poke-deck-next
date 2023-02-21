@@ -1,16 +1,17 @@
 import { useSpring, a } from "@react-spring/web";
 import { Pokemon } from "pokenode-ts";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useMemo, useState } from "react";
 
 import { DetailsCard } from "./DetailsCard";
 import { PreviewCard } from "./PreviewCard";
 
-export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview' }: { pokemon: Pokemon, keepFlipped?: FlipState }) => {
-  const [isHovered, toggleHovered] = useState<FlipState>(keepFlipped);
+export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview', selectedPokemons = [] }: { pokemon: Pokemon, selectedPokemons?: Pokemon[], keepFlipped?: FlipState }) => {
+  const isSelected = useMemo(() => !!selectedPokemons.find((selectedPokemon) => selectedPokemon.name == pokemon.name), [selectedPokemons, pokemon.name]);
+  const [isHovered, toggleHovered] = useState<FlipState>(() => isSelected ? 'Details' : keepFlipped);
 
   useEffect(() => {
-    toggleHovered(keepFlipped);
-  }, [keepFlipped])
+    toggleHovered(isSelected ? 'Details' : keepFlipped);
+  }, [keepFlipped, isSelected])
 
   const { transform, opacity } = useSpring({
     opacity: isHovered == 'Details' ? 1 : 0,
@@ -19,7 +20,7 @@ export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview' }: { pokemon: P
   })
 
   const unHover = () => {
-    if (keepFlipped != 'Details') {
+    if (keepFlipped != 'Details' && !isSelected) {
       toggleHovered('Preview');
     }
   }
@@ -36,7 +37,7 @@ export const FlipCard = memo(({ pokemon, keepFlipped = 'Preview' }: { pokemon: P
           transform,
           rotateY: '180deg',
         }}>
-        <DetailsCard pokemon={pokemon} />
+        <DetailsCard pokemon={pokemon} isSelected={isSelected}/>
       </a.div>
   </div>)
 });

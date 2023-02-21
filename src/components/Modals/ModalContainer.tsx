@@ -1,5 +1,5 @@
 import { atom, useAtom } from "jotai";
-import { ReactNode, useEffect } from "react";
+import { ReactNode } from "react";
 import ReactModal from "react-modal";
 
 import Close from "@icons/close.svg";
@@ -34,10 +34,7 @@ export const ModalContainer = ({
     api.start({
       from: { opacity: 1, scale: 1 },
       to: { opacity: 0, scale: 0 },
-      config: {
-        ...config.stiff,
-        duration: 100,
-      },
+      config: config.stiff,
     });
     const timeoutId = setTimeout(() => {
       toggleModal(false);
@@ -56,9 +53,9 @@ export const ModalContainer = ({
     >
       <a.div
         style={style}
-        className="bg-purple-900 text-white rounded-xl flex flex-col relative p-3 opacity-0"
+        className="bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0"
       >
-        <div className="flex justify-between">
+        <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
           <span className="text-2xl font-coiny">{title}</span>
           <Close
             className="cursor-pointer w-8 h-8 hover:text-yellow-400"

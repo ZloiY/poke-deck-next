@@ -1,11 +1,12 @@
 import Image from "next/image";
 import { Pokemon } from "pokenode-ts";
+import { twMerge } from "tailwind-merge";
 
 import { BlankCard } from "./BlankCard";
 
-export const PreviewCard = ({ pokemon, notInteractive = false }: { pokemon: Pokemon; notInteractive?: boolean }) => {
+export const PreviewCard = ({ pokemon, className, notInteractive = false }: { pokemon: Pokemon; notInteractive?: boolean, className?: string }) => {
   return (
-    <BlankCard notInteractive={notInteractive}>
+    <BlankCard notInteractive={notInteractive} className={className}>
       <div
         className="
           flex
@@ -23,7 +24,7 @@ export const PreviewCard = ({ pokemon, notInteractive = false }: { pokemon: Poke
             width={200}
           />
         </div>
-        <span className="text-3xl capitalize text-white">{pokemon.name}</span>
+        <span className={twMerge("text-3xl capitalize text-white", notInteractive && 'text-xl')}>{pokemon.name}</span>
       </div>
     </BlankCard>
   );
