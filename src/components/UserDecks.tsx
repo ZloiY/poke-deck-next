@@ -10,6 +10,7 @@ import { DeckCard } from "./Cards/Deck/DeckCard";
 import { Loader } from "./Loader";
 import { CreateDeck } from "./Modals";
 import { CreateDeckParams } from "./Modals/CreateDeck";
+import { twMerge } from "tailwind-merge";
 
 export const UserDecks = () => {
   const route = useRouter();
@@ -45,7 +46,7 @@ export const UserDecks = () => {
 
   return (
     <>
-      <CreateDeck create={create} />
+      <CreateDeck create={create} isLoading={createDeck.isLoading} />
       <div className="border-2 rounded-xl border-purple-900 bg-purple-800/60 p-2">
         <div className="flex justify-between items-center">
           <span className="font-coiny text-3xl">Your Decks:</span>
@@ -53,7 +54,7 @@ export const UserDecks = () => {
             {userDecks?.length}/{env.NEXT_PUBLIC_USER_MAX_DECKS}
           </span>
         </div>
-        <div ref={parent} className="w-full flex gap-5">
+        <div ref={parent} className={twMerge("w-full flex gap-5", isRefetching && "items-center")}>
           {userDecks?.length != +env.NEXT_PUBLIC_USER_MAX_DECKS && <AddDeckCard onClick={showModal} />}
           <Loader isLoading={isRefetching}>
             <>

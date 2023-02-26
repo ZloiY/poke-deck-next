@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import Remove from "@icons/close-circle.svg";
 import { Deck } from "@prisma/client";
-import { a, config, useTransition } from "@react-spring/web";
+import { a, config, useSpringRef, useTransition } from "@react-spring/web";
 
 import { useSelectPokemons } from "../../hooks";
 import { api } from "../../utils/api";
@@ -22,12 +22,12 @@ export const AddCards = ({
   onSubmit?: () => void;
 }) => {
   const { data: decks, isLoading } = api.deck.getUserDecks.useQuery(deckId);
-  const [_, toggleModal] = useAtom(isModalShown);
+  const [showModal, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(decks?.[0]);
   const addCardsToDecks = api.deck.addCardsToDecks.useMutation();
   const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
   const [parent] = useAutoAnimate();
-  const transitions = useTransition(pokemons, {
+  const transitions = useTransition(showModal ? pokemons : [], {
     trail: 400 / pokemons.length,
     keys: (pokemon) => pokemon.name,
     from: { opacity: 0, scale: 0 },
@@ -115,6 +115,7 @@ export const AddCards = ({
             ))}
           </div>
           <Button
+          isLoading={addCardsToDecks.isLoading}
             className="bg-green-500 w-full"
             disabled={!selectedDeck}
             onClick={updateDeck(onClose)}
