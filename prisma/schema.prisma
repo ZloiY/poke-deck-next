@@ -27,6 +27,9 @@ model Deck {
     deck          Pokemon[]
     name          String
     private       Boolean
+    isEmpty       Boolean
+    isFull        Boolean
+    deckLength    Int
     user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId        String    @unique
 }

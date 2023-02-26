@@ -1,10 +1,11 @@
-import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useRouter } from "next/router";
+
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 
 import { useModalState } from "../hooks/useModalState";
 import { api } from "../utils/api";
 import { AddDeckCard } from "./Cards";
-import { EmptyDeckCard } from "./Cards/Deck/EmptyDeckCard";
+import { DeckCard } from "./Cards/Deck/DeckCard";
 import { Loader } from "./Loader";
 import { CreateDeck } from "./Modals";
 import { CreateDeckParams } from "./Modals/CreateDeck";
@@ -33,13 +34,13 @@ export const UserDecks = () => {
 
   const addPokemons = (deckId: string) => {
     route.push({
-      pathname: '/home',
+      pathname: "/home",
       query: {
         ...route.query,
-        deckId
-      }
-    })
-  }
+        deckId,
+      },
+    });
+  };
 
   return (
     <>
@@ -54,7 +55,12 @@ export const UserDecks = () => {
           <Loader isLoading={isRefetching}>
             <>
               {userDecks?.map((deck) => (
-                <EmptyDeckCard deck={deck} addCard={addPokemons} removeDeck={remove} />
+                <DeckCard
+                  key={deck.id}
+                  deck={deck}
+                  addCard={addPokemons}
+                  removeDeck={remove}
+                />
               ))}
             </>
           </Loader>

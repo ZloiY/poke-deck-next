@@ -105,7 +105,7 @@ const Home: NextPageWithLayout = (
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
   const { pokemons: selectedPokemons } = useSelectPokemons();
-  const pokemonsInDeck = useGetPokemonsFromDeck();
+  const { data: pokemonsInDeck, refetch }  = useGetPokemonsFromDeck();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
@@ -130,7 +130,7 @@ const Home: NextPageWithLayout = (
 
   return (
     <div className="flex flex-col h-full">
-      <AddCards deckId={props.deckId} />
+      <AddCards deckId={props.deckId} onSubmit={refetch} />
       <FixedButton onClick={showModal} />
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />

@@ -30,9 +30,13 @@ export default function Registration() {
   const createUser = api.auth.signUp.useMutation();
   const router = useRouter();
 
-  const signUpUser: SubmitHandler<RegistrationForm> = useCallback((data, e) => {
-    createUser.mutate(data);
-    router.push('/login');
+  const signUpUser: SubmitHandler<RegistrationForm> = useCallback((data) => {
+    createUser.mutateAsync(data)
+    .then(() => {
+      router.push('/login');
+    }).catch((err) => {
+      console.log('error', err);
+    });
   }, []);
 
   const onSubmit = useCallback<ReactEventHandler>(

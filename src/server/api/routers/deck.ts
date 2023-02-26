@@ -14,7 +14,10 @@ export const deckRouter = createTRPCRouter({
         data: {
           userId: userId,
           name: input.name,
-          private: input.private
+          private: input.private,
+          isEmpty: true,
+          isFull: false,
+          deckLength: 0
         }
       })
     } catch (err) {
@@ -57,9 +60,21 @@ export const deckRouter = createTRPCRouter({
       }).array(),
     })
   ).mutation(async ({ input, ctx }) => {
-    await Promise.all(input.decksIds.map(async (deckId) => await ctx.prisma.deck.update({ where: {
-      id: deckId,
+    const decks = await ctx.prisma.deck.findMany({
+      where: {
+        OR: input.decksIds.map((id) => ({
+          id
+        }))
+      }
+    })
+    await Promise.all(decks
+      .filter((deck) => !deck.isFull && deck.deckLength + input.cards.length <= Number(process.env.DECK_MAX_SIZE))
+      .map(async (deck) => await ctx.prisma.deck.update({ where: {
+      id: deck.id,
     }, data: {
+      isEmpty: false,
+      isFull: deck.deckLength + input.cards.length == Number(process.env.DECK_MAX_SIZE),
+      deckLength: deck.deckLength + input.cards.length,
       deck: { create: input.cards }
     }})))
   })

@@ -12,10 +12,12 @@ import { PreviewCard } from "../Cards";
 import { EmptyDeckCard } from "../Cards/Deck/EmptyDeckCard";
 import { Loader } from "../Loader";
 import { Select } from "../Select";
-import { ModalContainer } from "./ModalContainer";
+import { ModalContainer, isModalShown } from "./ModalContainer";
+import { useAtom } from "jotai";
 
-export const AddCards = ({ deckId }: { deckId?: string | null }) => {
+export const AddCards = ({ deckId, onSubmit }: { deckId?: string | null, onSubmit?: () => void }) => {
   const { data: decks, isLoading } = api.deck.getUserDecks.useQuery(deckId);
+  const [_, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(decks?.[0]);
   const addCardsToDecks = api.deck.addCardsToDecks.useMutation();
   const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
@@ -34,6 +36,12 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
     }
   }, [decks])
 
+  useEffect(() => {
+    if (pokemons.length == 0) {
+      toggleModal(false);
+    }
+  }, [pokemons.length])
+
   const updateDeck = (onClose: () => void) => () => {
     if (selectedDeck) {
       addCardsToDecks.mutateAsync({
@@ -44,6 +52,7 @@ export const AddCards = ({ deckId }: { deckId?: string | null }) => {
         }))
       })
       .then(resetPokemons)
+      .then(onSubmit)
       .then(onClose)
     }
   };

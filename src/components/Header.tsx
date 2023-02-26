@@ -1,7 +1,7 @@
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import LogoutIcon from "@icons/logout.svg";
@@ -14,6 +14,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const { data } = useSession();
   const loadingState = useLoadingState();
   const router = useRouter();
+  const { deckId: _, ...query } = useMemo(() => router.query, [router.query]); 
 
   return (
     <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75 sticky top-0 z-50">
@@ -29,7 +30,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/home",
-            query: router.query,
+            query,
           }}
         >
           Home
@@ -37,7 +38,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/decks",
-            query: router.query,
+            query,
           }}
         >
           Decks
@@ -45,7 +46,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/pokemons",
-            query: router.query,
+            query,
           }}
         >
           Pókemons

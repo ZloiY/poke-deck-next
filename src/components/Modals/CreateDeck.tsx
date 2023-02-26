@@ -44,7 +44,7 @@ export const CreateDeck = ({
   return (
     <ModalContainer title="Create new deck">
       {(onClose) => (
-        <div className="gap-5 ">
+        <div className="gap-5 p-4">
           <form className="flex flex-col w-full gap-5" onSubmit={onSubmit(onClose)}>
             <div
               className={twMerge(

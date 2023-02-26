@@ -3,10 +3,10 @@ import { ReactEventHandler, memo } from "react";
 import AddCard from "@icons/add-card.svg";
 import DeleteDeck from "@icons/delete.svg";
 import Private from "@icons/private.svg";
-import { Deck } from "@prisma/client";
 
 import { BlankDeckCard } from "./BlankDeckCard";
 import { twMerge } from "tailwind-merge";
+import { DeckCard } from './types';
 
 export const EmptyDeckCard = memo(
   ({
@@ -15,10 +15,7 @@ export const EmptyDeckCard = memo(
     removeDeck,
     notResponsive = false,
     className,
-  }: {
-    deck: Deck;
-    addCard?: (id: string) => void;
-    removeDeck?: (id: string) => void;
+  }: DeckCard & {
     notResponsive?: boolean,
     className?: string,
   }) => (

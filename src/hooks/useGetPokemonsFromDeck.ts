@@ -16,6 +16,5 @@ export const useGetPokemonsFromDeck = () => {
     }
   }, []);
 
-  const { data } = api.deck.getPokemonsByDeckId.useQuery(deckId);
-  return data;
+  return api.deck.getPokemonsByDeckId.useQuery(deckId);
 }

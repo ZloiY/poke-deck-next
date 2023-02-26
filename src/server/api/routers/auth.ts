@@ -4,7 +4,7 @@ import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
-const alphabet = [[33, 38], [48,57], [60, 90], [97, 122]] as const;
+const alphabet = [[33, 38], [48, 57], [60, 90], [97, 122]] as const;
 
 const passwordRegEx = /[\w(@|#|$|&)+]{6}/g;
 
@@ -38,24 +38,26 @@ export const authRouter = createTRPCRouter({
           code: 'BAD_REQUEST',
         })
       }
+      console.log('input', input);
       const salt = saltGeneration();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const hash: string = sha256(`${input.password}${salt}`).toString();
       try {
-        await ctx.prisma.user.create({
+        const user = await ctx.prisma.user.create({
           data: {
             name: input.username,
             salt,
             hash,
           }
         })
+        return user;
       } catch (prismaError) {
-         console.log('User create error: ', prismaError);
-         throw new TRPCError({
-            message: 'User creation error',
-            code: 'BAD_REQUEST',
-            cause: prismaError
-         })
+        console.log('User create error: ', prismaError);
+        throw new TRPCError({
+          message: 'User creation error',
+          code: 'BAD_REQUEST',
+          cause: prismaError
+        })
       }
     })
 })
