@@ -1,4 +1,4 @@
-import { NamedAPIResource } from "pokenode-ts";
+import { NamedAPIResource, Pokemon } from "pokenode-ts";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -28,4 +28,11 @@ export const pokemonRouter = createTRPCRouter({
     const pokemon = await ctx.pokemonApi.getPokemonByName(input.name);
     return pokemon;
   }),
+  getPokemonDetailedList: protectedProcedure.input(
+    z.string()
+  ).query(async ({ input, ctx }) => {
+    const pokemons = await ctx.prisma.pokemon.findMany({ where: { deckId: input }});
+    const pokemonsInDeck: Pokemon[] = await Promise.all(pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)));
+    return pokemonsInDeck;
+  })
 })

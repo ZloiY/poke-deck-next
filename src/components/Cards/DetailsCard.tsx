@@ -67,7 +67,7 @@ export const DetailsCard = ({
   return (
     <BlankCard
       className={twMerge(
-        "transition-transform",
+        "transition-all",
         isSelected && "shadow-[0_0_15px_4px] shadow-orange-500 scale-105",
       )}
     >
