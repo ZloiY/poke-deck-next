@@ -1,31 +1,21 @@
 import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useMemo, useState } from "react";
-import { twMerge } from "tailwind-merge";
+import { useMemo } from "react";
 
 import LogoutIcon from "@icons/logout.svg";
 
-import { useLoadingState } from "../hooks/useLoadingState";
 import { FlipButton } from "./FlipButton";
 import { HighlightedLink } from "./HiglightedLink";
+import { PageLoader } from "./PageLoader";
 
 export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const { data } = useSession();
-  const loadingState = useLoadingState();
   const router = useRouter();
   const { deckId: _, ...query } = useMemo(() => router.query, [router.query]); 
 
   return (
     <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75 sticky top-0 z-50">
-      <div
-        className={twMerge(
-          "absolute h-[3px] left-0 top-0 bg-yellow-500 shadow-[0_0_15px_2px] shadow-yellow-300 transition-all ",
-          loadingState == "Hold" && "w-0",
-          loadingState == "Started" && "w-1/3 duration-1000 ease-in",
-          loadingState == "Finished" && "w-full duration-500 ease-out",
-        )}
-      ></div>
+     <PageLoader/>
       <div className="flex gap-10 items-center">
         <HighlightedLink
           href={{

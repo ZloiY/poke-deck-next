@@ -6,9 +6,9 @@ import { useEffect, useState } from "react";
 
 import { Coiny, Fredoka, Modak } from "@next/font/google";
 
-import { Loader } from "../components/Loader";
 import "../styles/globals.css";
 import { api } from "../utils/api";
+import { PageLoader } from "../components/PageLoader";
 
 const coiny = Coiny({
   weight: "400",
@@ -44,7 +44,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <main id="main"
       className={`${coiny.variable} ${modak.variable} ${fredoka.variable} font-fredoka text-white`}
-    >
+    >   <PageLoader/>
         <SessionProvider session={session}>
           {getLayout(<Component {...pageProps} />)}
         </SessionProvider>
