@@ -1,12 +1,8 @@
 import NextAuth, { type NextAuthOptions } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from "next-auth/providers/credentials";
 import sha256 from 'crypto-js/sha256';
 import { z } from "zod";
-// Prisma adapter for NextAuth, optional and can be removed
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
-import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db";
 
 export const authOptions: NextAuthOptions = {
@@ -23,15 +19,14 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt({ token, user }) {
-        token.id = user?.id 
-        return token;
+      token.id = user?.id
+      return token;
     },
   },
   pages: {
     signIn: '/login',
   },
   // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       type: 'credentials',
@@ -39,17 +34,17 @@ export const authOptions: NextAuthOptions = {
       authorize: async (credentials, req) => {
         const { username, password } = z.object({
           username: z.string().min(3),
-          password: z.string().regex( /[\w(@|#|$|&)+]{6}/g),
+          password: z.string().regex(/[\w(@|#|$|&)+]{6}/g),
         }).parse(credentials);
         try {
-          const user = await prisma.user.findUniqueOrThrow({ where: { name: username }});
+          const user = await prisma.user.findUniqueOrThrow({ where: { name: username } });
           if (user.hash == sha256(`${password}${user.salt}`).toString()) {
             return user;
           } else {
             console.log('Wrong password');
             throw new Error('Invalid credentials')
           }
-        } catch(prismaError) {
+        } catch (prismaError) {
           console.log('User create error: ', prismaError);
           throw new Error('Server error')
         }

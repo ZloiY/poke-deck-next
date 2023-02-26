@@ -38,7 +38,6 @@ export const authRouter = createTRPCRouter({
           code: 'BAD_REQUEST',
         })
       }
-      console.log('input', input);
       const salt = saltGeneration();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       const hash: string = sha256(`${input.password}${salt}`).toString();
