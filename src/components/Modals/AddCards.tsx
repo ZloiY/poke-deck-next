@@ -9,8 +9,7 @@ import { a, config, useTransition } from "@react-spring/web";
 import { useSelectPokemons } from "../../hooks";
 import { api } from "../../utils/api";
 import { Button } from "../Button";
-import { PreviewCard } from "../Cards";
-import { EmptyDeckCard } from "../Cards/Deck/EmptyDeckCard";
+import { DeckCard, PreviewCard } from "../Cards";
 import { Loader } from "../Loader";
 import { Select } from "../Select";
 import { ModalContainer, isModalShown } from "./ModalContainer";
@@ -76,10 +75,10 @@ export const AddCards = ({
               <>
                 <div className="flex flex-grow justify-start items-center">
                   {decks?.map((deck) => (
-                    <EmptyDeckCard
+                    <DeckCard
                       key={deck.id}
                       className="w-32 h-52 border-yellow-500 border-2"
-                      notResponsive={true}
+                      notInteractive={true}
                       deck={deck}
                     />
                   ))}
@@ -104,7 +103,7 @@ export const AddCards = ({
             {transitions((style, pokemon) => (
               <a.div style={style} className="relative">
                 <PreviewCard
-                  className="w-32 h-52 text-sm border-yellow-500 border-2"
+                  className="w-32 h-52 text-xl border-yellow-500 border-2"
                   pokemon={pokemon}
                   notInteractive={true}
                 />

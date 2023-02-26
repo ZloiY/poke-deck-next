@@ -31,7 +31,7 @@ model Deck {
     isFull        Boolean
     deckLength    Int
     user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId        String    @unique
+    userId        String
 }
 
 model Pokemon {

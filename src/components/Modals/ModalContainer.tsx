@@ -53,7 +53,7 @@ export const ModalContainer = ({
     >
       <a.div
         style={style}
-        className="bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0"
+        className="bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0 shadow-[0_0_20px_5px] shadow-purple-500"
       >
         <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
           <span className="text-2xl font-coiny">{title}</span>

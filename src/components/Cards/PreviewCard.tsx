@@ -11,11 +11,15 @@ export const PreviewCard = ({
   className,
   notInteractive = false,
   nameOnSide = false,
+  imageHeight,
+  imageWidth
 }: {
   pokemon: Pokemon | PokemonDB;
   nameOnSide?: boolean;
   notInteractive?: boolean;
   className?: string;
+  imageWidth?: number;
+  imageHeight?: number;
 }) => {
   const imageUrl = useMemo(() => {
     if ('imageUrl' in pokemon) {
@@ -26,28 +30,26 @@ export const PreviewCard = ({
   }, [pokemon])
 
   return (
-    <BlankCard notInteractive={notInteractive} className={className}>
+    <BlankCard notInteractive={notInteractive} className={twMerge("text-3xl",className)}>
       <div
         className="
           flex
           h-full
           max-w-xs flex-col
           items-center
-          justify-between
-          gap-5"
+          justify-between"
       >
         <div className="relative h-full flex justify-center items-center">
           <Image
             src={imageUrl}
             alt={`${pokemon.name} image`}
-            height={250}
-            width={200}
+            height={imageHeight ?? 250}
+            width={imageWidth ?? 200}
           />
         </div>
         <span
           className={twMerge(
-            "text-3xl capitalize text-white transition-transform duration-200",
-            notInteractive && "text-xl",
+            "capitalize text-white transition-transform duration-200",
             nameOnSide && "-translate-x-16 -translate-y-16 rotate-90"
           )}
         >
