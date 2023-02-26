@@ -1,3 +1,4 @@
+import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -13,9 +14,14 @@ import { EmptyDeckCard } from "../Cards/Deck/EmptyDeckCard";
 import { Loader } from "../Loader";
 import { Select } from "../Select";
 import { ModalContainer, isModalShown } from "./ModalContainer";
-import { useAtom } from "jotai";
 
-export const AddCards = ({ deckId, onSubmit }: { deckId?: string | null, onSubmit?: () => void }) => {
+export const AddCards = ({
+  deckId,
+  onSubmit,
+}: {
+  deckId?: string | null;
+  onSubmit?: () => void;
+}) => {
   const { data: decks, isLoading } = api.deck.getUserDecks.useQuery(deckId);
   const [_, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(decks?.[0]);
@@ -32,28 +38,32 @@ export const AddCards = ({ deckId, onSubmit }: { deckId?: string | null, onSubmi
 
   useEffect(() => {
     if (decks) {
-      setSelectedDeck(decks[0])
+      setSelectedDeck(decks[0]);
     }
-  }, [decks])
+  }, [decks]);
 
   useEffect(() => {
     if (pokemons.length == 0) {
       toggleModal(false);
     }
-  }, [pokemons.length])
+  }, [pokemons.length]);
 
   const updateDeck = (onClose: () => void) => () => {
     if (selectedDeck) {
-      addCardsToDecks.mutateAsync({
-        decksIds: [selectedDeck.id],
-        cards: pokemons.map((pokemon) => ({
-          name: pokemon.name,
-          imageUrl: pokemon.sprites.other?.["official-artwork"].front_default ?? pokemon.sprites.front_default ?? '' 
-        }))
-      })
-      .then(resetPokemons)
-      .then(onSubmit)
-      .then(onClose)
+      addCardsToDecks
+        .mutateAsync({
+          decksIds: [selectedDeck.id],
+          cards: pokemons.map((pokemon) => ({
+            name: pokemon.name,
+            imageUrl:
+              pokemon.sprites.other?.["official-artwork"].front_default ??
+              pokemon.sprites.front_default ??
+              "",
+          })),
+        })
+        .then(resetPokemons)
+        .then(onSubmit)
+        .then(onClose);
     }
   };
 
@@ -105,7 +115,13 @@ export const AddCards = ({ deckId, onSubmit }: { deckId?: string | null, onSubmi
               </a.div>
             ))}
           </div>
-          <Button className="bg-green-500 w-full" disabled={!selectedDeck} onClick={updateDeck(onClose)}>Add Cards!</Button>
+          <Button
+            className="bg-green-500 w-full"
+            disabled={!selectedDeck}
+            onClick={updateDeck(onClose)}
+          >
+            Add Cards!
+          </Button>
         </div>
       )}
     </ModalContainer>

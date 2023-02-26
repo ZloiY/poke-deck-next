@@ -2,6 +2,7 @@ import { useRouter } from "next/router";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 
+import { env } from "../env/client.mjs";
 import { useModalState } from "../hooks/useModalState";
 import { api } from "../utils/api";
 import { AddDeckCard } from "./Cards";
@@ -46,12 +47,14 @@ export const UserDecks = () => {
     <>
       <CreateDeck create={create} />
       <div className="border-2 rounded-xl border-purple-900 bg-purple-800/60 p-2">
-        <span className="font-coiny text-3xl">Your Decks:</span>
-        <div
-          ref={parent}
-          className="w-full grid gap-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2"
-        >
-          <AddDeckCard onClick={showModal} />
+        <div className="flex justify-between items-center">
+          <span className="font-coiny text-3xl">Your Decks:</span>
+          <span className="font-coiny text-3xl font-normal">
+            {userDecks?.length}/{env.NEXT_PUBLIC_USER_MAX_DECKS}
+          </span>
+        </div>
+        <div ref={parent} className="w-full flex gap-5">
+          {userDecks?.length != +env.NEXT_PUBLIC_USER_MAX_DECKS && <AddDeckCard onClick={showModal} />}
           <Loader isLoading={isRefetching}>
             <>
               {userDecks?.map((deck) => (

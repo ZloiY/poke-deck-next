@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { env } from "../../../env/server.mjs";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const deckRouter = createTRPCRouter({
@@ -39,8 +40,8 @@ export const deckRouter = createTRPCRouter({
   }),
   getPokemonsByDeckId: protectedProcedure
     .input(z.string())
-    .query(async ({input, ctx}) => {
-      return await ctx.prisma.pokemon.findMany({ where: { deckId: input }})
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.pokemon.findMany({ where: { deckId: input } })
     }),
   removeUserDeck: protectedProcedure.input(
     z.string()
@@ -68,14 +69,16 @@ export const deckRouter = createTRPCRouter({
       }
     })
     await Promise.all(decks
-      .filter((deck) => !deck.isFull && deck.deckLength + input.cards.length <= Number(process.env.DECK_MAX_SIZE))
-      .map(async (deck) => await ctx.prisma.deck.update({ where: {
-      id: deck.id,
-    }, data: {
-      isEmpty: false,
-      isFull: deck.deckLength + input.cards.length == Number(process.env.DECK_MAX_SIZE),
-      deckLength: deck.deckLength + input.cards.length,
-      deck: { create: input.cards }
-    }})))
+      .filter((deck) => !deck.isFull && deck.deckLength + input.cards.length <= Number(env.DECK_MAX_SIZE))
+      .map(async (deck) => await ctx.prisma.deck.update({
+        where: {
+          id: deck.id,
+        }, data: {
+          isEmpty: false,
+          isFull: deck.deckLength + input.cards.length == Number(env.DECK_MAX_SIZE),
+          deckLength: deck.deckLength + input.cards.length,
+          deck: { create: input.cards }
+        }
+      })))
   })
 })
