@@ -14,8 +14,10 @@ export type CreateDeckParams = {
 
 export const CreateDeck = ({
   create,
+  isLoading
 }: {
   create?: (params: CreateDeckParams) => void;
+  isLoading?: boolean;
 }) => {
   const {
     handleSubmit,
@@ -72,6 +74,7 @@ export const CreateDeck = ({
               <Button
                 type="submit"
                 disabled={!isValid}
+                isLoading={isLoading}
                 className="bg-green-500 whitespace-nowrap text-xl px-3 h-10"
               >
                 Create Deck!
