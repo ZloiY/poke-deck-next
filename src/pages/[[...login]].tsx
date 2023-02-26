@@ -1,17 +1,34 @@
-import { useCallback, useEffect, type ReactEventHandler } from "react";
+import { GetServerSidePropsContext } from "next";
+import { signIn } from "next-auth/react";
 import Link from "next/link";
-import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+import { type ReactEventHandler, useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { Welcome } from "../components/Welcome";
-import { useRouter } from "next/router";
+import { getServerAuthSession } from "../server/auth";
 
 type LoginForm = {
   username: string;
   password: string;
 };
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const session = await getServerAuthSession(context);
+  if (session?.expires && new Date() < new Date(session.expires)) {
+    return {
+      redirect: {
+        destination: '/home',
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
+}
 
 export default function Login() {
   const {
@@ -25,13 +42,6 @@ export default function Login() {
     },
   });
   const router = useRouter();
-  const session = useSession();
-
-  useEffect(() => {
-    if (session.status == 'authenticated') {
-      router.push('/home');
-    }
-  }, [session.status]);
 
   const onSubmit = useCallback<ReactEventHandler>(
     (event) =>
@@ -41,14 +51,14 @@ export default function Login() {
             ...form,
             redirect: false,
           });
-          router.push('/home');
+          router.push("/home");
         } catch (err) {
           throw err;
         }
       })(event).catch((error) => {
         console.log(error);
       }),
-    []
+    [],
   );
 
   return (
