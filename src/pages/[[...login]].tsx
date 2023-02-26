@@ -1,6 +1,6 @@
-import { useCallback, type ReactEventHandler } from "react";
+import { useCallback, useEffect, type ReactEventHandler } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 
 import { Button } from "../components/Button";
@@ -25,6 +25,13 @@ export default function Login() {
     },
   });
   const router = useRouter();
+  const session = useSession();
+
+  useEffect(() => {
+    if (session.status == 'authenticated') {
+      router.push('/home');
+    }
+  }, [session.status]);
 
   const onSubmit = useCallback<ReactEventHandler>(
     (event) =>
