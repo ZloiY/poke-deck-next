@@ -6,7 +6,7 @@ import { z } from "zod";
 import { a, config, useTransition } from "@react-spring/web";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
-import { DetailsCard } from "../../../components/Cards";
+import { DetailsCard, FlipCard } from "../../../components/Cards";
 import { cardGridStyles } from "../../../components/CardsGrid";
 import { Loader } from "../../../components/Loader";
 import { appRouter } from "../../../server/api/root";
@@ -17,7 +17,7 @@ import { NextPageWithLayout } from "../../_app";
 import { Layout } from "../../../components/Layout";
 import { PokemonsLayout, pokemonsLayoutAtom } from "../../../components/PokemonsLayout";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLoadingState } from "../../../hooks";
 import { useAtom } from "jotai";
 
@@ -59,19 +59,35 @@ const SelectedDeck: NextPageWithLayout<
     api.pokemon.getPokemonDetailedList.useQuery(props.deckId);
 
   const [transitionState] = useAtom(pokemonsLayoutAtom);
+
+  const [flipState, toggleFlip] = useState<FlipState>('Preview');
+
   useEffect(() => {
     router.prefetch('/pokemons/decks');
+    const timeoutId = setTimeout(() => {
+      toggleFlip('Details');
+    }, 500)
+
+    return () => {
+      clearTimeout(timeoutId);
+      toggleFlip('Preview');
+    }
   }, [])
 
   const transitions = useTransition(transitionState == 'Started' ? [] : (pokemonsDetails ?? []), {
-    trail: 400 / (pokemonsDetails?.length ?? 1),
+    trail: 800 / (pokemonsDetails?.length ?? 1),
     keys: (pokemon) => pokemon.name,
     from: {
       opacity: 0,
+      scale: 0
     },
-    enter: { opacity: 1 },
-    leave: { opacity: 0 },
-    config: config.slow,
+    enter: [{ opacity: 1, scale: 1 }],
+    leave: [{ opacity: 0, scale: 0 }],
+    config: {
+      ...config.stiff,
+      mass: 3,
+      duration: 300,
+    },
   });
 
   return (
@@ -79,7 +95,7 @@ const SelectedDeck: NextPageWithLayout<
       <div className={twMerge("w-full mt-5", cardGridStyles)}>
         {transitions((styles, pokemon) => (
           <a.div style={styles}>
-            <DetailsCard pokemon={pokemon} />
+            <FlipCard keepFlipped={flipState} pokemon={pokemon} />
           </a.div>
         ))}
       </div>

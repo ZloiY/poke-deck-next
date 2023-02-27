@@ -27,7 +27,7 @@ const TabLink = ({
   const isSelected = useMemo(
     () =>
       typeof href == "string"
-        ? route.asPath.includes(href)
+        ? href.includes(route.asPath) || route.asPath.includes(href)
         : href.pathname == route.pathname,
     [href, route.pathname],
   );
@@ -99,7 +99,7 @@ export const PokemonsLayout: NextPage<{
 
   return (
     <div className="flex flex-col items-center">
-      <div ref={parent} className="grid grid-flow-col grid-cols-2 gap-5 max-w-xl">
+      <div ref={parent} className={twMerge("grid grid-flow-col grid-cols-2 gap-5 max-w-xl")}>
         {transitions((style, linkProp) => (
           <a.div  style={style}>
             <TabLink key={linkProp.href} navigateTo={pushRoute} {...linkProp} />
