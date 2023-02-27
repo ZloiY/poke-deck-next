@@ -6,6 +6,9 @@ import { a, config, useSpring } from "@react-spring/web";
 
 import { useLoadingState, usePaginationState } from "../hooks";
 import { DetailsCard, FlipCard, PreviewCard } from "./Cards";
+import { twMerge } from "tailwind-merge";
+
+export const cardGridStyles = "grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2";
 
 type Card = typeof FlipCard | typeof DetailsCard | typeof PreviewCard;
 
@@ -79,8 +82,7 @@ export const CardsGrid = <P extends Pokemon>({
       <a.div
         style={{ position: position as unknown as "static", left }}
         ref={parent}
-        className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
-mt-5"
+        className={twMerge("w-full mt-5", cardGridStyles)}
       >
         {pokemons?.map((pokemon) => (children(pokemon)))}
       </a.div>

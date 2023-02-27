@@ -1,19 +1,25 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import superjson from "superjson";
+import { twMerge } from "tailwind-merge";
 import { z } from "zod";
 
+import { a, config, useTransition } from "@react-spring/web";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
-import Pokemons from "..";
 import { DetailsCard } from "../../../components/Cards";
-import { CardsGrid } from "../../../components/CardsGrid";
+import { cardGridStyles } from "../../../components/CardsGrid";
 import { Loader } from "../../../components/Loader";
 import { appRouter } from "../../../server/api/root";
 import { createInnerTRPCContext } from "../../../server/api/trpc";
 import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
-import { a, config, useTransition } from "@react-spring/web";
-import { ReactNode, useMemo } from "react";
+import { NextPageWithLayout } from "../../_app";
+import { Layout } from "../../../components/Layout";
+import { PokemonsLayout, pokemonsLayoutAtom } from "../../../components/PokemonsLayout";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+import { useLoadingState } from "../../../hooks";
+import { useAtom } from "jotai";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const parseQuery = z
@@ -45,33 +51,48 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 }
 
-const SelectedDeck = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) => {
+const SelectedDeck: NextPageWithLayout<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = (props) => {
+  const router = useRouter();
   const { data: pokemonsDetails, isLoading } =
     api.pokemon.getPokemonDetailedList.useQuery(props.deckId);
 
-  const transitions = useTransition(pokemonsDetails ?? [], {
-    trail: 200 / (pokemonsDetails?.length ?? 1),
-    keys: (pokemon) => pokemon.name,
-    from: { opacity: 0, scale: 0, rotate: `${Math.ceil(Math.random() * 180 - 90)}deg` },
-    enter: { opacity: 1, scale: 1, rotate: '0deg' },
-    config: config.stiff,
-  })
+  const [transitionState] = useAtom(pokemonsLayoutAtom);
+  useEffect(() => {
+    router.prefetch('/pokemons/decks');
+  }, [])
 
-  const pokemonTransitions = useMemo(() => {
-    return transitions((styles, pokemon) => ({ styles, ...pokemon }) as unknown as ReactNode)
-  }, [transitions])
+  const transitions = useTransition(transitionState == 'Started' ? [] : (pokemonsDetails ?? []), {
+    trail: 400 / (pokemonsDetails?.length ?? 1),
+    keys: (pokemon) => pokemon.name,
+    from: {
+      opacity: 0,
+    },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 },
+    config: config.slow,
+  });
 
   return (
-    <Pokemons showSelectedDeck={!!props.deckId}>
-      <Loader isLoading={isLoading}>
-        <CardsGrid pokemons={pokemonTransitions ?? []}>
-          {(pokemon) => <a.div><DetailsCard pokemon={pokemon}/></a.div>}
-        </CardsGrid>
-      </Loader>
-    </Pokemons>
+    <Loader isLoading={isLoading}>
+      <div className={twMerge("w-full mt-5", cardGridStyles)}>
+        {transitions((styles, pokemon) => (
+          <a.div style={styles}>
+            <DetailsCard pokemon={pokemon} />
+          </a.div>
+        ))}
+      </div>
+    </Loader>
   );
 };
+
+SelectedDeck.getLayout = (page) => (
+  <Layout>
+    <PokemonsLayout showSelectedDeck>
+      {page}
+    </PokemonsLayout>
+  </Layout>
+)
 
 export default SelectedDeck;

@@ -4,13 +4,14 @@ import superjson from "superjson";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
 import { DeckCard } from "../../components/Cards";
-import { CardsGrid } from "../../components/CardsGrid";
+import { Layout } from "../../components/Layout";
 import { Loader } from "../../components/Loader";
 import { appRouter } from "../../server/api/root";
 import { createInnerTRPCContext } from "../../server/api/trpc";
 import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../utils/api";
-import Pokemon from "./index";
+import { NextPageWithLayout } from "../_app";
+import { PokemonsLayout } from "../../components/PokemonsLayout";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
@@ -31,25 +32,31 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   }
 }
 
-const Decks = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) => {
+const Decks: NextPageWithLayout<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = (props) => {
   const { data: decks, isLoading } = api.deck.getUserDecks.useQuery();
 
   return (
-    <Pokemon>
-      <Loader isLoading={isLoading}>
-        <div
-          className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
+    <Loader isLoading={isLoading}>
+      <div
+        className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
 mt-5"
-        >
-          {decks?.map((deck) => (
-            <DeckCard deck={deck} />
-          ))}
-        </div>
-      </Loader>
-    </Pokemon>
+      >
+        {decks?.map((deck) => (
+          <DeckCard deck={deck} />
+        ))}
+      </div>
+    </Loader>
   );
 };
+
+Decks.getLayout = (page) => (
+  <Layout>
+    <PokemonsLayout>
+      {page}
+    </PokemonsLayout>
+  </Layout>
+);
 
 export default Decks;
