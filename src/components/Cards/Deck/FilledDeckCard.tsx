@@ -1,4 +1,5 @@
 import next from "next";
+import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
@@ -11,7 +12,7 @@ import { api } from "../../../utils/api";
 import { Loader } from "../../Loader";
 import { PreviewCard } from "../PreviewCard";
 import { BlankDeckCard } from "./BlankDeckCard";
-import { DeckCard } from "./types";
+import { Deck } from "@prisma/client";
 
 const getFirstSix = <T extends any>(arr: T[]): T[] => {
   const counter = 6;
@@ -34,11 +35,12 @@ export const FilledDeckCard = ({
   addCard,
   className,
   notInteractive,
-}: DeckCard) => {
+}: DeckCard<Deck>) => {
   const { data: pokemons, isLoading } = api.deck.getPokemonsByDeckId.useQuery(
     deck.id,
   );
   const [isHovered, toggleHovered] = useState(false);
+  const router = useRouter();
 
   const firstSixOrLess = useMemo(
     () => (pokemons ? getFirstSix(pokemons) : []),
@@ -93,8 +95,18 @@ export const FilledDeckCard = ({
     toggleHovered(false);
   };
 
+  const goToTheDeck = () => {
+    router.push({
+      pathname: "/pokemons/deck/[deckId]",
+      query: { deckId: deck.id },
+    });
+  };
+
   return (
-    <BlankDeckCard className={className} notInteractive={notInteractive}>
+    <BlankDeckCard
+      className={className}
+      notInteractive={notInteractive}
+    >
       {!deck.isFull && !notInteractive && (
         <Add
           className="absolute top-2 left-1 w-14 h-14 text-white hover:text-yellow-400 active:text-yellow-500 active:scale-90 cursor-pointer"
@@ -110,6 +122,7 @@ export const FilledDeckCard = ({
         />
       )}
       <div
+      onClick={goToTheDeck}
         className={twMerge(
           "flex flex-col gap-5 justify-between items-center h-full",
           notInteractive && "gap-2 justify-end",
@@ -149,15 +162,15 @@ export const FilledDeckCard = ({
             <p className={twMerge("text-xl", notInteractive && "text-sm")}>
               {deck.deckLength}/{process.env.NEXT_PUBLIC_DECK_MAX_SIZE}
             </p>
-            {!notInteractive && (
-              <Delete
-                className="absolute right-1 bottom-2 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
-                onClick={() => removeDeck?.(deck.id)}
-              />
-            )}
           </>
         </Loader>
       </div>
+      {!notInteractive && (
+        <Delete
+          className="absolute right-1 bottom-2 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
+          onClick={() => removeDeck?.(deck.id)}
+        />
+      )}
     </BlankDeckCard>
   );
 };

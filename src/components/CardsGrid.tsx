@@ -1,23 +1,23 @@
 import { Pokemon } from "pokenode-ts";
-import { Pokemon as PrismaPokemon } from "@prisma/client";
-import { useEffect, useRef } from "react";
+import { ReactElement, useEffect, useRef } from "react";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { a, config, useSpring } from "@react-spring/web";
 
 import { useLoadingState, usePaginationState } from "../hooks";
-import { FlipCard } from "./Cards";
+import { DetailsCard, FlipCard, PreviewCard } from "./Cards";
+import { twMerge } from "tailwind-merge";
 
-export const CardsGrid = ({
+export const cardGridStyles = "grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2";
+
+type Card = typeof FlipCard | typeof DetailsCard | typeof PreviewCard;
+
+export const CardsGrid = <P extends Pokemon>({
   pokemons = [],
-  selectedPokemons = [],
-  pokemonsInDeck = [],
-  cardsFlipped = 'Preview',
+  children
 }: {
-  pokemons?: Pokemon[];
-  selectedPokemons?: Pokemon[]
-  pokemonsInDeck?: PrismaPokemon[],
-  cardsFlipped?: FlipState;
+  pokemons?: P[];
+  children: <T extends { pokemon: Pokemon }>(pokemon: Pokemon) => ReactElement<T>
 }) => {
   const loadingState = useLoadingState();
   const paginationState = usePaginationState();
@@ -82,18 +82,9 @@ export const CardsGrid = ({
       <a.div
         style={{ position: position as unknown as "static", left }}
         ref={parent}
-        className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
-mt-5"
+        className={twMerge("w-full mt-5", cardGridStyles)}
       >
-        {pokemons?.map((pokemon) => (
-          <FlipCard
-            key={pokemon?.name}
-            selectedPokemons={selectedPokemons}
-            pokemonsInDeck={pokemonsInDeck}
-            pokemon={pokemon}
-            keepFlipped={cardsFlipped}
-          />
-        ))}
+        {pokemons?.map((pokemon) => (children(pokemon)))}
       </a.div>
     </div>
   );

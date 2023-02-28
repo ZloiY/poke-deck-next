@@ -11,7 +11,7 @@ import { PageLoader } from "./PageLoader";
 export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const { data } = useSession();
   const router = useRouter();
-  const { deckId: _, ...query } = useMemo(() => router.query, [router.query]); 
+  const { deckId: _, decks: __, ...query } = useMemo(() => router.query, [router.query]); 
 
   return (
     <div className="flex items-center justify-between bg-purple-900 py-5 px-6 text-4xl shadow-lg shadow-purple-700/75 sticky top-0 z-50">
@@ -20,7 +20,6 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/home",
-            query,
           }}
         >
           Home
@@ -28,7 +27,6 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/decks",
-            query,
           }}
         >
           Decks
@@ -36,7 +34,6 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/pokemons",
-            query,
           }}
         >
           Pókemons

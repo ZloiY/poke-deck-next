@@ -1,24 +1,27 @@
 import Image from "next/image";
 import { Pokemon } from "pokenode-ts";
-import { useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 import Add from "@icons/add.svg";
 import Remove from "@icons/close-circle.svg";
+import Delete from '@icons/delete.svg';
 import { Pokemon as PrismaPokemon } from "@prisma/client";
 
 import { useSelectPokemons } from "../../hooks";
 import { Switcher } from "../Switcher";
 import { BlankCard } from "./BlankCard";
 
-export const DetailsCard = ({
+export const DetailsCard = memo(({
   pokemon,
   isSelected = false,
   pokemonsInDeck = [],
+  removeFromDeck,
 }: {
   pokemon: Pokemon;
   pokemonsInDeck?: PrismaPokemon[];
   isSelected?: boolean;
+  removeFromDeck?: (pokemon: Pokemon) => void
 }) => {
   const { pushPokemon, removePokemon } = useSelectPokemons();
   const pokemonInCurrentDeck = useMemo(
@@ -67,24 +70,30 @@ export const DetailsCard = ({
   return (
     <BlankCard
       className={twMerge(
-        "transition-transform",
+        "transition-all",
         isSelected && "shadow-[0_0_15px_4px] shadow-orange-500 scale-105",
       )}
     >
-      <div className="relative h-full pb-4">
         {isSelected ? (
           !pokemonInCurrentDeck && (
             <Remove
-              className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-red-500 hover:text-red-400 z-10"
+              className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-red-500 hover:text-red-400 z-10"
               onClick={() => removePokemon(pokemon)}
             />
           )
-        ) : (
+        ) : !removeFromDeck && (
           <Add
-            className="absolute top-0 left-0 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10"
+            className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10"
             onClick={() => pushPokemon(pokemon)}
           />
         )}
+        {removeFromDeck && (
+          <Delete
+            className="absolute top-2 left-2 h-10 w-10 cursor-pointer text-red-700 hover:text-red-400 z-10"
+            onClick={() => removeFromDeck(pokemon)}
+          />
+        )}
+      <div className="relative h-full pb-4">
         <div className="flex h-full flex-col items-stretch justify-between gap-4 mt-2">
           <div className="flex gap-7">
             <div className="relative h-40 basis-40">
@@ -159,4 +168,4 @@ export const DetailsCard = ({
       </div>
     </BlankCard>
   );
-};
+});

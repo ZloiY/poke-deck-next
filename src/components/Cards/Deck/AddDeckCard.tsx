@@ -1,8 +1,10 @@
+import { memo } from "react";
+
 import Add from "@icons/add-inverse.svg";
 
 import { BlankDeckCard } from "./BlankDeckCard";
 
-export const AddDeckCard = ({ onClick }: { onClick?: () => void }) => (
+export const AddDeckCard = memo(({ onClick }: { onClick?: () => void }) => (
   <BlankDeckCard onClick={onClick}>
     <div className="flex justify-center items-center w-full h-full">
       <div>
@@ -11,4 +13,4 @@ export const AddDeckCard = ({ onClick }: { onClick?: () => void }) => (
       </div>
     </div>
   </BlankDeckCard>
-);
+));

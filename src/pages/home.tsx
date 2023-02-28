@@ -12,13 +12,19 @@ import { z } from "zod";
 import Check from "@icons/check.svg";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
+import { FlipCard } from "../components/Cards";
 import { CardsGrid } from "../components/CardsGrid";
 import { Layout } from "../components/Layout";
 import { Loader } from "../components/Loader";
 import { AddCards } from "../components/Modals";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
-import { useFlipState, useSelectPokemons, setNewSelectedPokemonStorage, useGetPokemonsFromDeck } from "../hooks";
+import {
+  setNewSelectedPokemonStorage,
+  useFlipState,
+  useGetPokemonsFromDeck,
+  useSelectPokemons,
+} from "../hooks";
 import { useModalState } from "../hooks/useModalState";
 import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
@@ -105,7 +111,7 @@ const Home: NextPageWithLayout = (
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
   const { pokemons: selectedPokemons } = useSelectPokemons();
-  const { data: pokemonsInDeck, refetch }  = useGetPokemonsFromDeck();
+  const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
@@ -113,7 +119,7 @@ const Home: NextPageWithLayout = (
 
   useEffect(() => {
     setNewSelectedPokemonStorage(homePageSelectedPokemons);
-  }, [])
+  }, []);
 
   const updateQuery = useCallback(
     (search: string) => {
@@ -142,12 +148,16 @@ const Home: NextPageWithLayout = (
         onPrevPage={pagination.goToPrevPage}
       />
       <Loader isLoading={isLoading}>
-        <CardsGrid
-          pokemons={pokemons}
-          selectedPokemons={selectedPokemons}
-          pokemonsInDeck={pokemonsInDeck}
-          cardsFlipped={flipState}
-        />
+        <CardsGrid pokemons={pokemons}>
+          {(pokemon) => (
+            <FlipCard
+              pokemon={pokemon}
+              selectedPokemons={selectedPokemons}
+              pokemonsInDeck={pokemonsInDeck}
+              keepFlipped={flipState}
+            />
+          )}
+        </CardsGrid>
       </Loader>
     </div>
   );
