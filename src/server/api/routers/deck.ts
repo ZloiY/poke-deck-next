@@ -80,5 +80,5 @@ export const deckRouter = createTRPCRouter({
           deck: { create: input.cards }
         }
       })))
-  })
+  }),
 })

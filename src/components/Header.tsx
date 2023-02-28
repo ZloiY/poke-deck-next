@@ -20,7 +20,6 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/home",
-            query,
           }}
         >
           Home
@@ -28,7 +27,6 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/decks",
-            query,
           }}
         >
           Decks
@@ -36,7 +34,6 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         <HighlightedLink
           href={{
             pathname: "/pokemons",
-            query,
           }}
         >
           Pókemons

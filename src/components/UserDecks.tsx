@@ -9,7 +9,6 @@ import { AddDeckCard } from "./Cards";
 import { DeckCard } from "./Cards/Deck/DeckCard";
 import { Loader } from "./Loader";
 import { CreateDeck } from "./Modals";
-import { CreateDeckParams } from "./Modals/CreateDeck";
 import { twMerge } from "tailwind-merge";
 
 export const UserDecks = () => {
@@ -38,7 +37,6 @@ export const UserDecks = () => {
     route.push({
       pathname: "/home",
       query: {
-        ...route.query,
         deckId,
       },
     });

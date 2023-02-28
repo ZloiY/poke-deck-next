@@ -7,11 +7,6 @@ import { Checkbox } from "../Checkbox";
 import { Input } from "../Input";
 import { ModalContainer } from "./ModalContainer";
 
-export type CreateDeckParams = {
-  name: string;
-  private: boolean;
-};
-
 export const CreateDeck = ({
   create,
   isLoading

@@ -34,5 +34,18 @@ export const pokemonRouter = createTRPCRouter({
     const pokemons = await ctx.prisma.pokemon.findMany({ where: { deckId: input }});
     const pokemonsInDeck: Pokemon[] = await Promise.all(pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)));
     return pokemonsInDeck;
+  }),
+  removePokemonFromDeck: protectedProcedure.input(
+    z.object({
+      deckId: z.string(),
+      pokemonName: z.string(),
+    })
+  ).mutation(async ({ input, ctx }) => {
+    await ctx.prisma.pokemon.deleteMany({
+      where: {
+        deckId: input.deckId,
+        name: input.pokemonName,
+      }
+    })
   })
 })

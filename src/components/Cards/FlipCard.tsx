@@ -7,18 +7,19 @@ import { a, useSpring } from "@react-spring/web";
 import { DetailsCard } from "./DetailsCard";
 import { PreviewCard } from "./PreviewCard";
 
+type FlipCardProps =
+  Parameters<typeof DetailsCard>[0]
+  & Parameters<typeof PreviewCard>[0]
+  & { selectedPokemons?: Pokemon[], keepFlipped?: FlipState }
+
 export const FlipCard = memo(
   ({
     pokemon,
     keepFlipped = "Preview",
     selectedPokemons = [],
-    pokemonsInDeck = []
-  }: {
-    pokemon: Pokemon;
-    selectedPokemons?: Pokemon[];
-    pokemonsInDeck?: PrismaPokemon[];
-    keepFlipped?: FlipState;
-  }) => {
+    pokemonsInDeck = [],
+    removeFromDeck
+  }: FlipCardProps) => {
     const isSelected = useMemo(
       () =>
         !![...selectedPokemons, ...pokemonsInDeck].find(
@@ -68,7 +69,7 @@ export const FlipCard = memo(
             rotateY: "180deg",
           }}
         >
-          <DetailsCard pokemon={pokemon} isSelected={isSelected} pokemonsInDeck={pokemonsInDeck} />
+          <DetailsCard pokemon={pokemon} isSelected={isSelected} pokemonsInDeck={pokemonsInDeck} removeFromDeck={removeFromDeck} />
         </a.div>
       </div>
     );

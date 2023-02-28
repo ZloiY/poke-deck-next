@@ -4,6 +4,7 @@ import ReactModal from "react-modal";
 
 import Close from "@icons/close.svg";
 import { a, config, useSpring } from "@react-spring/web";
+import { twMerge } from "tailwind-merge";
 
 export const isModalShown = atom(false);
 
@@ -13,12 +14,14 @@ export const ModalContainer = ({
   title = "",
   children,
   onClose,
+  anotherAtom,
 }: {
   children: (onClose: () => void) => ReactNode;
   onClose?: () => void;
   title?: string;
+  anotherAtom?: typeof isModalShown,
 }) => {
-  const [modalState, toggleModal] = useAtom(isModalShown);
+  const [modalState, toggleModal] = useAtom(anotherAtom ?? isModalShown);
 
   const [style, api] = useSpring(
     () => ({
@@ -53,15 +56,15 @@ export const ModalContainer = ({
     >
       <a.div
         style={style}
-        className="bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0 shadow-[0_0_20px_5px] shadow-purple-500"
+        className={twMerge(title && "bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0 shadow-[0_0_20px_5px] shadow-purple-500")}
       >
-        <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
+        {title && <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
           <span className="text-2xl font-coiny">{title}</span>
           <Close
             className="cursor-pointer w-8 h-8 hover:text-yellow-400"
             onClick={onRequestClose}
           />
-        </div>
+        </div>}
         {children(onRequestClose)}
       </a.div>
     </ReactModal>

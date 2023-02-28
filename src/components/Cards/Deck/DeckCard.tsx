@@ -1,6 +1,7 @@
 import { EmptyDeckCard } from "./EmptyDeckCard";
 import { FilledDeckCard } from "./FilledDeckCard";
-import { DeckCard as DeckCardProps } from "./types";
+
+type DeckCardProps = Parameters<typeof EmptyDeckCard>[0] & Parameters<typeof FilledDeckCard>[0];
 
 export const DeckCard = ({ deck, ...props }: DeckCardProps) => {
   return (
