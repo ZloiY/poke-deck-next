@@ -1,4 +1,5 @@
 import { useAtom } from "jotai";
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
@@ -6,7 +7,8 @@ import Remove from "@icons/close-circle.svg";
 import { Deck } from "@prisma/client";
 import { a, config, useSpringRef, useTransition } from "@react-spring/web";
 
-import { useSelectPokemons } from "../../hooks";
+import { env } from "../../env/client.mjs";
+import { useMessageBus, useSelectPokemons } from "../../hooks";
 import { api } from "../../utils/api";
 import { Button } from "../Button";
 import { DeckCard, PreviewCard } from "../Cards";
@@ -25,6 +27,8 @@ export const AddCards = ({
   const [showModal, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(decks?.[0]);
   const addCardsToDecks = api.deck.addCardsToDecks.useMutation();
+  const router = useRouter();
+  const { pushMessage } = useMessageBus();
   const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
   const [parent] = useAutoAnimate();
   const transitions = useTransition(showModal ? pokemons : [], {
@@ -60,9 +64,17 @@ export const AddCards = ({
               "",
           })),
         })
+        .then(pushMessage)
         .then(resetPokemons)
         .then(onSubmit)
-        .then(onClose);
+        .then(onClose)
+        .then(() => {
+          router.push({
+            pathname: "/pokemons/deck/[deckId]",
+            query: { deckId: selectedDeck.id },
+          });
+        })
+        .catch(pushMessage);
     }
   };
 
@@ -90,7 +102,9 @@ export const AddCards = ({
                       className="w-64"
                       defaultValue={selectedDeck}
                       onChange={(value) => setSelectedDeck(value as Deck)}
-                      getOptionLabel={(deck) => deck.name}
+                      getOptionLabel={(deck) =>
+                        `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
+                      }
                       isOptionSelected={(deck) => deck.id == deckId}
                       options={decks}
                     />
@@ -115,7 +129,7 @@ export const AddCards = ({
             ))}
           </div>
           <Button
-          isLoading={addCardsToDecks.isLoading}
+            isLoading={addCardsToDecks.isLoading}
             className="bg-green-500 w-full"
             disabled={!selectedDeck}
             onClick={updateDeck(onClose)}

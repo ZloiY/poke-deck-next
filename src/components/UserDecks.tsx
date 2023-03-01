@@ -10,6 +10,7 @@ import { DeckCard } from "./Cards/Deck/DeckCard";
 import { Loader } from "./Loader";
 import { CreateDeck } from "./Modals";
 import { twMerge } from "tailwind-merge";
+import { useMessageBus } from "../hooks";
 
 export const UserDecks = () => {
   const route = useRouter();
@@ -22,14 +23,17 @@ export const UserDecks = () => {
     refetch,
   } = api.deck.getUserDecks.useQuery();
   const [parent] = useAutoAnimate();
+  const { pushMessage } = useMessageBus();
 
   const create = async (params: CreateDeckParams) => {
-    await createDeck.mutateAsync(params);
+    const message = await createDeck.mutateAsync(params);
+    pushMessage(message);
     refetch();
   };
 
   const remove = async (id: string) => {
-    await removeDeck.mutateAsync(id);
+    const message = await removeDeck.mutateAsync(id);
+    pushMessage(message);
     refetch();
   };
 

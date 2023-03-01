@@ -18,7 +18,6 @@ export const EmptyDeckCard = memo(
   }: DeckCard<Deck>) => (
     <BlankDeckCard
       className={className}
-      onClick={() => addCard?.(deck.id)}
       notInteractive={notInteractive}
     >
       {deck.private && (
@@ -29,7 +28,7 @@ export const EmptyDeckCard = memo(
           )}
         />
       )}
-      <div className="relative flex justify-center items-center h-full w-full">
+      <div  onClick={() => addCard?.(deck.id)} className="relative flex justify-center items-center h-full w-full">
         <div>
           <AddCard className="w-full h-full mx-auto" />
           {!notInteractive && (
@@ -46,13 +45,13 @@ export const EmptyDeckCard = memo(
         >
           {deck.name}
         </p>
-        {!notInteractive && (
+      </div>
+      {!notInteractive && (
           <DeleteDeck
-            className="absolute bottom-0 right-0 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
+            className="absolute bottom-2 right-1 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
             onClick={() => removeDeck?.(deck.id)}
           />
         )}
-      </div>
     </BlankDeckCard>
   ),
 );

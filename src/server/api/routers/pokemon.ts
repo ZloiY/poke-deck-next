@@ -1,4 +1,5 @@
 import { NamedAPIResource, Pokemon } from "pokenode-ts";
+import { v4 } from "uuid";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -31,7 +32,7 @@ export const pokemonRouter = createTRPCRouter({
   getPokemonDetailedList: protectedProcedure.input(
     z.string()
   ).query(async ({ input, ctx }) => {
-    const pokemons = await ctx.prisma.pokemon.findMany({ where: { deckId: input }});
+    const pokemons = await ctx.prisma.pokemon.findMany({ where: { deckId: input } });
     const pokemonsInDeck: Pokemon[] = await Promise.all(pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)));
     return pokemonsInDeck;
   }),
@@ -40,12 +41,30 @@ export const pokemonRouter = createTRPCRouter({
       deckId: z.string(),
       pokemonName: z.string(),
     })
-  ).mutation(async ({ input, ctx }) => {
-    await ctx.prisma.pokemon.deleteMany({
-      where: {
-        deckId: input.deckId,
-        name: input.pokemonName,
-      }
-    })
+  ).mutation(async ({ input, ctx }): Promise<Message> => {
+    try {
+      await ctx.prisma.pokemon.deleteMany({
+        where: {
+          deckId: input.deckId,
+          name: input.pokemonName,
+        }
+      })
+      const pokemons = await ctx.prisma.pokemon.findMany({
+        where: {
+          deckId: input.deckId,
+        }
+      })
+      await ctx.prisma.deck.update({
+        data: {
+          deckLength: pokemons.length
+        },
+        where: {
+          id: input.deckId,
+        }
+      })
+      return { id: v4(), state: "Success", message: `Pokemon ${input.pokemonName} was successfully removed`}
+    } catch(err) {
+      return { id: v4(), state: "Failure", message: `Couldn't remove ${input.pokemonName} from the deck`}
+    }
   })
 })
