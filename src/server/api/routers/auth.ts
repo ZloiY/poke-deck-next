@@ -1,5 +1,6 @@
 import { TRPCError } from "@trpc/server";
 import sha256 from 'crypto-js/sha256';
+import { v4 } from "uuid";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -31,12 +32,13 @@ export const authRouter = createTRPCRouter({
       password: z.string().regex(passwordRegEx),
       repeatPassword: z.string().regex(passwordRegEx),
     }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input, ctx }): Promise<Message> => {
       if (input.password !== input.repeatPassword) {
-        throw new TRPCError({
+        return {
+          id: v4(),
+          state: 'Failure',
           message: 'Password are not the same',
-          code: 'BAD_REQUEST',
-        })
+        }
       }
       const salt = saltGeneration();
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -49,14 +51,10 @@ export const authRouter = createTRPCRouter({
             hash,
           }
         })
-        return user;
+        return { id: v4(), state: 'Success', message: 'User successfully created'};
       } catch (prismaError) {
         console.log('User create error: ', prismaError);
-        throw new TRPCError({
-          message: 'User creation error',
-          code: 'BAD_REQUEST',
-          cause: prismaError
-        })
+        return { id: v4(), state: 'Failure', message: 'Something went wrong...'}
       }
     })
 })

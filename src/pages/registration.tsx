@@ -1,11 +1,15 @@
+import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ReactEventHandler, useCallback } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
+import { v4 } from "uuid";
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
+import { NotificationsPopups } from "../components/NotificationPopup";
 
 import { Welcome } from "../components/Welcome";
+import { useMessageBus } from "../hooks";
 import { api } from "../utils/api";
 
 type RegistrationForm = {
@@ -29,14 +33,27 @@ export default function Registration() {
   });
   const createUser = api.auth.signUp.useMutation();
   const router = useRouter();
+  const { pushMessage } = useMessageBus();
 
   const signUpUser: SubmitHandler<RegistrationForm> = useCallback((data) => {
     createUser.mutateAsync(data)
-    .then(() => {
-      router.push('/login');
-    }).catch((err) => {
-      console.log('error', err);
-    });
+    .then((message) => {
+      pushMessage(message)
+      return signIn('credentials', {
+        username: data.username,
+        password: data.password,
+        redirect: false,
+      })
+    })
+    .then((signInResponse) => {
+      if (signInResponse?.ok) {
+        pushMessage({ id: v4(), state: 'Success', message:'You successfully signed in'})
+        router.push('/home');
+      } else {
+        pushMessage({ id: v4(), state: 'Failure', message: "Couldn't sign you up"})
+      }
+    })
+    .catch(pushMessage);
   }, []);
 
   const onSubmit = useCallback<ReactEventHandler>(
@@ -48,7 +65,8 @@ export default function Registration() {
   );
 
   return (
-    <div className="flex h-full items-center justify-center">
+    <div className="flex h-full items-center justify-center relative">
+      <NotificationsPopups/>
       <div>
         <Welcome />
         <div className="flex items-center justify-center">

@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { env } from "../../../env/server.mjs";
+import { v4 } from 'uuid'; 
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const deckRouter = createTRPCRouter({
@@ -8,7 +9,7 @@ export const deckRouter = createTRPCRouter({
       name: z.string().min(2).max(20),
       private: z.boolean(),
     })
-  ).mutation(async ({ input, ctx }) => {
+  ).mutation(async ({ input, ctx }): Promise<Message> => {
     const userId = ctx.session.user.id;
     try {
       await ctx.prisma.deck.create({
@@ -21,8 +22,10 @@ export const deckRouter = createTRPCRouter({
           deckLength: 0
         }
       })
+      return { id: v4(), state: 'Success', message: `Deck ${input.name} was created successfully`}
     } catch (err) {
-      console.log('deck creation error', err)
+      console.error('deck creation error', err)
+      return { id: v4(), state: 'Failure', message: `Couldn't create ${input.name} deck`}
     }
   }),
   getUserDecks: protectedProcedure.input(z.string().nullable().optional().transform(value => value ?? null)).query(async ({ input, ctx }) => {
@@ -45,12 +48,18 @@ export const deckRouter = createTRPCRouter({
     }),
   removeUserDeck: protectedProcedure.input(
     z.string()
-  ).mutation(async ({ input, ctx }) => {
+  ).mutation(async ({ input, ctx }): Promise<Message> => {
+    try {
     await ctx.prisma.deck.delete({
       where: {
         id: input,
       }
     })
+    return { id: v4(), state: 'Success', message: 'Deck was successfully removed' }
+  } catch(err) {
+    console.error('Error during removing deck', err);
+    return { id: v4(), state: 'Failure', message: "Couldn't remove the deck"}
+  }
   }),
   addCardsToDecks: protectedProcedure.input(
     z.object({
@@ -60,7 +69,8 @@ export const deckRouter = createTRPCRouter({
         imageUrl: z.string(),
       }).array(),
     })
-  ).mutation(async ({ input, ctx }) => {
+  ).mutation(async ({ input, ctx }): Promise<Message> => {
+    try {
     const decks = await ctx.prisma.deck.findMany({
       where: {
         OR: input.decksIds.map((id) => ({
@@ -80,5 +90,10 @@ export const deckRouter = createTRPCRouter({
           deck: { create: input.cards }
         }
       })))
+    return { id: v4(), state: 'Success', message: 'Card(s) where successfully added to the deck(s)'}
+    } catch(err) {
+      console.error('Error during adding cards to deck', err);
+      return { id: v4(), state: 'Failure', message: 'Something went wrong...( Please try again later'}
+    }
   }),
 })

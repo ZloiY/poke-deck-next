@@ -24,6 +24,7 @@ import { createInnerTRPCContext } from "../../../server/api/trpc";
 import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
 import { NextPageWithLayout } from "../../_app";
+import { useMessageBus } from "../../../hooks";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const parseQuery = z
@@ -66,7 +67,7 @@ const SelectedDeck: NextPageWithLayout<
     isRefetching,
   } = api.pokemon.getPokemonDetailedList.useQuery(props.deckId);
   const removePokemon = api.pokemon.removePokemonFromDeck.useMutation();
-
+  const { pushMessage } = useMessageBus();
   const [transitionState] = useAtom(pokemonsLayoutAtom);
 
   const [flipState, toggleFlip] = useState<FlipState>("Preview");
@@ -104,10 +105,11 @@ const SelectedDeck: NextPageWithLayout<
 
   const removePokemonFromDeck = async (pokemon: Pokemon) => {
     const deckId = props.deckId;
-    await removePokemon.mutateAsync({
+    const message = await removePokemon.mutateAsync({
       deckId,
       pokemonName: pokemon.name,
     });
+    pushMessage(message);
     refetch();
   };
 

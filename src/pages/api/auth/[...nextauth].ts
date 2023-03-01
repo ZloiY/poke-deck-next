@@ -42,11 +42,11 @@ export const authOptions: NextAuthOptions = {
             return user;
           } else {
             console.log('Wrong password');
-            throw new Error('Invalid credentials')
+            return null;
           }
         } catch (prismaError) {
-          console.log('User create error: ', prismaError);
-          throw new Error('Server error')
+          console.log('User signing error: ', prismaError);
+          return null
         }
       }
     })

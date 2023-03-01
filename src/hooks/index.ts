@@ -4,3 +4,4 @@ export { usePaginationState } from './usePaginationState';
 export { useFlipState } from './useFlipState';
 export { useSelectPokemons, setNewStorage as setNewSelectedPokemonStorage } from './useSelectPokemons';
 export { useGetPokemonsFromDeck } from './useGetPokemonsFromDeck';
+export { useMessageBus } from './useMessageBus';
