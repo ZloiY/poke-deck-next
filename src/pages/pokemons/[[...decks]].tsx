@@ -17,7 +17,7 @@ import { NextPageWithLayout } from "../_app";
 import { env } from "../../env/client.mjs";
 import { useModalState } from "../../hooks/useModalState";
 import { CreateDeck, Refetch } from "../../components/Modals";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { atom } from "jotai";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -29,7 +29,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       transformer: superjson,
     });
 
-    ssg.deck.getUserDecks.prefetch();
+    ssg.deck.getUserDecks.prefetch({ limit: null, cursor: null });
 
     return {
       props: {
@@ -44,10 +44,11 @@ const refetchModalAtom = atom(false);
 const Decks: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = (props) => {
-  const { data: decks, isLoading, isRefetching, refetch } = api.deck.getUserDecks.useQuery();
+  const { data, isLoading, isRefetching, refetch } = api.deck.getUserDecks.useQuery({ limit: null });
   const removeDeck = api.deck.removeUserDeck.useMutation();
   const createDeck = api.deck.createDeck.useMutation();
   const router = useRouter();
+  const decks = useMemo(() => data?.decks ?? [], [data?.decks]);
 
   const [_, showModal] = useModalState();
 
@@ -118,7 +119,7 @@ mt-5"
 };
 
 Decks.getLayout = (page) => (
-  <Layout>
+  <Layout showFlip={false}>
     <PokemonsLayout>{page}</PokemonsLayout>
   </Layout>
 );

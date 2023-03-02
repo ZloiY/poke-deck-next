@@ -1,4 +1,5 @@
 import next from "next";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -6,13 +7,13 @@ import { twMerge } from "tailwind-merge";
 import Add from "@icons/add-card.svg";
 import Delete from "@icons/delete.svg";
 import Private from "@icons/private.svg";
+import { Deck } from "@prisma/client";
 import { a, config, useSprings } from "@react-spring/web";
 
 import { api } from "../../../utils/api";
 import { Loader } from "../../Loader";
 import { PreviewCard } from "../PreviewCard";
 import { BlankDeckCard } from "./BlankDeckCard";
-import { Deck } from "@prisma/client";
 
 const getFirstSix = <T extends any>(arr: T[]): T[] => {
   const counter = 6;
@@ -35,12 +36,13 @@ export const FilledDeckCard = ({
   addCard,
   className,
   notInteractive,
-}: DeckCard<Deck>) => {
-  const { data: pokemons, isLoading } = api.deck.getPokemonsByDeckId.useQuery(
-    deck.id,
-  );
+  onClick,
+}: DeckCard<Deck & { username?: string }>) => {
+  const { data: pokemons, isLoading } =
+    api.pokemon.getPokemonsByDeckId.useQuery(deck.id);
   const [isHovered, toggleHovered] = useState(false);
   const router = useRouter();
+  const session = useSession();
 
   const firstSixOrLess = useMemo(
     () => (pokemons ? getFirstSix(pokemons) : []),
@@ -96,18 +98,21 @@ export const FilledDeckCard = ({
   };
 
   const goToTheDeck = () => {
-    router.push({
-      pathname: "/pokemons/deck/[deckId]",
-      query: { deckId: deck.id },
-    });
+    if (session.data?.user?.id == deck.userId) {
+      router.push({
+        pathname: "/pokemons/deck/[deckId]",
+        query: { deckId: deck.id },
+      });
+    }
   };
 
   return (
     <BlankDeckCard
       className={className}
       notInteractive={notInteractive}
+      onClick={() => onClick?.(deck.id)}
     >
-      {!deck.isFull && !notInteractive && (
+      {!deck.isFull && addCard && (
         <Add
           className="absolute top-2 left-1 w-14 h-14 text-white hover:text-yellow-400 active:text-yellow-500 active:scale-90 cursor-pointer"
           onClick={() => addCard?.(deck.id)}
@@ -122,7 +127,7 @@ export const FilledDeckCard = ({
         />
       )}
       <div
-      onClick={goToTheDeck}
+        onClick={goToTheDeck}
         className={twMerge(
           "flex flex-col gap-5 justify-between items-center h-full",
           notInteractive && "gap-2 justify-end",
@@ -156,6 +161,9 @@ export const FilledDeckCard = ({
                 </a.div>
               ))}
             </div>
+            {deck.username && (
+              <p className="text-2xl">Owner: {deck.username}</p>
+            )}
             <p className={twMerge("text-2xl", notInteractive && "text-base")}>
               {deck.name}
             </p>
@@ -165,7 +173,7 @@ export const FilledDeckCard = ({
           </>
         </Loader>
       </div>
-      {!notInteractive && (
+      {removeDeck && (
         <Delete
           className="absolute right-1 bottom-2 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
           onClick={() => removeDeck?.(deck.id)}

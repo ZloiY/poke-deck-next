@@ -36,6 +36,11 @@ export const pokemonRouter = createTRPCRouter({
     const pokemonsInDeck: Pokemon[] = await Promise.all(pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)));
     return pokemonsInDeck;
   }),
+  getPokemonsByDeckId: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      return await ctx.prisma.pokemon.findMany({ where: { deckId: input } })
+    }),
   removePokemonFromDeck: protectedProcedure.input(
     z.object({
       deckId: z.string(),
@@ -62,9 +67,9 @@ export const pokemonRouter = createTRPCRouter({
           id: input.deckId,
         }
       })
-      return { id: v4(), state: "Success", message: `Pokemon ${input.pokemonName} was successfully removed`}
-    } catch(err) {
-      return { id: v4(), state: "Failure", message: `Couldn't remove ${input.pokemonName} from the deck`}
+      return { id: v4(), state: "Success", message: `Pokemon ${input.pokemonName} was successfully removed` }
+    } catch (err) {
+      return { id: v4(), state: "Failure", message: `Couldn't remove ${input.pokemonName} from the deck` }
     }
   })
 })

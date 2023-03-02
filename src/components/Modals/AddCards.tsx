@@ -23,13 +23,14 @@ export const AddCards = ({
   deckId?: string | null;
   onSubmit?: () => void;
 }) => {
-  const { data: decks, isLoading } = api.deck.getUserDecks.useQuery(deckId);
+  const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
+  const { data: deck, isLoading } = api.deck.getUserDeckById.useQuery({ deckId });
+  const { data: userDecks, isLoading: decksLoading } = api.deck.getEmptyUserDecks.useQuery({ numberOfEmptySlots: pokemons.length })
   const [showModal, toggleModal] = useAtom(isModalShown);
-  const [selectedDeck, setSelectedDeck] = useState(decks?.[0]);
+  const [selectedDeck, setSelectedDeck] = useState(deck);
   const addCardsToDecks = api.deck.addCardsToDecks.useMutation();
   const router = useRouter();
   const { pushMessage } = useMessageBus();
-  const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
   const [parent] = useAutoAnimate();
   const transitions = useTransition(showModal ? pokemons : [], {
     trail: 400 / pokemons.length,
@@ -40,10 +41,10 @@ export const AddCards = ({
   });
 
   useEffect(() => {
-    if (decks) {
-      setSelectedDeck(decks[0]);
+    if (deck) {
+      setSelectedDeck(deck);
     }
-  }, [decks]);
+  }, [deck]);
 
   useEffect(() => {
     if (pokemons.length == 0) {
@@ -86,7 +87,7 @@ export const AddCards = ({
             <Loader isLoading={isLoading}>
               <>
                 <div className="flex flex-grow justify-start items-center">
-                  {decks?.map((deck) => (
+                  {userDecks?.map((deck) => (
                     <DeckCard
                       key={deck.id}
                       className="w-32 h-52 border-yellow-500 border-2"
@@ -106,7 +107,7 @@ export const AddCards = ({
                         `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
                       }
                       isOptionSelected={(deck) => deck.id == deckId}
-                      options={decks}
+                      options={userDecks}
                     />
                   </div>
                 </div>
