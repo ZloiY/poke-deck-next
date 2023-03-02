@@ -67,10 +67,7 @@ export const UserDecks = () => {
         <div
           id="scroll-div"
           ref={parent}
-          className={twMerge(
-            "w-full flex gap-5 overflow-x-scroll pb-2 scrollbar scrollbar-thumb-purple-900 scrollbar-track-transparent",
-            isRefetching && "items-center",
-          )}
+          className="w-full flex gap-5 overflow-x-scroll pb-2 scrollbar scrollbar-thumb-purple-900 scrollbar-track-transparent"
         >
           <InfiniteScroll
             hasMore={!!hasNextPage}

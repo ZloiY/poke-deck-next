@@ -65,7 +65,7 @@ export default function Registration() {
   );
 
   return (
-    <div className="flex h-full items-center justify-center relative">
+    <div className="flex h-full items-center justify-center font-fredoka relative">
       <NotificationsPopups/>
       <div>
         <Welcome />

@@ -2,6 +2,7 @@ import { z } from "zod";
 import { env } from "../../../env/server.mjs";
 import { v4 } from 'uuid';
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { Deck, User } from "@prisma/client";
 
 export const deckRouter = createTRPCRouter({
   createDeck: protectedProcedure.input(
@@ -93,10 +94,38 @@ export const deckRouter = createTRPCRouter({
         nextCursor
       }
     }),
-  getPokemonsByDeckId: protectedProcedure
-    .input(z.string())
+  getOthersUsersDecks: protectedProcedure.input(
+    z.object({
+      limit: z.number().min(1).max(10),
+      cursor: z.string().nullish(),
+    }))
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.pokemon.findMany({ where: { deckId: input } })
+      const limit = input.limit;
+      const cursor = input.cursor ? { id: input.cursor } : undefined;
+      const userId = ctx.session.user.id;
+      const decks: (Deck & { user: User})[] = await ctx.prisma.deck.findMany({
+        where: {
+          userId: {
+            not: userId,
+          },
+          private: false,
+        },
+        include: {
+          user: true,
+        },
+        cursor,
+        take: limit + 1,
+      })
+      const decksLength = await ctx.prisma.deck.count()
+      let nextCursor = undefined;
+      if (decks.length > limit) {
+        nextCursor = decks.pop()?.id;
+      }
+      return {
+        decks: decks.map((deck) => ({ ...deck, username: deck.user.name})),
+        decksLength,
+        nextCursor
+      }
     }),
   removeUserDeck: protectedProcedure.input(
     z.string()

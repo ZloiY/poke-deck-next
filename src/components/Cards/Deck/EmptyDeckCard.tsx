@@ -15,11 +15,8 @@ export const EmptyDeckCard = memo(
     removeDeck,
     notInteractive = false,
     className,
-  }: DeckCard<Deck>) => (
-    <BlankDeckCard
-      className={className}
-      notInteractive={notInteractive}
-    >
+  }: DeckCard<Deck & { username?: string }>) => (
+    <BlankDeckCard className={className} notInteractive={notInteractive}>
       {deck.private && (
         <Private
           className={twMerge(
@@ -28,12 +25,20 @@ export const EmptyDeckCard = memo(
           )}
         />
       )}
-      <div  onClick={() => addCard?.(deck.id)} className="relative flex justify-center items-center h-full w-full">
+      <div
+        onClick={() => addCard?.(deck.id)}
+        className="relative flex justify-center items-center h-full w-full"
+      >
         <div>
           <AddCard className="w-full h-full mx-auto" />
-          {!notInteractive && (
+          {addCard && (
             <p className="font-coiny mt-4 text-2xl text-center">
               Add cards to the deck
+            </p>
+          )}
+          {deck.username && (
+            <p className="font-fredoka text-2xl text-center mt-2">
+              Owner: {deck.username}
             </p>
           )}
         </div>
@@ -46,12 +51,12 @@ export const EmptyDeckCard = memo(
           {deck.name}
         </p>
       </div>
-      {!notInteractive && (
-          <DeleteDeck
-            className="absolute bottom-2 right-1 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
-            onClick={() => removeDeck?.(deck.id)}
-          />
-        )}
+      {removeDeck && (
+        <DeleteDeck
+          className="absolute bottom-2 right-1 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
+          onClick={() => removeDeck?.(deck.id)}
+        />
+      )}
     </BlankDeckCard>
   ),
 );

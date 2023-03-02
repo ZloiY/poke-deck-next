@@ -79,7 +79,7 @@ export default function Login() {
   );
 
   return (
-    <div className="flex h-full items-center justify-center relative">
+    <div className="flex h-full items-center justify-center relative font-fredoka">
       <NotificationsPopups/>
       <div>
         <Welcome />
