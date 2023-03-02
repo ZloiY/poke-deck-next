@@ -20,7 +20,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       ctx: createInnerTRPCContext({ session }),
       transformer: superjson,
     });
-    ssg.deck.getUserDecks.prefetch();
+    ssg.deck.getUserDecks.prefetch({ limit: 4 });
     return {
       props: {
         trpcState: ssg.dehydrate(),

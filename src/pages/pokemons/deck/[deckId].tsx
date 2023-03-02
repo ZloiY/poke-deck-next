@@ -134,7 +134,7 @@ const SelectedDeck: NextPageWithLayout<
 };
 
 SelectedDeck.getLayout = (page) => (
-  <Layout>
+  <Layout showFlip={false}>
     <PokemonsLayout showSelectedDeck>{page}</PokemonsLayout>
   </Layout>
 );
