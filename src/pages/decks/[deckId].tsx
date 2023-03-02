@@ -5,15 +5,16 @@ import { z } from "zod";
 
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
+import { DetailsCard } from "../../components/Cards";
+import { cardGridStyles } from "../../components/CardsGrid";
 import { Layout } from "../../components/Layout";
+import { Loader } from "../../components/Loader";
 import { env } from "../../env/client.mjs";
 import { appRouter } from "../../server/api/root";
 import { createInnerTRPCContext } from "../../server/api/trpc";
 import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../utils/api";
 import { NextPageWithLayout } from "../_app";
-import { cardGridStyles } from "../../components/CardsGrid";
-import { DetailsCard } from "../../components/Cards";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
@@ -47,25 +48,26 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
 const OtherUserDeck: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = (props) => {
-  const { data: pokemons } = api.pokemon.getPokemonDetailedList.useQuery(
-    props.deckId,
-  );
+  const { data: pokemons, isLoading } =
+    api.pokemon.getPokemonDetailedList.useQuery(props.deckId);
   const { data: deck } = api.deck.getDeckById.useQuery(props.deckId);
 
   return (
     <div className="mt-5 flex flex-col gap-5">
       <div className="flex justify-between gap-5 text-3xl font-coiny text-white">
-        <span>Owner: {deck?.username}</span>
-        <span>Deck name: {deck?.name}</span>
+        <span>Owner: {deck?.username ?? '...'}</span>
+        <span>Deck name: {deck?.name ?? '...'}</span>
         <span>
-          Deck size: {deck?.deckLength}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}
+          Deck size: {deck?.deckLength ?? '...'}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}
         </span>
       </div>
-      <div className={twMerge("mt-5", cardGridStyles)}>
-        {pokemons?.map((pokemon) => (
-          <DetailsCard pokemon={pokemon}/>
-        ))}
-      </div>
+      <Loader isLoading={isLoading}>
+        <div className={twMerge("mt-5", cardGridStyles)}>
+          {pokemons?.map((pokemon) => (
+            <DetailsCard key={pokemon.id} pokemon={pokemon} />
+          ))}
+        </div>
+      </Loader>
     </div>
   );
 };

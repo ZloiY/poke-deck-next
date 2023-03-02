@@ -5,10 +5,11 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { api } from "../utils/api";
 import { DeckCard } from "./Cards";
+import { Loader } from "./Loader";
 
 export const OtherUsersDecks = () => {
   const router = useRouter();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     api.deck.getOthersUsersDecks.useInfiniteQuery(
       { limit: 7 },
       {
@@ -36,9 +37,9 @@ export const OtherUsersDecks = () => {
 
   const viewDeck = (deckId: string) => {
     router.push({
-      pathname: '/decks/[deckId]',
+      pathname: "/decks/[deckId]",
       query: { deckId },
-    })
+    });
   };
 
   useEffect(() => {
@@ -70,35 +71,40 @@ export const OtherUsersDecks = () => {
           Total decks: {decksLength ?? 0}
         </span>
       </div>
-      <div
-        ref={parent}
-        className="w-full h-[520px] flex gap-5 overflow-x-scroll pb-2 scrollbar scrollbar-thumb-purple-900 scrollbar-track-transparent"
-      >
-        {decks.length > 0 ? (
-          <div
-            className="h-full relative"
-            style={{ width: `${virtualColumn.getTotalSize()}px` }}
-          >
-            {virtualColumn.getVirtualItems().map((virtualItem) => (
-              <div
-                key={virtualItem.index}
-                className="h-full"
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: `${virtualItem.size}px`,
-                  transform: `translateX(${virtualItem.start}px)`,
-                }}
-              >
-                <DeckCard onClick={viewDeck} deck={decks[virtualItem.index]!} />
-              </div>
-            ))}
-          </div>
-        ) : (
-          "Sorry no other users decks"
-        )}
-      </div>
+      <Loader isLoading={isLoading}>
+        <div
+          ref={parent}
+          className="w-full h-[520px] flex gap-5 overflow-x-scroll pb-2 scrollbar scrollbar-thumb-purple-900 scrollbar-track-transparent"
+        >
+          {decks.length > 0 ? (
+            <div
+              className="h-full relative text-center text-3xl"
+              style={{ width: `${virtualColumn.getTotalSize()}px` }}
+            >
+              {virtualColumn.getVirtualItems().map((virtualItem) => (
+                <div
+                  key={virtualItem.index}
+                  className="h-full"
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: `${virtualItem.size}px`,
+                    transform: `translateX(${virtualItem.start}px)`,
+                  }}
+                >
+                  <DeckCard
+                    onClick={viewDeck}
+                    deck={decks[virtualItem.index]!}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            "Sorry no other users decks"
+          )}
+        </div>
+      </Loader>
     </div>
   );
 };
