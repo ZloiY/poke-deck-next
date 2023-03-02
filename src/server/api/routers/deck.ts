@@ -30,7 +30,7 @@ export const deckRouter = createTRPCRouter({
   }),
   getUserDecks: protectedProcedure
     .input(z.object({
-      cursor: z.string().nullish().optional(),
+      cursor: z.string().nullish(),
       limit: z.number().min(1).max(20).nullish(),
     }))
     .query(async ({ input, ctx }) => {
