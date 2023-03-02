@@ -122,11 +122,31 @@ export const deckRouter = createTRPCRouter({
         nextCursor = decks.pop()?.id;
       }
       return {
-        decks: decks.map((deck) => ({ ...deck, username: deck.user.name})),
+        decks: decks.map((deck) => {
+          const { user, ...deckParams } = deck;
+          return { ...deckParams, username: user.name }
+        }),
         decksLength,
         nextCursor
       }
     }),
+  getDeckById: protectedProcedure.input(
+    z.string()
+  )
+  .query(async ({ input: deckId, ctx}) => {
+    const deck: (Deck & { user: User }) | null = await ctx.prisma.deck.findUnique({
+      where: {
+        id: deckId,
+      },
+      include: {
+        user: true
+      }
+    });
+    if (deck) {
+      const { user, ...deckParams } = deck;
+      return { ...deckParams, username: user.name }
+    }
+  }),
   removeUserDeck: protectedProcedure.input(
     z.string()
   ).mutation(async ({ input, ctx }): Promise<Message> => {

@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { useEffect, useMemo, useRef } from "react";
 
 import { useVirtualizer } from "@tanstack/react-virtual";
@@ -6,6 +7,7 @@ import { api } from "../utils/api";
 import { DeckCard } from "./Cards";
 
 export const OtherUsersDecks = () => {
+  const router = useRouter();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
     api.deck.getOthersUsersDecks.useInfiniteQuery(
       { limit: 7 },
@@ -24,8 +26,6 @@ export const OtherUsersDecks = () => {
     [data?.pages],
   );
 
-  console.log(decks.length)
-
   const virtualColumn = useVirtualizer({
     horizontal: true,
     count: hasNextPage ? decks?.length + 1 : decks?.length,
@@ -33,6 +33,13 @@ export const OtherUsersDecks = () => {
     estimateSize: () => 320,
     overscan: 7,
   });
+
+  const viewDeck = (deckId: string) => {
+    router.push({
+      pathname: '/decks/[deckId]',
+      query: { deckId },
+    })
+  };
 
   useEffect(() => {
     const [lastItem] = [...virtualColumn.getVirtualItems()].reverse();
@@ -84,7 +91,7 @@ export const OtherUsersDecks = () => {
                   transform: `translateX(${virtualItem.start}px)`,
                 }}
               >
-                <DeckCard deck={decks[virtualItem.index]!} />
+                <DeckCard onClick={viewDeck} deck={decks[virtualItem.index]!} />
               </div>
             ))}
           </div>
