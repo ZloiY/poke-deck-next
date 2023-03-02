@@ -28,30 +28,70 @@ export const deckRouter = createTRPCRouter({
       return { id: v4(), state: 'Failure', message: `Couldn't create ${input.name} deck` }
     }
   }),
+  getUserDeckById: protectedProcedure
+    .input(z.object({
+      deckId: z.string().nullish()
+    }))
+    .query(async ({ input, ctx }) => {
+      const deckId = input.deckId;
+      if (deckId) {
+        const deck = await ctx.prisma.deck.findUnique({
+          where: {
+            id: deckId
+          }
+        })
+        return deck;
+      } else {
+        const userId = ctx.session.user.id;
+        const deck = await ctx.prisma.deck.findFirst({
+          where: {
+            userId,
+          }
+        })
+        return deck
+      }
+    }),
+  getEmptyUserDecks: protectedProcedure
+    .input(z.object({
+      numberOfEmptySlots: z.number().nullish()
+    }))
+    .query(async ({input, ctx}) => {
+      const numberOfSlots = input.numberOfEmptySlots ?? +env.DECK_MAX_SIZE
+      const userId = ctx.session.user.id;
+      const decks = await ctx.prisma.deck.findMany({
+        where: {
+          userId,
+          deckLength: {
+            lte: +env.DECK_MAX_SIZE - numberOfSlots 
+          }
+        }
+      })
+      return decks;
+    }),
   getUserDecks: protectedProcedure
     .input(z.object({
       cursor: z.string().nullish(),
       limit: z.number().min(1).max(20).nullish(),
     }))
     .query(async ({ input, ctx }) => {
-      const limit = input.limit ?? 20;
+      const limit = input.limit ?? +env.USER_MAX_DECKS;
       const cursor = input.cursor ? { id: input.cursor } : undefined;
-        const userId = ctx.session.user.id;
-        const decks = await ctx.prisma.deck.findMany({
-          where: {
-            userId
-          },
-          cursor,
-          take: limit + 1
-        });
-        let nextCursor = undefined;
-        if (decks.length > limit) {
-          nextCursor = decks.pop()?.id;
-        }
-        return {
-          decks,
-          nextCursor
-        }
+      const userId = ctx.session.user.id;
+      const decks = await ctx.prisma.deck.findMany({
+        where: {
+          userId
+        },
+        cursor,
+        take: limit + 1
+      });
+      let nextCursor = undefined;
+      if (decks.length > limit) {
+        nextCursor = decks.pop()?.id;
+      }
+      return {
+        decks,
+        nextCursor
+      }
     }),
   getPokemonsByDeckId: protectedProcedure
     .input(z.string())
