@@ -67,7 +67,7 @@ export const UserDecks = () => {
         <div
           id="scroll-div"
           ref={parent}
-          className="w-full flex gap-5 overflow-x-scroll pb-2 scrollbar scrollbar-thumb-purple-900 scrollbar-track-transparent"
+          className="w-full flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent"
         >
           <InfiniteScroll
             hasMore={!!hasNextPage}

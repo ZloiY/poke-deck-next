@@ -61,7 +61,7 @@ export const CreateDeck = ({
                       "Name of the deck should include more than 2 symbols",
                   },
                   maxLength: {
-                    value: 20,
+                    value: 15,
                     message: "Shouldn't be longer than 20 symbols",
                   },
                 })}

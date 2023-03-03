@@ -24,7 +24,7 @@ main {
   @apply rounded-xl border-purple-900 focus-within:border-yellow-500 hover:border-yellow-400 shadow-none;
 }
 .rselect--white .rselect__control {
-  @apply rounded-xl border-2 border-purple-500 focus-within:border-yellow-500 hover:border-yellow-400;
+  @apply rounded-xl border-2 border-purple-500 bg-purple-500 focus-within:border-yellow-500 hover:border-yellow-400 transition-colors;
 }
 .rselect--heading .rselect__control {
   @apply border-4 border-white focus-within:border-yellow-500 hover:border-yellow-400
@@ -56,7 +56,7 @@ main {
   @apply text-black py-0 my-0 ml-2;
 }
 .rselect--white .rselect__single-value {
-  @apply text-black ml-1;
+  @apply text-white ml-1;
 }
 
 .rselect .rselect__placeholder {
@@ -79,7 +79,7 @@ main {
   @apply m-0 border-purple-900 border-2 border-t-0 rounded-b-xl rounded-t-none shadow-none
 }
 .rselect--white .rselect__menu {
-  @apply border-yellow-500 rounded-b-xl
+  @apply border-yellow-500 rounded-b-xl bg-purple-500
 }
 .rselect--heading .rselect__menu {
   @apply border-4 border-yellow-400 bg-purple-700
@@ -96,13 +96,13 @@ main {
   @apply text-sm px-4 py-2 hover:bg-yellow-500 border-t border-purple-900
 }
 .rselect--white .rselect__option {
-  @apply px-3 text-white hover:text-black hover:bg-transparent border-purple-500 cursor-pointer;
+  @apply px-3 text-white hover:text-black bg-purple-500 border-purple-500 cursor-pointer transition-colors;
 }
 .rselect--heading .rselect__option {
   @apply text-2xl hover:bg-white border-yellow-400;
 }
 .rselect .rselect__option--is-focused {
-  @apply bg-transparent text-black;
+  @apply bg-transparent text-yellow-400;
 }
 .rselect .rselect__option--is-selected {
   @apply bg-purple-900 text-white;

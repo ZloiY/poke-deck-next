@@ -24,8 +24,13 @@ export const AddCards = ({
   onSubmit?: () => void;
 }) => {
   const { pokemons, removePokemon, resetPokemons } = useSelectPokemons();
-  const { data: deck, isLoading } = api.deck.getUserDeckById.useQuery({ deckId });
-  const { data: userDecks, isLoading: decksLoading } = api.deck.getEmptyUserDecks.useQuery({ numberOfEmptySlots: pokemons.length })
+  const { data: deck, isLoading } = api.deck.getUserDeckById.useQuery({
+    deckId,
+  });
+  const { data: userDecks, isLoading: decksLoading } =
+    api.deck.getEmptyUserDecks.useQuery({
+      numberOfEmptySlots: pokemons.length,
+    });
   const [showModal, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(deck);
   const addCardsToDecks = api.deck.addCardsToDecks.useMutation();
@@ -84,18 +89,13 @@ export const AddCards = ({
       {(onClose) => (
         <div className="flex flex-col gap-5 min-w-[450px] max-w-[720px] px-2 pb-4">
           <div className="flex gap-10 w-full px-1">
-            <Loader isLoading={isLoading}>
+            <Loader className="text-white" isLoading={isLoading}>
               <>
-                <div className="flex flex-grow justify-start items-center">
-                  {userDecks?.map((deck) => (
-                    <DeckCard
-                      key={deck.id}
-                      className="w-32 h-52 border-yellow-500 border-2"
-                      notInteractive={true}
-                      deck={deck}
-                    />
-                  ))}
-                </div>
+                {selectedDeck && <DeckCard
+                  className="w-32 h-52 border-yellow-500 border-2"
+                  notInteractive={true}
+                  deck={selectedDeck}
+                />}
                 <div className="flex justify-start items-center">
                   <div className="flex gap-5 flex-col">
                     <p className="font-coiny text-2xl">Select deck:</p>
@@ -106,7 +106,7 @@ export const AddCards = ({
                       getOptionLabel={(deck) =>
                         `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
                       }
-                      isOptionSelected={(deck) => deck.id == deckId}
+                      isOptionSelected={(deck) => deck.id == selectedDeck?.id}
                       options={userDecks}
                     />
                   </div>
