@@ -1,14 +1,15 @@
 import { GetServerSidePropsContext } from "next";
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ReactEventHandler, useCallback } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
+
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { NotificationsPopups } from "../components/NotificationPopup";
-
 import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
 import { setNewMessages } from "../hooks/useMessageBus";
@@ -21,10 +22,10 @@ type RegistrationForm = {
 };
 
 export async function getStaticProps(context: GetServerSidePropsContext) {
-    setNewMessages([]);
-    return {
-      props: {}
-    }
+  setNewMessages([]);
+  return {
+    props: {},
+  };
 }
 
 export default function Registration() {
@@ -45,24 +46,33 @@ export default function Registration() {
   const { pushMessage } = useMessageBus();
 
   const signUpUser: SubmitHandler<RegistrationForm> = useCallback((data) => {
-    createUser.mutateAsync(data)
-    .then((message) => {
-      pushMessage(message)
-      return signIn('credentials', {
-        username: data.username,
-        password: data.password,
-        redirect: false,
+    createUser
+      .mutateAsync(data)
+      .then((message) => {
+        pushMessage(message);
+        return signIn("credentials", {
+          username: data.username,
+          password: data.password,
+          redirect: false,
+        });
       })
-    })
-    .then((signInResponse) => {
-      if (signInResponse?.ok) {
-        pushMessage({ id: v4(), state: 'Success', message:'You successfully signed in'})
-        router.push('/home');
-      } else {
-        pushMessage({ id: v4(), state: 'Failure', message: "Couldn't sign you up"})
-      }
-    })
-    .catch(pushMessage);
+      .then((signInResponse) => {
+        if (signInResponse?.ok) {
+          pushMessage({
+            id: v4(),
+            state: "Success",
+            message: "You successfully signed in",
+          });
+          router.push("/home");
+        } else {
+          pushMessage({
+            id: v4(),
+            state: "Failure",
+            message: "Couldn't sign you up",
+          });
+        }
+      })
+      .catch(pushMessage);
   }, []);
 
   const onSubmit = useCallback<ReactEventHandler>(
@@ -70,12 +80,20 @@ export default function Registration() {
       handleSubmit(signUpUser)(event).catch((error) => {
         console.log(error);
       }),
-    []
+    [],
   );
 
   return (
     <div className="flex h-full items-center justify-center font-fredoka relative">
-      <NotificationsPopups/>
+      <Head>
+        <title>PokeDeck registration</title>
+        <meta
+          property="og:registration"
+          content="PokeDeck registration"
+          key="title"
+        />
+      </Head>
+      <NotificationsPopups />
       <div>
         <Welcome />
         <div className="flex items-center justify-center">
@@ -129,12 +147,15 @@ export default function Registration() {
                   "You should repeat your 'password'",
               })}
             />
-          <Button isLoading={createUser.isLoading} type="submit">
-            Register
-          </Button>
+            <Button isLoading={createUser.isLoading} type="submit">
+              Register
+            </Button>
             <span>
               Already have account?
-              <Link href="/login" className="ml-1 text-blue-300 underline hover:text-yellow-400">
+              <Link
+                href="/login"
+                className="ml-1 text-blue-300 underline hover:text-yellow-400"
+              >
                 Log in!
               </Link>
             </span>

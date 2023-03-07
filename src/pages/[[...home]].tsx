@@ -1,11 +1,13 @@
 import { atom, useAtom } from "jotai";
+import { useSession } from "next-auth/react";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
 } from "next/types";
 import { Pokemon } from "pokenode-ts";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import superjson from "superjson";
 import { z } from "zod";
 
@@ -24,16 +26,15 @@ import {
   useFlipState,
   useGetPokemonsFromDeck,
   useMessageBus,
-  useSelectPokemons,
+  useModalState,
   usePagination,
-  useModalState
+  useSelectPokemons,
 } from "../hooks";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
-import { useSession } from "next-auth/react";
 
 const FixedButton = ({ onClick }: { onClick: () => void }) => {
   const [entered, toggleEnter] = useState(false);
@@ -100,9 +101,14 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         },
       };
     }
+    return {
+      props: {}
+    }
   }
   return {
-    props: {},
+    redirect: {
+      destination: "/login",
+    },
   };
 }
 
@@ -113,41 +119,48 @@ const Home: NextPageWithLayout = (
   const route = useRouter();
   const session = useSession();
   const flipState = useFlipState();
-  const pagination = usePagination(props?.page ?? 0, 15, 1275);
+  const pagination = usePagination(props?.page ?? 0, 15, 1275, "/home");
   const { pushMessage } = useMessageBus();
   const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
-  const { mutateAsync: createDeck, isLoading: deckCreating } = api.deck.createDeck.useMutation();
+  const { mutateAsync: createDeck, isLoading: deckCreating } =
+    api.deck.createDeck.useMutation();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
   });
-  
-  const createDeckWithCards = useCallback((params: { name: string, private: boolean }) => {
-    const cards = selectedPokemons.map((pokemon) => ({
-      name: pokemon.name,
-      imageUrl: pokemon.sprites.other?.["official-artwork"].front_default ?? pokemon.sprites.front_default ?? ''
-    }))
-    createDeck({ ...params, cards })
-      .then((message) => {
-        route.push({
-          pathname: '/pokemons/deck/[deckId]',
-          query: {
-            deckId: message.deck?.id,
-          }
-        });
-        return message;
-      })
-      .then(pushMessage)
-      .then(resetPokemons)
-  }, [selectedPokemons, useSelectPokemons, createDeck])
+
+  const createDeckWithCards = useCallback(
+    (params: { name: string; private: boolean }) => {
+      const cards = selectedPokemons.map((pokemon) => ({
+        name: pokemon.name,
+        imageUrl:
+          pokemon.sprites.other?.["official-artwork"].front_default ??
+          pokemon.sprites.front_default ??
+          "",
+      }));
+      createDeck({ ...params, cards })
+        .then((message) => {
+          route.push({
+            pathname: "/pokemons/deck/[deckId]",
+            query: {
+              deckId: message.deck?.id,
+            },
+          });
+          return message;
+        })
+        .then(pushMessage)
+        .then(resetPokemons);
+    },
+    [selectedPokemons, useSelectPokemons, createDeck],
+  );
 
   const updateQuery = useCallback(
     (search: string) => {
       route.replace({
-        pathname: "/home",
+        pathname: "/home/[page]",
         query: {
-          ...route.query,
+          page: route.query.page,
           search,
         },
       });
@@ -157,8 +170,16 @@ const Home: NextPageWithLayout = (
 
   return (
     <div className="flex flex-col h-full">
-      {(session.data?.user?.numberOfDecks ?? 0) > 0 && <AddCards deckId={props.deckId} onSubmit={refetch} />}
-      {(session.data?.user?.numberOfDecks ?? 0) == 0 && <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />}
+      <Head>
+        <title>PokeDeck</title>
+        <meta property="og:title" content="PokeDeck" key="title" />
+      </Head>
+      {(session.data?.user?.numberOfDecks ?? 0) > 0 && (
+        <AddCards deckId={props.deckId} onSubmit={refetch} />
+      )}
+      {(session.data?.user?.numberOfDecks ?? 0) == 0 && (
+        <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />
+      )}
       <FixedButton onClick={showModal} />
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
