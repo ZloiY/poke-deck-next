@@ -11,6 +11,7 @@ import { Input } from "../components/Input";
 import { NotificationsPopups } from "../components/NotificationPopup";
 import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
+import { setNewMessages } from "../hooks/useMessageBus";
 import { getServerAuthSession } from "../server/auth";
 
 type LoginForm = {
@@ -20,6 +21,7 @@ type LoginForm = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
+  setNewMessages([]);
   if (session?.expires && new Date() < new Date(session.expires)) {
     return {
       redirect: {

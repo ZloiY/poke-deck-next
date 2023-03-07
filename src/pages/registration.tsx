@@ -1,3 +1,4 @@
+import { GetServerSidePropsContext } from "next";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -10,6 +11,7 @@ import { NotificationsPopups } from "../components/NotificationPopup";
 
 import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
+import { setNewMessages } from "../hooks/useMessageBus";
 import { api } from "../utils/api";
 
 type RegistrationForm = {
@@ -17,6 +19,13 @@ type RegistrationForm = {
   password: string;
   repeatPassword: string;
 };
+
+export async function getStaticProps(context: GetServerSidePropsContext) {
+    setNewMessages([]);
+    return {
+      props: {}
+    }
+}
 
 export default function Registration() {
   const {
