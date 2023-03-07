@@ -74,7 +74,7 @@ export const OtherUsersDecks = () => {
       <Loader isLoading={isLoading}>
         <div
           ref={parent}
-          className="w-full h-[520px] flex gap-5 overflow-x-scroll pb-2 scrollbar scrollbar-thumb-purple-900 scrollbar-track-transparent"
+          className="w-full h-[520px] flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent"
         >
           {decks.length > 0 ? (
             <div

@@ -6,11 +6,10 @@ export default withAuth(
   {
     callbacks: {
       authorized({ req, token }) {
-        console.log('token', token);
         return !!token;
       },
     }
   }
 )
 
-export const config = { matcher: ['/home/:path*', '/decks/:path*'] };
+export const config = { matcher: ['/home/:path*', '/decks/:path*', '/pokemons/:path*'] };

@@ -16,22 +16,24 @@ import { FlipCard } from "../components/Cards";
 import { CardsGrid } from "../components/CardsGrid";
 import { Layout } from "../components/Layout";
 import { Loader } from "../components/Loader";
-import { AddCards } from "../components/Modals";
+import { AddCards, CreateDeck } from "../components/Modals";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
 import {
   setNewSelectedPokemonStorage,
   useFlipState,
   useGetPokemonsFromDeck,
+  useMessageBus,
   useSelectPokemons,
+  usePagination,
+  useModalState
 } from "../hooks";
-import { useModalState } from "../hooks/useModalState";
-import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
+import { useSession } from "next-auth/react";
 
 const FixedButton = ({ onClick }: { onClick: () => void }) => {
   const [entered, toggleEnter] = useState(false);
@@ -56,8 +58,11 @@ const FixedButton = ({ onClick }: { onClick: () => void }) => {
   ) : null;
 };
 
+const homePageSelectedPokemons = atom<Pokemon[]>([]);
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
+  setNewSelectedPokemonStorage(homePageSelectedPokemons);
   if (session) {
     const ssg = createProxySSGHelpers({
       router: appRouter,
@@ -101,25 +106,41 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const homePageSelectedPokemons = atom<Pokemon[]>([]);
-
 const Home: NextPageWithLayout = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
   const [_, showModal] = useModalState();
   const route = useRouter();
+  const session = useSession();
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
-  const { pokemons: selectedPokemons } = useSelectPokemons();
+  const { pushMessage } = useMessageBus();
+  const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
+  const { mutateAsync: createDeck, isLoading: deckCreating } = api.deck.createDeck.useMutation();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
   });
-
-  useEffect(() => {
-    setNewSelectedPokemonStorage(homePageSelectedPokemons);
-  }, []);
+  
+  const createDeckWithCards = useCallback((params: { name: string, private: boolean }) => {
+    const cards = selectedPokemons.map((pokemon) => ({
+      name: pokemon.name,
+      imageUrl: pokemon.sprites.other?.["official-artwork"].front_default ?? pokemon.sprites.front_default ?? ''
+    }))
+    createDeck({ ...params, cards })
+      .then((message) => {
+        route.push({
+          pathname: '/pokemons/deck/[deckId]',
+          query: {
+            deckId: message.deck?.id,
+          }
+        });
+        return message;
+      })
+      .then(pushMessage)
+      .then(resetPokemons)
+  }, [selectedPokemons, useSelectPokemons, createDeck])
 
   const updateQuery = useCallback(
     (search: string) => {
@@ -136,7 +157,8 @@ const Home: NextPageWithLayout = (
 
   return (
     <div className="flex flex-col h-full">
-      <AddCards deckId={props.deckId} onSubmit={refetch} />
+      {(session.data?.user?.numberOfDecks ?? 0) > 0 && <AddCards deckId={props.deckId} onSubmit={refetch} />}
+      {(session.data?.user?.numberOfDecks ?? 0) == 0 && <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />}
       <FixedButton onClick={showModal} />
       <div className="flex relative justify-center items-center px-72 -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
@@ -151,6 +173,7 @@ const Home: NextPageWithLayout = (
         <CardsGrid pokemons={pokemons}>
           {(pokemon) => (
             <FlipCard
+              key={pokemon.id}
               pokemon={pokemon}
               selectedPokemons={selectedPokemons}
               pokemonsInDeck={pokemonsInDeck}

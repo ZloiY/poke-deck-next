@@ -1,4 +1,4 @@
-import { ReactEventHandler, useCallback } from "react";
+import { FormEventHandler, ReactEventHandler, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 
@@ -26,7 +26,7 @@ export const CreateDeck = ({
     },
   });
 
-  const onSubmit = useCallback<(closeModal: () => void) => ReactEventHandler>((closeModal: () => void) =>
+  const onSubmit = (closeModal: () => void): FormEventHandler<HTMLFormElement> =>
     (event) =>
       handleSubmit(async (form) => {
         create?.(form);
@@ -34,9 +34,7 @@ export const CreateDeck = ({
         .catch((error) => {
           console.log(error);
         })
-        .finally(closeModal),
-    [],
-  );
+        .finally(closeModal);
 
   return (
     <ModalContainer title="Create new deck">
@@ -61,7 +59,7 @@ export const CreateDeck = ({
                       "Name of the deck should include more than 2 symbols",
                   },
                   maxLength: {
-                    value: 20,
+                    value: 15,
                     message: "Shouldn't be longer than 20 symbols",
                   },
                 })}
