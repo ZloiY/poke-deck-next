@@ -15,7 +15,7 @@ export const SelectingPokemonsService = (initialStorage: PrimitiveAtom<Pokemon[]
       currentPokemonsStorage = newStorage;
     },
     useSelectPokemons: () => {
-      const [pokemons, setAddedPokemons] = useAtom(currentPokemonsStorage);
+      const [pokemons] = useAtom(currentPokemonsStorage);
       const [_, pushPokemon] = useAtom(pushPokemonAtom);
       const [__, resetPokemons] = useAtom(resetPokemonsAtom);
       const [___, removePokemon] = useAtom(removePokemonAtom);

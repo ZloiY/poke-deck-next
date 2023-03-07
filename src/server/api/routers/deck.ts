@@ -14,7 +14,6 @@ export const deckRouter = createTRPCRouter({
   ).mutation(async ({ input, ctx }): Promise<Message & { deck: Deck | undefined }> => {
     const userId = ctx.session.user.id;
     const { cards, private: privateDeck, name } = input;
-    console.log(cards); // when `console.log` params it actually applying it without looks like skipping it
     if (cards && cards.length > 0) {
       try {
         const deck = await ctx.prisma.deck.create({

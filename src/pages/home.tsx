@@ -58,8 +58,11 @@ const FixedButton = ({ onClick }: { onClick: () => void }) => {
   ) : null;
 };
 
+const homePageSelectedPokemons = atom<Pokemon[]>([]);
+
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
+  setNewSelectedPokemonStorage(homePageSelectedPokemons);
   if (session) {
     const ssg = createProxySSGHelpers({
       router: appRouter,
@@ -103,8 +106,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   };
 }
 
-const homePageSelectedPokemons = atom<Pokemon[]>([]);
-
 const Home: NextPageWithLayout = (
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) => {
@@ -139,11 +140,7 @@ const Home: NextPageWithLayout = (
       })
       .then(pushMessage)
       .then(resetPokemons)
-  }, [selectedPokemons, createDeck])
-
-  useEffect(() => {
-    setNewSelectedPokemonStorage(homePageSelectedPokemons);
-  }, []);
+  }, [selectedPokemons, useSelectPokemons, createDeck])
 
   const updateQuery = useCallback(
     (search: string) => {

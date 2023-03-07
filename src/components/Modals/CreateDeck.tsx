@@ -1,4 +1,4 @@
-import { ReactEventHandler, useCallback } from "react";
+import { FormEventHandler, ReactEventHandler, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 
@@ -26,7 +26,7 @@ export const CreateDeck = ({
     },
   });
 
-  const onSubmit = useCallback<(closeModal: () => void) => ReactEventHandler>((closeModal: () => void) =>
+  const onSubmit = (closeModal: () => void): FormEventHandler<HTMLFormElement> =>
     (event) =>
       handleSubmit(async (form) => {
         create?.(form);
@@ -34,9 +34,7 @@ export const CreateDeck = ({
         .catch((error) => {
           console.log(error);
         })
-        .finally(closeModal),
-    [],
-  );
+        .finally(closeModal);
 
   return (
     <ModalContainer title="Create new deck">
