@@ -11,5 +11,5 @@ export const useMessageBus = () => {
     return unSub;
   }, [])
 
-  return useMemo(() => ({ messages, pushMessage: messageBus.push, deleteMessage: messageBus.deleteById }), []);
+  return useMemo(() => ({ messages, pushMessage: messageBus.push, deleteMessage: messageBus.deleteById }), [messages]);
 }
