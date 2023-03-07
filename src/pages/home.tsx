@@ -25,9 +25,9 @@ import {
   useGetPokemonsFromDeck,
   useMessageBus,
   useSelectPokemons,
+  usePagination,
+  useModalState
 } from "../hooks";
-import { useModalState } from "../hooks/useModalState";
-import { usePagination } from "../hooks/usePagination";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
@@ -114,7 +114,7 @@ const Home: NextPageWithLayout = (
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275);
   const { pushMessage } = useMessageBus();
-  const { pokemons: selectedPokemons } = useSelectPokemons();
+  const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
   const { mutateAsync: createDeck, isLoading: deckCreating } = api.deck.createDeck.useMutation();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
@@ -138,6 +138,7 @@ const Home: NextPageWithLayout = (
         return message;
       })
       .then(pushMessage)
+      .then(resetPokemons)
   }, [selectedPokemons, createDeck])
 
   useEffect(() => {

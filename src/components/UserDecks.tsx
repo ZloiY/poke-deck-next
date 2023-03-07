@@ -24,7 +24,7 @@ export const UserDecks = () => {
     hasNextPage,
     fetchNextPage,
     isFetchingNextPage,
-    isRefetching,
+    isLoading,
     refetch
   } = api.deck.getUserDecks.useInfiniteQuery({ limit: 4 }, {
     getNextPageParam: (last) => last.nextCursor
@@ -74,7 +74,7 @@ export const UserDecks = () => {
             className="flex gap-5 w-full"
             dataLength={userDecks?.length ?? 0}
             next={fetchNextPage}
-            loader={<Loader isLoading={isFetchingNextPage} />}
+            loader={<Loader isLoading={isLoading || isFetchingNextPage} />}
             scrollableTarget="scroll-div"
           >
             {userDecks?.length != +env.NEXT_PUBLIC_USER_MAX_DECKS && (

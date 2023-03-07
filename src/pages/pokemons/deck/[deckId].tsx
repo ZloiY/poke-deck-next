@@ -19,12 +19,12 @@ import {
   PokemonsLayout,
   pokemonsLayoutAtom,
 } from "../../../components/PokemonsLayout";
+import { useMessageBus } from "../../../hooks";
 import { appRouter } from "../../../server/api/root";
 import { createInnerTRPCContext } from "../../../server/api/trpc";
 import { getServerAuthSession } from "../../../server/auth";
 import { api } from "../../../utils/api";
 import { NextPageWithLayout } from "../../_app";
-import { useMessageBus } from "../../../hooks";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const parseQuery = z
@@ -83,6 +83,12 @@ const SelectedDeck: NextPageWithLayout<
       toggleFlip("Preview");
     };
   }, []);
+
+  useEffect(() => {
+    if (!isLoading && pokemonsDetails?.length == 0) {
+      router.push("/pokemons/decks");
+    }
+  }, [pokemonsDetails, isLoading]);
 
   const transitions = useTransition(
     transitionState == "Started" ? [] : pokemonsDetails ?? [],

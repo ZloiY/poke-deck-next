@@ -102,6 +102,7 @@ export const AddCards = ({
                     <Select
                       className="w-64"
                       defaultValue={selectedDeck}
+                      isLoading={decksLoading}
                       onChange={(value) => setSelectedDeck(value as Deck)}
                       getOptionLabel={(deck) =>
                         `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`

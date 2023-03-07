@@ -1,24 +1,24 @@
+import { atom } from "jotai";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
+import { useCallback, useMemo } from "react";
 import superjson from "superjson";
 
-import { a, config, useTransition } from "@react-spring/web";
+import { a, useTransition } from "@react-spring/web";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
 import { AddDeckCard, DeckCard } from "../../components/Cards";
 import { Layout } from "../../components/Layout";
 import { Loader } from "../../components/Loader";
+import { CreateDeck, Refetch } from "../../components/Modals";
 import { PokemonsLayout } from "../../components/PokemonsLayout";
+import { env } from "../../env/client.mjs";
+import { useModalState } from "../../hooks/useModalState";
 import { appRouter } from "../../server/api/root";
 import { createInnerTRPCContext } from "../../server/api/trpc";
 import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../utils/api";
 import { NextPageWithLayout } from "../_app";
-import { env } from "../../env/client.mjs";
-import { useModalState } from "../../hooks/useModalState";
-import { CreateDeck, Refetch } from "../../components/Modals";
-import { useCallback, useMemo } from "react";
-import { atom } from "jotai";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
@@ -44,7 +44,8 @@ const refetchModalAtom = atom(false);
 const Decks: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = (props) => {
-  const { data, isLoading, isRefetching, refetch } = api.deck.getUserDecks.useQuery({ limit: null });
+  const { data, isLoading, isRefetching, refetch } =
+    api.deck.getUserDecks.useQuery({ limit: null });
   const removeDeck = api.deck.removeUserDeck.useMutation();
   const createDeck = api.deck.createDeck.useMutation();
   const router = useRouter();
@@ -88,32 +89,37 @@ const Decks: NextPageWithLayout<
   const addDeck = useCallback(async (params: CreateDeckParams) => {
     await createDeck.mutateAsync(params);
     refetch();
-  }, [])
+  }, []);
 
   return (
     <>
-    <Refetch isRefetching={!isLoading && isRefetching} anotherAtom={refetchModalAtom}/>
-    <CreateDeck create={addDeck} />
-    <Loader isLoading={isLoading}>
-      <>
-        <p className="font-coiny text-3xl mt-4 w-full text-end">Total Decks Amount: {decks?.length}/{env.NEXT_PUBLIC_USER_MAX_DECKS}</p>
-        <div
-          className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
+      <Refetch
+        isRefetching={!isLoading && isRefetching}
+        anotherAtom={refetchModalAtom}
+      />
+      <CreateDeck create={addDeck} />
+      <Loader isLoading={isLoading}>
+        <>
+          <p className="font-coiny text-3xl mt-4 w-full text-end">
+            Total Decks Amount: {decks?.length}/{env.NEXT_PUBLIC_USER_MAX_DECKS}
+          </p>
+          <div
+            className="w-full grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2
 mt-5"
-        >
-          <AddDeckCard onClick={showModal}/>
-          {transitions((style, deck) => (
-            <a.div style={style}>
-              <DeckCard
-                deck={deck}
-                addCard={addCardsToDeck}
-                removeDeck={removeUserDeck}
-              />
-            </a.div>
-          ))}
-        </div>
-      </>
-    </Loader>
+          >
+            <AddDeckCard onClick={showModal} />
+            {transitions((style, deck) => (
+              <a.div style={style}>
+                <DeckCard
+                  deck={deck}
+                  addCard={addCardsToDeck}
+                  removeDeck={removeUserDeck}
+                />
+              </a.div>
+            ))}
+          </div>
+        </>
+      </Loader>
     </>
   );
 };

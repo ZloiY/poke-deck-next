@@ -120,7 +120,7 @@ export default function Registration() {
                   "You should repeat your 'password'",
               })}
             />
-          <Button type="submit">
+          <Button isLoading={createUser.isLoading} type="submit">
             Register
           </Button>
             <span>

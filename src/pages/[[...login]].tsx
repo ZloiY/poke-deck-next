@@ -2,7 +2,7 @@ import { GetServerSidePropsContext } from "next";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type ReactEventHandler, useCallback } from "react";
+import { type ReactEventHandler, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { v4 } from "uuid";
 
@@ -46,10 +46,12 @@ export default function Login() {
   });
   const router = useRouter();
   const { pushMessage } = useMessageBus();
+  const [isLoginIn, toggleLogin] = useState(false);
 
   const onSubmit = useCallback<ReactEventHandler>(
     (event) =>
       handleSubmit(async (form) => {
+        toggleLogin(true)
         try {
           const message = await signIn("credentials", {
             ...form,
@@ -74,6 +76,8 @@ export default function Login() {
         }
       })(event).catch((error) => {
         console.log(error);
+      }).finally(() => {
+        toggleLogin(false);
       }),
     [],
   );
@@ -105,7 +109,7 @@ export default function Login() {
                 required: "You should enter password",
               })}
             />
-            <Button type="submit">Log In</Button>
+            <Button isLoading={isLoginIn} type="submit">Log In</Button>
             <span>
               Don&apos;t have account?
               <Link
