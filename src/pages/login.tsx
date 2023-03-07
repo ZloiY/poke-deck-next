@@ -1,5 +1,6 @@
 import { GetServerSidePropsContext } from "next";
 import { signIn } from "next-auth/react";
+import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ReactEventHandler, useCallback, useState } from "react";
@@ -11,6 +12,7 @@ import { Input } from "../components/Input";
 import { NotificationsPopups } from "../components/NotificationPopup";
 import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
+import { setNewMessages } from "../hooks/useMessageBus";
 import { getServerAuthSession } from "../server/auth";
 
 type LoginForm = {
@@ -20,17 +22,18 @@ type LoginForm = {
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
+  setNewMessages([]);
   if (session?.expires && new Date() < new Date(session.expires)) {
     return {
       redirect: {
-        destination: '/home',
-      }
-    }
+        destination: "/home",
+      },
+    };
   }
 
   return {
-    props: {}
-  }
+    props: {},
+  };
 }
 
 export default function Login() {
@@ -51,7 +54,7 @@ export default function Login() {
   const onSubmit = useCallback<ReactEventHandler>(
     (event) =>
       handleSubmit(async (form) => {
-        toggleLogin(true)
+        toggleLogin(true);
         try {
           const message = await signIn("credentials", {
             ...form,
@@ -60,31 +63,37 @@ export default function Login() {
           if (message?.ok) {
             pushMessage({
               id: v4(),
-              state: 'Success',
-              message: 'You successfully logged in'
-            })
+              state: "Success",
+              message: "You successfully logged in",
+            });
             router.push("/home");
           } else {
             pushMessage({
               id: v4(),
-              state: 'Failure',
-              message: "You've entered wrong credentials"
-            })
+              state: "Failure",
+              message: "You've entered wrong credentials",
+            });
           }
         } catch (err) {
           throw err;
         }
-      })(event).catch((error) => {
-        console.log(error);
-      }).finally(() => {
-        toggleLogin(false);
-      }),
+      })(event)
+        .catch((error) => {
+          console.log(error);
+        })
+        .finally(() => {
+          toggleLogin(false);
+        }),
     [],
   );
 
   return (
     <div className="flex h-full items-center justify-center relative font-fredoka">
-      <NotificationsPopups/>
+      <Head>
+        <title>PokeDeck login</title>
+        <meta property="og:title" content="PokeDeck login" key="title" />
+      </Head>
+      <NotificationsPopups />
       <div>
         <Welcome />
         <div className="flex items-center justify-center">
@@ -109,7 +118,9 @@ export default function Login() {
                 required: "You should enter password",
               })}
             />
-            <Button isLoading={isLoginIn} type="submit">Log In</Button>
+            <Button isLoading={isLoginIn} type="submit">
+              Log In
+            </Button>
             <span>
               Don&apos;t have account?
               <Link

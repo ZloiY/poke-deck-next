@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import { ReactElement } from "react";
 import superjson from "superjson";
 
@@ -10,7 +11,6 @@ import { UserDecks } from "../../components/UserDecks";
 import { appRouter } from "../../server/api/root";
 import { createInnerTRPCContext } from "../../server/api/trpc";
 import { getServerAuthSession } from "../../server/auth";
-import { api } from "../../utils/api";
 import { NextPageWithLayout } from "../_app";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
@@ -39,6 +39,10 @@ const Decks: NextPageWithLayout = (
 ) => {
   return (
     <div className="flex flex-col gap-8">
+      <Head>
+        <title>Decks</title>
+        <meta property="og:title" content="Decks" key="title" />
+      </Head>
       <UserDecks />
       <OtherUsersDecks />
     </div>

@@ -1,4 +1,5 @@
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import superjson from "superjson";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
@@ -54,11 +55,15 @@ const OtherUserDeck: NextPageWithLayout<
 
   return (
     <div className="mt-5 flex flex-col gap-5">
+      <Head>
+        <title>PokeDeck deck</title>
+        <meta property="og:title" content="PokeDeck deck" key="title" />
+      </Head>
       <div className="flex justify-between gap-5 text-3xl font-coiny text-white">
-        <span>Owner: {deck?.username ?? '...'}</span>
-        <span>Deck name: {deck?.name ?? '...'}</span>
+        <span>Owner: {deck?.username ?? "..."}</span>
+        <span>Deck name: {deck?.name ?? "..."}</span>
         <span>
-          Deck size: {deck?.deckLength ?? '...'}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}
+          Deck size: {deck?.deckLength ?? "..."}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}
         </span>
       </div>
       <Loader isLoading={isLoading}>

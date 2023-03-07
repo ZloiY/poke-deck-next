@@ -1,5 +1,6 @@
 import { atom } from "jotai";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback, useMemo } from "react";
 import superjson from "superjson";
@@ -93,6 +94,10 @@ const Decks: NextPageWithLayout<
 
   return (
     <>
+      <Head>
+        <title>User decks</title>
+        <meta property="og:title" content="User decks" key="title" />
+      </Head>
       <Refetch
         isRefetching={!isLoading && isRefetching}
         anotherAtom={refetchModalAtom}

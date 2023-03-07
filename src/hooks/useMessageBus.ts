@@ -3,6 +3,8 @@ import { EventBus } from "../services/EventBus";
 
 const messageBus = new EventBus<Message>();
 
+export const setNewMessages = messageBus.setNewValues;
+
 export const useMessageBus = () => {
   const [messages, setNewMessages] = useState<Message[]>([]);
 

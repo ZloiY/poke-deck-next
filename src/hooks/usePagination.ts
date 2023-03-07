@@ -14,7 +14,7 @@ type PaginationReturn = {
 
 const calcOffset = (page: number, limit: number) => page * limit;
 
-export const usePagination = (page: number, limit: number, totalLength: number): PaginationReturn => {
+export const usePagination = (page: number, limit: number, totalLength: number, rootRoute: string): PaginationReturn => {
   const route = useRouter();
   const initialPage = page;
   const totalPages = Math.ceil(totalLength / limit);
@@ -25,28 +25,30 @@ export const usePagination = (page: number, limit: number, totalLength: number):
   const hasPrevPage = initialPage > 0;
   
   const goToNextPage = useCallback(() => {
+    const { search } =  route.query;
     if (hasNextPage) {
       route.push({
-        pathname: route.pathname,
+        pathname: `${rootRoute}/[page]`,
         query: {
-          ...route.query,
+          search,
           page: page + 1,
         }
       })
     }
-  }, [hasNextPage, page])
+  }, [hasNextPage, page, route])
 
   const goToPrevPage = useCallback(() => {
+    const { search } =  route.query;
     if (hasPrevPage) {
       route.push({
-        pathname: route.pathname,
+        pathname: `${rootRoute}/[page]`,
         query: {
-          ...route.query,
+          search,
           page: page - 1,
         }
       })
     }
-  }, [hasPrevPage, page]);
+  }, [hasPrevPage, page, route]);
 
   return useMemo(() => ({
     currentPageParams: { limit, offset: calcOffset(page, limit)},

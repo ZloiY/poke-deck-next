@@ -1,5 +1,6 @@
 import { useAtom } from "jotai";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { Pokemon } from "pokenode-ts";
 import { useEffect, useMemo, useState } from "react";
@@ -121,6 +122,10 @@ const SelectedDeck: NextPageWithLayout<
 
   return (
     <>
+      <Head>
+        <title>User decks</title>
+        <meta property="og:title" content="User decks" key="title" />
+      </Head>
       <Refetch isRefetching={!isLoading && isRefetching} />
       <Loader isLoading={isLoading}>
         <div className={twMerge("w-full mt-5", cardGridStyles)}>
