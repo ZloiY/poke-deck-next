@@ -156,7 +156,7 @@ export default function Registration() {
                   "You should repeat your 'password'",
               })}
             />
-            <Button className="text-2xl h-14" isLoading={createUser.isLoading || createUser.isSuccess} type="submit">
+            <Button className="text-2xl h-12" isLoading={createUser.isLoading || createUser.isSuccess} type="submit">
               Register
             </Button>
             <span>

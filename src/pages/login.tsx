@@ -121,7 +121,7 @@ export default function Login() {
                 required: "You should enter password",
               })}
             />
-            <Button className="text-2xl py-2 h-14" isLoading={isLoginIn} type="submit">
+            <Button className="text-2xl py-2 h-12" isLoading={isLoginIn} type="submit">
               Log In
             </Button>
             <span>
