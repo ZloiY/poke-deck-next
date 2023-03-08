@@ -11,18 +11,18 @@ import { z } from "zod";
 import { a, config, useTransition } from "@react-spring/web";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
-import { FlipCard } from "../../../components/Cards";
-import { cardGridStyles } from "../../../components/CardsGrid";
-import { Layout } from "../../../components/Layout";
-import { Loader } from "../../../components/Loader";
-import { Refetch } from "../../../components/Modals";
-import { PokemonsLayout } from "../../../components/PokemonsLayout";
-import { useLoadingState, useMessageBus } from "../../../hooks";
-import { appRouter } from "../../../server/api/root";
-import { createInnerTRPCContext } from "../../../server/api/trpc";
-import { getServerAuthSession } from "../../../server/auth";
-import { api } from "../../../utils/api";
-import { NextPageWithLayout } from "../../_app";
+import { FlipCard } from "../../components/Cards";
+import { cardGridStyles } from "../../components/CardsGrid";
+import { Layout } from "../../components/Layout";
+import { Loader } from "../../components/Loader";
+import { Refetch } from "../../components/Modals";
+import { PokemonsLayout } from "../../components/PokemonsLayout";
+import { useLoadingState, useMessageBus } from "../../hooks";
+import { appRouter } from "../../server/api/root";
+import { createInnerTRPCContext } from "../../server/api/trpc";
+import { getServerAuthSession } from "../../server/auth";
+import { api } from "../../utils/api";
+import { NextPageWithLayout } from "../_app";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const parseQuery = z
