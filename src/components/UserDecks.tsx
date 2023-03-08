@@ -78,7 +78,7 @@ export const UserDecks = () => {
             isLoading && "justify-center"
           )}
         >
-          <Loader className="w-52 h-52" isLoading={isLoading}>
+          <Loader className="w-60 h-60" isLoading={isLoading}>
             <InfiniteScroll
               hasMore={!!hasNextPage}
               className="flex gap-5 w-full"
