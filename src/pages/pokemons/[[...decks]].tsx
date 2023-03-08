@@ -104,7 +104,7 @@ const Decks: NextPageWithLayout<
         anotherAtom={refetchModalAtom}
       />
       <CreateDeck create={addDeck} />
-      <Loader isLoading={isLoading}>
+      <Loader className="h-96 w-96 mt-40" isLoading={isLoading}>
         <>
           <p className="font-coiny text-3xl mt-4 w-full text-end">
             Total Decks Amount: {decks?.length}/{env.NEXT_PUBLIC_USER_MAX_DECKS}
