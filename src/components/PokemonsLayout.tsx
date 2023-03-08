@@ -7,11 +7,8 @@ import { Url } from "url";
 import { a, config, useTransition } from "@react-spring/web";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { NextPage } from "next";
-import { atom, useAtom } from "jotai";
 
 type PokemonsLayoutTransition = 'Started' | 'Finished';
-
-export const pokemonsLayoutAtom = atom<PokemonsLayoutTransition>('Finished');
 
 const TabLink = ({
   href,
@@ -71,20 +68,10 @@ export const PokemonsLayout: NextPage<{
   children,
 }) => {
   const router = useRouter();
-  const [transitionState, setLayoutTransition] = useAtom(pokemonsLayoutAtom);
   const links = useMemo(
-    () => (showSelectedDeck && transitionState == 'Finished' ? linksProps : [linksProps[1]!]),
-    [showSelectedDeck, transitionState],
+    () => (showSelectedDeck ? linksProps : [linksProps[1]!]),
+    [showSelectedDeck],
   );
-
-  const pushRoute = useCallback((href: string | Partial<Url>) => {
-    setLayoutTransition('Started');
-    const timeoutId = setTimeout(() => {
-      setLayoutTransition('Finished')
-      router.push(href);
-      clearTimeout(timeoutId);
-    }, 500);
-  }, [router]);
 
   const [parent] = useAutoAnimate();
 
@@ -102,7 +89,7 @@ export const PokemonsLayout: NextPage<{
       <div ref={parent} className={twMerge("grid grid-flow-col grid-cols-2 gap-5 max-w-xl")}>
         {transitions((style, linkProp) => (
           <a.div  style={style}>
-            <TabLink key={linkProp.href} navigateTo={pushRoute} {...linkProp} />
+            <TabLink key={linkProp.href} navigateTo={router.push} {...linkProp} />
           </a.div>
         ))}
       </div>
