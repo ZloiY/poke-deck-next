@@ -80,9 +80,6 @@ export default function Login() {
       })(event)
         .catch((error) => {
           console.log(error);
-        })
-        .finally(() => {
-          toggleLogin(false);
         }),
     [],
   );

@@ -54,7 +54,7 @@ const OtherUserDeck: NextPageWithLayout<
   const { data: deck } = api.deck.getDeckById.useQuery(props.deckId);
 
   return (
-    <div className="mt-5 flex flex-col gap-5">
+    <div className={twMerge("mt-5 flex flex-col gap-5", isLoading && "items-center justify-center")}>
       <Head>
         <title>PokeDeck deck</title>
         <meta property="og:title" content="PokeDeck deck" key="title" />
@@ -66,7 +66,7 @@ const OtherUserDeck: NextPageWithLayout<
           Deck size: {deck?.deckLength ?? "..."}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}
         </span>
       </div>
-      <Loader isLoading={isLoading}>
+      <Loader className="w-96 h-96" isLoading={isLoading}>
         <div className={twMerge("mt-5", cardGridStyles)}>
           {pokemons?.map((pokemon) => (
             <DetailsCard key={pokemon.id} pokemon={pokemon} />

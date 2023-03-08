@@ -3,7 +3,7 @@ import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type ReactEventHandler, useCallback } from "react";
+import { type ReactEventHandler, useCallback, useState } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 
@@ -147,7 +147,7 @@ export default function Registration() {
                   "You should repeat your 'password'",
               })}
             />
-            <Button isLoading={createUser.isLoading} type="submit">
+            <Button isLoading={createUser.isLoading || createUser.isSuccess} type="submit">
               Register
             </Button>
             <span>
