@@ -1,17 +1,11 @@
-import Link from "next/link";
+import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { ReactElement, ReactNode, useCallback, useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 import { Url } from "url";
 
-import { a, config, useTransition } from "@react-spring/web";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { NextPage } from "next";
-import { atom, useAtom } from "jotai";
-
-type PokemonsLayoutTransition = 'Started' | 'Finished';
-
-export const pokemonsLayoutAtom = atom<PokemonsLayoutTransition>('Finished');
+import { a, config, useTransition } from "@react-spring/web";
 
 const TabLink = ({
   href,
@@ -19,7 +13,7 @@ const TabLink = ({
   navigateTo,
 }: {
   href: string | Partial<Url>;
-  navigateTo: (href: string | Partial<Url>) => void
+  navigateTo: (href: string | Partial<Url>) => void;
   children: string;
 }) => {
   const route = useRouter();
@@ -27,7 +21,7 @@ const TabLink = ({
   const isSelected = useMemo(
     () =>
       typeof href == "string"
-        ? href.includes(route.asPath) || route.asPath.includes(href)
+        ? href.includes(route.asPath)
         : href.pathname == route.pathname,
     [href, route.pathname],
   );
@@ -54,43 +48,37 @@ const TabLink = ({
 
 const linksProps = [
   {
-    href: "/pokemons/deck",
+    href: {
+      pathname: "/pokemons/[deckId]",
+    },
     children: "Selected Deck",
   },
   {
-    href: "/pokemons/decks",
+    href: {
+      pathname: "/pokemons/[[...decks]]",
+    },
     children: "User Decks",
   },
-];
+] as const;
 
-export const PokemonsLayout: NextPage<{
-  showSelectedDeck?: boolean;
-  children: ReactNode;
-}, ReactElement> = ({
-  showSelectedDeck,
-  children,
-}) => {
+export const PokemonsLayout: NextPage<
+  {
+    showSelectedDeck?: boolean;
+    children: ReactNode;
+  },
+  ReactElement
+> = ({ showSelectedDeck, children }) => {
   const router = useRouter();
-  const [transitionState, setLayoutTransition] = useAtom(pokemonsLayoutAtom);
   const links = useMemo(
-    () => (showSelectedDeck && transitionState == 'Finished' ? linksProps : [linksProps[1]!]),
-    [showSelectedDeck, transitionState],
+    () => (showSelectedDeck ? linksProps : [linksProps[1]]),
+    [showSelectedDeck],
   );
-
-  const pushRoute = useCallback((href: string | Partial<Url>) => {
-    setLayoutTransition('Started');
-    const timeoutId = setTimeout(() => {
-      setLayoutTransition('Finished')
-      router.push(href);
-      clearTimeout(timeoutId);
-    }, 500);
-  }, [router]);
 
   const [parent] = useAutoAnimate();
 
   const transitions = useTransition(links, {
     trail: 200 / links.length,
-    keys: (link) => link?.href,
+    keys: (link) => link?.href.pathname,
     from: { opacity: 0, scale: 0 },
     enter: { opacity: 1, scale: 1 },
     leave: { opacity: 0, scale: 0 },
@@ -99,10 +87,17 @@ export const PokemonsLayout: NextPage<{
 
   return (
     <div className="flex flex-col items-center">
-      <div ref={parent} className={twMerge("grid grid-flow-col grid-cols-2 gap-5 max-w-xl")}>
+      <div
+        ref={parent}
+        className={twMerge("grid grid-flow-col grid-cols-2 gap-5 max-w-xl")}
+      >
         {transitions((style, linkProp) => (
-          <a.div  style={style}>
-            <TabLink key={linkProp.href} navigateTo={pushRoute} {...linkProp} />
+          <a.div style={style}>
+            <TabLink
+              key={linkProp.href.pathname}
+              navigateTo={router.push}
+              {...linkProp}
+            />
           </a.div>
         ))}
       </div>

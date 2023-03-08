@@ -71,7 +71,7 @@ export const OtherUsersDecks = () => {
           Total decks: {decksLength ?? 0}
         </span>
       </div>
-      <Loader isLoading={isLoading}>
+      <Loader className="mt-32 w-60 h-60" isLoading={isLoading}>
         <div
           ref={parent}
           className="w-full h-[520px] flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent"

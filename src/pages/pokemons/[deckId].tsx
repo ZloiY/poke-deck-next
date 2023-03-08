@@ -11,21 +11,18 @@ import { z } from "zod";
 import { a, config, useTransition } from "@react-spring/web";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
 
-import { FlipCard } from "../../../components/Cards";
-import { cardGridStyles } from "../../../components/CardsGrid";
-import { Layout } from "../../../components/Layout";
-import { Loader } from "../../../components/Loader";
-import { Refetch } from "../../../components/Modals";
-import {
-  PokemonsLayout,
-  pokemonsLayoutAtom,
-} from "../../../components/PokemonsLayout";
-import { useMessageBus } from "../../../hooks";
-import { appRouter } from "../../../server/api/root";
-import { createInnerTRPCContext } from "../../../server/api/trpc";
-import { getServerAuthSession } from "../../../server/auth";
-import { api } from "../../../utils/api";
-import { NextPageWithLayout } from "../../_app";
+import { FlipCard } from "../../components/Cards";
+import { cardGridStyles } from "../../components/CardsGrid";
+import { Layout } from "../../components/Layout";
+import { Loader } from "../../components/Loader";
+import { Refetch } from "../../components/Modals";
+import { PokemonsLayout } from "../../components/PokemonsLayout";
+import { useLoadingState, useMessageBus } from "../../hooks";
+import { appRouter } from "../../server/api/root";
+import { createInnerTRPCContext } from "../../server/api/trpc";
+import { getServerAuthSession } from "../../server/auth";
+import { api } from "../../utils/api";
+import { NextPageWithLayout } from "../_app";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const parseQuery = z
@@ -69,7 +66,7 @@ const SelectedDeck: NextPageWithLayout<
   } = api.pokemon.getPokemonDetailedList.useQuery(props.deckId);
   const removePokemon = api.pokemon.removePokemonFromDeck.useMutation();
   const { pushMessage } = useMessageBus();
-  const [transitionState] = useAtom(pokemonsLayoutAtom);
+  const loadingState = useLoadingState();
 
   const [flipState, toggleFlip] = useState<FlipState>("Preview");
 
@@ -92,7 +89,7 @@ const SelectedDeck: NextPageWithLayout<
   }, [pokemonsDetails, isLoading]);
 
   const transitions = useTransition(
-    transitionState == "Started" ? [] : pokemonsDetails ?? [],
+    loadingState == "Started" ? [] : pokemonsDetails ?? [],
     {
       trail: 800 / (pokemonsDetails?.length ?? 1),
       keys: (pokemon) => pokemon.name,
@@ -126,8 +123,10 @@ const SelectedDeck: NextPageWithLayout<
         <title>User decks</title>
         <meta property="og:title" content="User decks" key="title" />
       </Head>
-      <Refetch isRefetching={!isLoading && isRefetching} />
-      <Loader isLoading={isLoading}>
+      <Refetch
+        isRefetching={!isLoading && (isRefetching || removePokemon.isLoading)}
+      />
+      <Loader className="h-96 w-96 mt-20" isLoading={isLoading}>
         <div className={twMerge("w-full mt-5", cardGridStyles)}>
           {transitions((styles, pokemon) => (
             <a.div style={styles}>

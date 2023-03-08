@@ -55,6 +55,7 @@ const Decks: NextPageWithLayout<
   const [_, showModal] = useModalState();
 
   const transitions = useTransition(decks ?? [], {
+    keys: (item) => item.id,
     trail: 700 / (decks?.length ?? 1),
     from: {
       opacity: 0,
@@ -99,11 +100,11 @@ const Decks: NextPageWithLayout<
         <meta property="og:title" content="User decks" key="title" />
       </Head>
       <Refetch
-        isRefetching={!isLoading && isRefetching}
+        isRefetching={!isLoading && (removeDeck.isLoading || createDeck.isLoading || isRefetching)}
         anotherAtom={refetchModalAtom}
       />
       <CreateDeck create={addDeck} />
-      <Loader isLoading={isLoading}>
+      <Loader className="h-96 w-96 mt-40" isLoading={isLoading}>
         <>
           <p className="font-coiny text-3xl mt-4 w-full text-end">
             Total Decks Amount: {decks?.length}/{env.NEXT_PUBLIC_USER_MAX_DECKS}

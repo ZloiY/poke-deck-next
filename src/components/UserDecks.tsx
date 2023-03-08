@@ -25,11 +25,17 @@ export const UserDecks = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
-    refetch
-  } = api.deck.getUserDecks.useInfiniteQuery({ limit: 4 }, {
-    getNextPageParam: (last) => last.nextCursor
-  });
-  const userDecks = useMemo(() => data?.pages.flatMap((group) => group.decks) ?? [],[data?.pages])
+    refetch,
+  } = api.deck.getUserDecks.useInfiniteQuery(
+    { limit: 4 },
+    {
+      getNextPageParam: (last) => last.nextCursor,
+    },
+  );
+  const userDecks = useMemo(
+    () => data?.pages.flatMap((group) => group.decks) ?? [],
+    [data?.pages],
+  );
   const [parent] = useAutoAnimate();
   const { pushMessage } = useMessageBus();
 
@@ -67,28 +73,33 @@ export const UserDecks = () => {
         <div
           id="scroll-div"
           ref={parent}
-          className="w-full flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent"
+          className={twMerge(
+            "w-full h-[520px] flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent",
+            isLoading && "justify-center"
+          )}
         >
-          <InfiniteScroll
-            hasMore={!!hasNextPage}
-            className="flex gap-5 w-full"
-            dataLength={userDecks?.length ?? 0}
-            next={fetchNextPage}
-            loader={<Loader isLoading={isLoading || isFetchingNextPage} />}
-            scrollableTarget="scroll-div"
-          >
-            {userDecks?.length != +env.NEXT_PUBLIC_USER_MAX_DECKS && (
-              <AddDeckCard onClick={showModal} />
-            )}
-            {userDecks?.map((deck) => (
-              <DeckCard
-                key={deck.id}
-                deck={deck}
-                addCard={addPokemons}
-                removeDeck={remove}
-              />
-            ))}
-          </InfiniteScroll>
+          <Loader className="w-60 h-60" isLoading={isLoading}>
+            <InfiniteScroll
+              hasMore={!!hasNextPage}
+              className="flex gap-5 w-full"
+              dataLength={userDecks?.length ?? 0}
+              next={fetchNextPage}
+              loader={<Loader isLoading />}
+              scrollableTarget="scroll-div"
+            >
+              {userDecks?.length != +env.NEXT_PUBLIC_USER_MAX_DECKS && (
+                <AddDeckCard onClick={showModal} />
+              )}
+              {userDecks?.map((deck) => (
+                <DeckCard
+                  key={deck.id}
+                  deck={deck}
+                  addCard={addPokemons}
+                  removeDeck={remove}
+                />
+              ))}
+            </InfiniteScroll>
+          </Loader>
         </div>
       </div>
     </>

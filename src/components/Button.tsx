@@ -9,7 +9,7 @@ export const Button = ({className, isLoading, ...props}: ButtonHTMLAttributes<HT
       hover:shadow-[0_0_15px_4px] hover:shadow-zinc-400/50 hover:bg-yellow-500 active:bg-yellow-600 active:shadow-zinc-500/50
       disabled:bg-gray-500 disabled:hover:bg-gray-500 disabled:shadow-none disabled:cursor-auto disabled:text-gray-400`
       , className)} {...props}>
-      {isLoading ? <div className="animate-spin-slow contrast-100 h-7"><Loader/></div> : props.children}
+      {isLoading ? <div className="animate-spin-slow contrast-100 h-full w-full"><Loader/></div> : props.children}
     </button>
   );
 };
