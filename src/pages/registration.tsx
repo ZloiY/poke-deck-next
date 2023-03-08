@@ -98,12 +98,15 @@ export default function Registration() {
         <Welcome />
         <div className="flex items-center justify-center">
           <form
-            className="flex flex-col gap-5 rounded-lg bg-purple-900 py-5 px-4 shadow-[0px_0px_20px_5px] shadow-zinc-600/50"
+            className="flex flex-col gap-5 rounded-lg text-xl bg-purple-900 p-5 shadow-[0px_0px_20px_5px] shadow-zinc-600/50 w-full max-w-xl"
             onSubmit={onSubmit}
           >
             <Input
               id="username"
               label="Username:"
+              labelStyles="text-2xl"
+              inputStyles="text-2xl h-14"
+              errorStyles="text-lg"
               error={errors?.username?.message}
               {...register("username", {
                 required: "You should specify username",
@@ -121,6 +124,9 @@ export default function Registration() {
               id="password"
               type="password"
               label="Password:"
+              labelStyles="text-2xl"
+              inputStyles="text-2xl h-14"
+              errorStyles="text-lg"
               error={errors?.password?.message}
               {...register("password", {
                 required: "You should specify password",
@@ -139,6 +145,9 @@ export default function Registration() {
               id="repeatPassword"
               type="password"
               label="Repeat Password:"
+              labelStyles="text-2xl"
+              inputStyles="text-2xl h-14"
+              errorStyles="text-lg"
               error={errors?.repeatPassword?.message}
               {...register("repeatPassword", {
                 required: "You should put password",
@@ -147,7 +156,7 @@ export default function Registration() {
                   "You should repeat your 'password'",
               })}
             />
-            <Button isLoading={createUser.isLoading || createUser.isSuccess} type="submit">
+            <Button className="text-2xl h-14" isLoading={createUser.isLoading || createUser.isSuccess} type="submit">
               Register
             </Button>
             <span>

@@ -95,12 +95,15 @@ export default function Login() {
         <Welcome />
         <div className="flex items-center justify-center">
           <form
-            className="flex flex-col gap-5 rounded-lg bg-purple-900 py-5 px-4 shadow-[0px_0px_20px_5px] shadow-zinc-600/50"
+            className="flex flex-col gap-5 rounded-lg text-xl bg-purple-900 p-5 shadow-[0px_0px_20px_5px] shadow-zinc-600/50 w-full max-w-xl"
             onSubmit={onSubmit}
           >
             <Input
               id="username"
               label="Username:"
+              labelStyles="text-2xl"
+              inputStyles="text-2xl h-14"
+              errorStyles="text-lg"
               error={errors.username?.message}
               {...register("username", {
                 required: "You should type you username",
@@ -110,12 +113,15 @@ export default function Login() {
               id="password"
               label="Password:"
               type="password"
+              inputStyles="text-2xl h-14"
+              labelStyles="text-2xl"
+              errorStyles="text-lg"
               error={errors.password?.message}
               {...register("password", {
                 required: "You should enter password",
               })}
             />
-            <Button isLoading={isLoginIn} type="submit">
+            <Button className="text-2xl py-2 h-14" isLoading={isLoginIn} type="submit">
               Log In
             </Button>
             <span>
