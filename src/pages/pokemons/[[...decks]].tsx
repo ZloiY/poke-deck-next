@@ -2,7 +2,7 @@ import { atom } from "jotai";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import superjson from "superjson";
 
 import { a, useTransition } from "@react-spring/web";
@@ -45,7 +45,6 @@ const refetchModalAtom = atom(false);
 const Decks: NextPageWithLayout<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = (props) => {
-  const [showRefetch, toggleRefetch] = useState(false);
   const { data, isLoading, isRefetching, refetch } =
     api.deck.getUserDecks.useQuery({ limit: null });
   const removeDeck = api.deck.removeUserDeck.useMutation();
@@ -56,6 +55,7 @@ const Decks: NextPageWithLayout<
   const [_, showModal] = useModalState();
 
   const transitions = useTransition(decks ?? [], {
+    keys: (item) => item.id,
     trail: 700 / (decks?.length ?? 1),
     from: {
       opacity: 0,
@@ -75,14 +75,11 @@ const Decks: NextPageWithLayout<
   });
 
   const removeUserDeck = async (deckId: string) => {
-    toggleRefetch(true);
     await removeDeck.mutateAsync(deckId);
     refetch();
-    toggleRefetch(false);
   };
 
   const addCardsToDeck = (deckId: string) => {
-    toggleRefetch(true);
     router.push({
       pathname: "/home",
       query: {
@@ -92,10 +89,8 @@ const Decks: NextPageWithLayout<
   };
 
   const addDeck = useCallback(async (params: CreateDeckParams) => {
-    toggleRefetch(true);
     await createDeck.mutateAsync(params);
     refetch();
-    toggleRefetch(false);
   }, []);
 
   return (
@@ -105,7 +100,7 @@ const Decks: NextPageWithLayout<
         <meta property="og:title" content="User decks" key="title" />
       </Head>
       <Refetch
-        isRefetching={!isLoading && (showRefetch || isRefetching)}
+        isRefetching={!isLoading && (removeDeck.isLoading || createDeck.isLoading || isRefetching)}
         anotherAtom={refetchModalAtom}
       />
       <CreateDeck create={addDeck} />

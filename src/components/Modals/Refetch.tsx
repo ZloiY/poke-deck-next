@@ -1,19 +1,21 @@
-import { useAtom } from "jotai";
+import { atom, useAtom } from "jotai";
 import { useEffect } from "react";
 
 import Loader from "@icons/loader.svg";
 
-import { ModalContainer, isModalShown } from "./ModalContainer";
+import { ModalContainer } from "./ModalContainer";
 
-export const Refetch = ({ isRefetching, anotherAtom }: { isRefetching: boolean, anotherAtom?: typeof isModalShown }) => {
-  const [_, toggleModal] = useAtom(anotherAtom ?? isModalShown);
+const refetchStateAtom = atom(false)
+
+export const Refetch = ({ isRefetching, anotherAtom }: { isRefetching: boolean, anotherAtom?: typeof refetchStateAtom }) => {
+  const [_, toggleModal] = useAtom(anotherAtom ?? refetchStateAtom);
 
   useEffect(() => {
     toggleModal(isRefetching);
   }, [isRefetching]);
 
   return (
-    <ModalContainer anotherAtom={anotherAtom}>
+    <ModalContainer anotherAtom={anotherAtom ?? refetchStateAtom}>
       {() => (
         <div className="w-full h-full flex items-center justify-center">
           <div className="animate-spin">

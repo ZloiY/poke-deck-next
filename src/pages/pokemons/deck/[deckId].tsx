@@ -126,7 +126,7 @@ const SelectedDeck: NextPageWithLayout<
         <title>User decks</title>
         <meta property="og:title" content="User decks" key="title" />
       </Head>
-      <Refetch isRefetching={!isLoading && isRefetching} />
+      <Refetch isRefetching={!isLoading && (isRefetching || removePokemon.isLoading)} />
       <Loader className="h-96 w-96 mt-20" isLoading={isLoading}>
         <div className={twMerge("w-full mt-5", cardGridStyles)}>
           {transitions((styles, pokemon) => (

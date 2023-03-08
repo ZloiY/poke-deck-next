@@ -8,7 +8,7 @@ export const HighlightedLink = ({ href, children }: { href: string | Partial<Url
   const route = useRouter();
 
   return <Link
-  className={twMerge("font-modak hover:text-yellow-400", (route.pathname == href || route.pathname.includes((href as Url).pathname ?? '')) && "text-yellow-500")}
+  className={twMerge("font-modak hover:text-yellow-400", (route.pathname == href || route.asPath.includes((href as Url).pathname ?? '')) && "text-yellow-500")}
   href={href}>
     {children}
   </Link>
