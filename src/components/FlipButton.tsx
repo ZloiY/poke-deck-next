@@ -11,7 +11,7 @@ export const FlipButton = () => {
   return (
     <Flip
       className={twMerge(
-        "h-10 w-10 text-white transition-transform duration-200 hover:text-yellow-400 cursor-pointer right-0 z-50",
+        "text-white transition-transform duration-200 hover:text-yellow-400 cursor-pointer right-0 z-50 lg:w-10 lg:h-10 w-16 h-16",
         state == 'Details' && "text-yellow-500 rotate-180",
       )}
       onClick={() => setState((state) => state == 'Preview' ? 'Details' : 'Preview')}
