@@ -3,7 +3,7 @@ import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { type ReactEventHandler, useCallback, useState } from "react";
+import { type ReactEventHandler, useCallback } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { v4 } from "uuid";
 
@@ -98,7 +98,9 @@ export default function Registration() {
         <Welcome />
         <div className="flex items-center justify-center">
           <form
-            className="flex flex-col gap-5 rounded-lg text-xl bg-purple-900 p-5 shadow-[0px_0px_20px_5px] shadow-zinc-600/50 w-full max-w-xl"
+            className="flex flex-col gap-5 sm:rounded-lg text-xl bg-purple-900 p-5 
+            sm:shadow-[0px_0px_20px_5px] sm:shadow-zinc-600/50 w-full max-w-2xl
+            rounded-none shadow-none"
             onSubmit={onSubmit}
           >
             <Input
