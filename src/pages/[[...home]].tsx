@@ -181,7 +181,7 @@ const Home: NextPageWithLayout = (
         <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />
       )}
       <FixedButton onClick={showModal} />
-      <div className="flex relative justify-center items-center px-72 -mt-5">
+      <div className="flex relative justify-center items-center -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>
       <PaginationButtons

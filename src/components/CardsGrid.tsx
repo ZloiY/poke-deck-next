@@ -8,7 +8,8 @@ import { useLoadingState, usePaginationState } from "../hooks";
 import { DetailsCard, FlipCard, PreviewCard } from "./Cards";
 import { twMerge } from "tailwind-merge";
 
-export const cardGridStyles = "grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2";
+export const cardGridStyles = `grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4lg
+lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 items-center justify-items-center`
 
 type Card = typeof FlipCard | typeof DetailsCard | typeof PreviewCard;
 
