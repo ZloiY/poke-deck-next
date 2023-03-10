@@ -77,7 +77,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
           className="lg:w-8 lg:h-8 min-[580px]:w-14 min-[580px]:h-14 w-10 h-10 stroke-white hover:stroke-yellow-400 active:stroke-yellow-500 cursor-pointer"
         />
       </div>}
-      {status == 'unauthenticated' && <HighlightedLink href={{ pathname: "/login" }}>Sigin In</HighlightedLink>}
+      {status == 'unauthenticated' && <HighlightedLink href={{ pathname: "/login" }}>Sign In</HighlightedLink>}
     </div>
   );
 };
