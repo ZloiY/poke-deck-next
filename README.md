@@ -1,28 +1,48 @@
-# Create T3 App
+# PokeDeck App 
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Another app where you can do different things with pokemons, bootstrapped with [T3 Stack](https://create.t3.gg/).
 
-## What's next? How do I make an app with this?
-
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## The tech stack
 
 - [Next.js](https://nextjs.org)
 - [NextAuth.js](https://next-auth.js.org)
 - [Prisma](https://prisma.io)
 - [Tailwind CSS](https://tailwindcss.com)
 - [tRPC](https://trpc.io)
+- [Zod](https://zod.dev/)
+- [ReactSpring](https://react-spring.dev/)
+- [AutoAnimate](https://auto-animate.formkit.com/)
+- [@use-gesture](https://use-gesture.netlify.app/)
+- [jotai](https://jotai.org/)
 
-## Learn More
+## How to launch
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+First thing first you need to install npm deps via:
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+    npm install
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Then you need to setup your `.env` by following `.env.example`.
+Setup the `schema.prisma` file for the preferable db. In my example we will use `sqlite`.
+To start using sqlite we need to do this change:
 
-## How do I deploy this?
+Remove
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+    shadowDatabaseUrl = env("SHADOW_DB_URL")
+    relationMode      = "prisma"
+
+Replace this
+
+    provider          = "mysql"
+with this
+
+    provider          = "sqlite"
+
+Also don't forget to create `db.sqlite` in `prisma/` directory.
+
+Remove the `prisma/migrations/` and launch
+
+    npx prisma migrate dev
+
+And now you can run
+
+    npm run dev
