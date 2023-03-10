@@ -6,7 +6,11 @@ export default withAuth(
   {
     callbacks: {
       authorized({ req, token }) {
-        return !!token;
+        if (req.url.includes("/home")) {
+          return true;
+        } else {
+          return !!token;
+        }
       },
     }
   }

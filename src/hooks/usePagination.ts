@@ -43,7 +43,7 @@ export const usePagination = (page: number, limit: number, totalLength: number, 
         query: {
           search,
           page: page + 1,
-        }
+        },
       })
     }
   }, [hasNextPage, page, route])
