@@ -77,18 +77,21 @@ export const DetailsCard = memo(({
         {isSelected ? (
           !pokemonInCurrentDeck && (
             <Remove
+              role="button"
               className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-red-500 hover:text-red-400 z-10"
               onClick={() => removePokemon(pokemon)}
             />
           )
         ) : !removeFromDeck && (
           <Add
+            role="button"
             className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10"
             onClick={() => pushPokemon(pokemon)}
           />
         )}
         {removeFromDeck && (
           <Delete
+            role="button"
             className="absolute top-2 left-2 h-10 w-10 cursor-pointer text-red-700 hover:text-red-400 z-10"
             onClick={() => removeFromDeck(pokemon)}
           />

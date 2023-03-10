@@ -1,5 +1,6 @@
+import { atom, useAtom } from "jotai";
 import { useRouter } from "next/router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 
 type PaginationReturn = {
   currentPageParams: { limit: number, offset: number },
@@ -10,23 +11,33 @@ type PaginationReturn = {
   currentPage: number,
   goToNextPage: () => void,
   goToPrevPage: () => void,
+  paginationState: PaginationState,
 }
+
+
+const paginationStateAtom = atom<PaginationState>("Initial");
 
 const calcOffset = (page: number, limit: number) => page * limit;
 
 export const usePagination = (page: number, limit: number, totalLength: number, rootRoute: string): PaginationReturn => {
   const route = useRouter();
   const initialPage = page;
+  const [paginationState, setPaginationState] = useAtom(paginationStateAtom);
   const totalPages = Math.ceil(totalLength / limit);
   if (initialPage > totalPages || initialPage < 0) {
     throw new Error("Wrong page");
   }
   const hasNextPage =  initialPage < totalPages;
   const hasPrevPage = initialPage > 0;
-  
+ 
+  useEffect(() => {
+    setPaginationState("Initial")
+  }, [])
+
   const goToNextPage = useCallback(() => {
     const { search } =  route.query;
     if (hasNextPage) {
+      setPaginationState("Next");
       route.push({
         pathname: `${rootRoute}/[page]`,
         query: {
@@ -40,6 +51,7 @@ export const usePagination = (page: number, limit: number, totalLength: number, 
   const goToPrevPage = useCallback(() => {
     const { search } =  route.query;
     if (hasPrevPage) {
+      setPaginationState("Prev");
       route.push({
         pathname: `${rootRoute}/[page]`,
         query: {
@@ -58,6 +70,7 @@ export const usePagination = (page: number, limit: number, totalLength: number, 
     hasPrevPage,
     currentPage: page,
     goToNextPage,
-    goToPrevPage
-  }), [hasNextPage, hasPrevPage, goToNextPage, goToPrevPage, limit, page])
+    goToPrevPage,
+    paginationState,
+  }), [hasNextPage, paginationState, hasPrevPage, goToNextPage, goToPrevPage, limit, page])
 }

@@ -73,6 +73,7 @@ export default function Login() {
               state: "Failure",
               message: "You've entered wrong credentials",
             });
+            toggleLogin(false);
           }
         } catch (err) {
           throw err;
@@ -93,9 +94,11 @@ export default function Login() {
       <NotificationsPopups />
       <div>
         <Welcome />
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center h-full">
           <form
-            className="flex flex-col gap-5 rounded-lg text-xl bg-purple-900 p-5 shadow-[0px_0px_20px_5px] shadow-zinc-600/50 w-full max-w-xl"
+            className="flex flex-col gap-5 sm:rounded-lg text-xl bg-purple-900 p-5 
+            sm:shadow-[0px_0px_20px_5px] sm:shadow-zinc-600/50 w-full max-w-2xl
+            shadow-none rounded-none"
             onSubmit={onSubmit}
           >
             <Input

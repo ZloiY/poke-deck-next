@@ -1,4 +1,4 @@
-import { atom, useAtom } from "jotai";
+import { atom } from "jotai";
 import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
@@ -13,6 +13,7 @@ import { z } from "zod";
 
 import Check from "@icons/check.svg";
 import { createProxySSGHelpers } from "@trpc/react-query/ssg";
+import { useDrag } from "@use-gesture/react";
 
 import { FlipCard } from "../components/Cards";
 import { CardsGrid } from "../components/CardsGrid";
@@ -130,6 +131,16 @@ const Home: NextPageWithLayout = (
     ...pagination.currentPageParams,
   });
 
+  const drag = useDrag(({ down, axis, delta: [x] }) => {
+   if (down && axis == 'x') {
+     if (x > 0) {
+       pagination.goToPrevPage()
+     } else if (x < 0) {
+       pagination.goToNextPage()
+     }
+   }
+    })
+
   const createDeckWithCards = useCallback(
     (params: { name: string; private: boolean }) => {
       const cards = selectedPokemons.map((pokemon) => ({
@@ -169,7 +180,7 @@ const Home: NextPageWithLayout = (
   );
 
   return (
-    <div className="flex flex-col h-full">
+    <div {...drag()} className="flex flex-col h-full">
       <Head>
         <title>PokeDeck</title>
         <meta property="og:title" content="PokeDeck" key="title" />
@@ -181,7 +192,7 @@ const Home: NextPageWithLayout = (
         <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />
       )}
       <FixedButton onClick={showModal} />
-      <div className="flex relative justify-center items-center px-72 -mt-5">
+      <div className="flex relative justify-center items-center -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>
       <PaginationButtons
@@ -191,7 +202,7 @@ const Home: NextPageWithLayout = (
         onPrevPage={pagination.goToPrevPage}
       />
       <Loader isLoading={isLoading}>
-        <CardsGrid pokemons={pokemons}>
+        <CardsGrid paginationState={pagination.paginationState} pokemons={pokemons}>
           {(pokemon) => (
             <FlipCard
               key={pokemon.id}

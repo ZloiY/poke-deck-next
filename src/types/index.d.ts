@@ -10,3 +10,5 @@ type Message = {
   state: 'Success' | 'Failure',
   message: string,
 }
+
+type PaginationState = "Initial" | "Next" | "Prev";

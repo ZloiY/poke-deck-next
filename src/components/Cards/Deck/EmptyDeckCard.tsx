@@ -1,4 +1,4 @@
-import { ReactEventHandler, memo } from "react";
+import { memo } from "react";
 import { twMerge } from "tailwind-merge";
 
 import AddCard from "@icons/add-card.svg";
@@ -30,7 +30,7 @@ export const EmptyDeckCard = memo(
         className="relative flex justify-center items-center h-full w-full"
       >
         <div>
-          <AddCard className="w-full h-full mx-auto" />
+          <AddCard role="button" className="w-full h-full mx-auto" />
           {addCard && (
             <p className="font-coiny mt-4 text-2xl text-center">
               Add cards to the deck

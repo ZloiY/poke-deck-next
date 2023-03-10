@@ -26,7 +26,7 @@ export const SearchBar = ({
 
   return (
     <input
-      className="w-full h-full
+      className="w-4/5 h-full
     p-2
     text-3xl 
     border-4 rounded

@@ -61,6 +61,7 @@ export const ModalContainer = ({
         {title && <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
           <span className="text-2xl font-coiny">{title}</span>
           <Close
+            role="button"
             className="cursor-pointer w-8 h-8 hover:text-yellow-400"
             onClick={onRequestClose}
           />

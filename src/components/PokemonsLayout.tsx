@@ -28,6 +28,7 @@ const TabLink = ({
 
   return (
     <div
+      role="button"
       className={twMerge(
         "px-10 py-3 rounded-2xl flex justify-center border-2 transition-colors border-purple-900 hover:text-yellow-500 hover:bg-purple-900 cursor-pointer",
         isSelected && "border-2 border-yellow-500 bg-purple-900",

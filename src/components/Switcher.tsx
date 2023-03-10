@@ -84,6 +84,7 @@ export const Switcher = memo(({
     <div className={twMerge("relative flex gap-3 justify-between items-center rounded-full bg-purple-700 p-1")}>
       {dots.map((dot) => (
         <div
+          role="button"
           key={dot.id}
           className={twMerge("rounded-full h-5 w-5 bg-white hover:bg-orange-500 active:bg-yellow-500 active:scale-90 duration-500 cursor-pointer",
           dot.id == 'central'    && "bg-yellow-500",
