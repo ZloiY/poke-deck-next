@@ -11,6 +11,7 @@ export const BlankCard = ({
   children,
 }: Partial<{ isLoading: boolean; className?: string; onClick?: () => void; children: ReactNode; notInteractive: boolean }>) => (
   <div
+    role="button"
     className={twMerge(`
     flex items-center justify-center
     relative

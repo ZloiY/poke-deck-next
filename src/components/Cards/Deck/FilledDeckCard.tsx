@@ -114,6 +114,7 @@ export const FilledDeckCard = ({
     >
       {!deck.isFull && addCard && (
         <Add
+          role="button"
           className="absolute top-2 left-1 w-14 h-14 text-white hover:text-yellow-400 active:text-yellow-500 active:scale-90 cursor-pointer"
           onClick={() => addCard?.(deck.id)}
         />
@@ -127,11 +128,12 @@ export const FilledDeckCard = ({
         />
       )}
       <div
-        onClick={goToTheDeck}
+        role="button"
         className={twMerge(
           "flex flex-col gap-5 justify-between items-center h-full",
           notInteractive && "gap-2 justify-end",
         )}
+        onClick={goToTheDeck}
       >
         <Loader isLoading={isLoading}>
           <>
@@ -175,6 +177,7 @@ export const FilledDeckCard = ({
       </div>
       {removeDeck && (
         <Delete
+          role="button"
           className="absolute right-1 bottom-2 w-14 h-14 text-red-700 hover:text-red-500 active:text-red-600 active:scale-90"
           onClick={() => removeDeck?.(deck.id)}
         />

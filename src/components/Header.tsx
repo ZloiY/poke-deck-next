@@ -35,7 +35,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         isRefetching={signingOut}
        />
       <PageLoader />
-      <div className="text-white lg:hidden cursor-pointer
+      <div role="button" className="text-white lg:hidden cursor-pointer
         hover:text-yellow-400 active:text-yellow-500 active:scale-90"
         onClick={() => toggleNavMenu(true)}>
           <BurgerMenu className="w-20 h-20" />
@@ -69,6 +69,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         {showFlip && <FlipButton/>}
         <span className="lg:text-4xl text-6xl">Hello, {data?.user?.name}!</span>
         <LogoutIcon
+          role="button"
           onClick={onSignOut}
           alt="logout"
           className="lg:w-8 lg:h-8 w-14 h-14 stroke-white hover:stroke-yellow-400 active:stroke-yellow-500 cursor-pointer"
