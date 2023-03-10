@@ -73,6 +73,7 @@ export default function Login() {
               state: "Failure",
               message: "You've entered wrong credentials",
             });
+            toggleLogin(false);
           }
         } catch (err) {
           throw err;
