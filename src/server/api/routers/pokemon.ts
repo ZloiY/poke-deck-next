@@ -39,7 +39,11 @@ export const pokemonRouter = createTRPCRouter({
   getPokemonsByDeckId: publicProcedure 
     .input(z.string())
     .query(async ({ input, ctx }) => {
-      return await ctx.prisma.pokemon.findMany({ where: { deckId: input } })
+      if (input.length > 0) {
+        return await ctx.prisma.pokemon.findMany({ where: { deckId: input } })
+      } else {
+        return [];
+      }
     }),
   removePokemonFromDeck: protectedProcedure.input(
     z.object({
