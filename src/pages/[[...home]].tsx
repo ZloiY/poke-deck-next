@@ -90,28 +90,21 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props.page = result.data.page;
     props.deckId = result.data.deckId;
   }
-  if (session) {
-    const ssg = createProxySSGHelpers({
-      router: appRouter,
-      ctx: createInnerTRPCContext({ session }),
-      transformer: superjson,
-    });
-    if (result.success) {
-      await ssg.pokemon.getPokemonList.prefetch({
-        searchQuery: props.search,
-        limit: 15,
-        offset: 15 * props.page,
-      });
-      return {
-        props: {
-          trpcState: ssg.dehydrate(),
-          ...props,
-        },
-      };
-    }
-  }
+  const ssg = createProxySSGHelpers({
+    router: appRouter,
+    ctx: createInnerTRPCContext({ session }),
+    transformer: superjson,
+  });
+  await ssg.pokemon.getPokemonList.prefetch({
+    searchQuery: props.search,
+    limit: 15,
+    offset: 15 * props.page,
+  });
   return {
-    props,
+    props: {
+      trpcState: ssg.dehydrate(),
+      ...props,
+    },
   };
 }
 
