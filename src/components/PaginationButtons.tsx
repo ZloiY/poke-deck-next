@@ -4,7 +4,6 @@ import Arrow from "@icons/arrow-left.svg";
 import { useLoadingState } from "../hooks";
 import { useEffect } from "react";
 
-type PaginationState = "Initial" | "Next" | "Prev";
 
 const paginationStateAtom = atom<PaginationState>("Initial");
 const setPaginationState = atom(null, (_get, set, newState: PaginationState) =>
