@@ -65,57 +65,52 @@ const homePageSelectedPokemons = atom<Pokemon[]>([]);
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const session = await getServerAuthSession(context);
   setNewSelectedPokemonStorage(homePageSelectedPokemons);
-  if (session) {
-    const ssg = createProxySSGHelpers({
-      router: appRouter,
-      ctx: createInnerTRPCContext({ session }),
-      transformer: superjson,
-    });
-    const result = z
-      .object({
-        search: z
-          .string()
-          .optional()
-          .transform((value) => value ?? null),
-        deckId: z
-          .string()
-          .optional()
-          .transform((value) => value ?? null),
-        page: z
-          .string()
-          .optional()
-          .transform((value) => (value ? +value : 0)),
-      })
-      .safeParse(context.query);
-    if (result.success) {
-      await ssg.pokemon.getPokemonList.prefetch({
-        searchQuery: result.data.search,
-        limit: 15,
-        offset: 15 * result.data.page,
-      });
-      return {
-        props: {
-          trpcState: ssg.dehydrate(),
-          search: result.data.search,
-          page: result.data.page,
-          deckId: result.data.deckId,
-        },
-      };
-    }
-    return {
-      props: {}
-    }
+  const schema = z.object({
+    search: z
+      .string()
+      .optional()
+      .transform((value) => value ?? null),
+    deckId: z
+      .string()
+      .optional()
+      .transform((value) => value ?? null),
+    page: z
+      .string()
+      .optional()
+      .transform((value) => (value ? +value : 0)),
+  });
+  const result = schema.safeParse(context.query);
+  const props: z.infer<typeof schema> = {
+    search: null,
+    page: 0,
+    deckId: null,
+  };
+  if (result.success) {
+    props.search = result.data.search;
+    props.page = result.data.page;
+    props.deckId = result.data.deckId;
   }
+  const ssg = createProxySSGHelpers({
+    router: appRouter,
+    ctx: createInnerTRPCContext({ session }),
+    transformer: superjson,
+  });
+  await ssg.pokemon.getPokemonList.prefetch({
+    searchQuery: props.search,
+    limit: 15,
+    offset: 15 * props.page,
+  });
   return {
-    redirect: {
-      destination: "/login",
+    props: {
+      trpcState: ssg.dehydrate(),
+      ...props,
     },
   };
 }
 
-const Home: NextPageWithLayout = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) => {
+const Home: NextPageWithLayout<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = (props) => {
   const [_, showModal] = useModalState();
   const route = useRouter();
   const session = useSession();
@@ -132,14 +127,14 @@ const Home: NextPageWithLayout = (
   });
 
   const drag = useDrag(({ down, axis, delta: [x] }) => {
-   if (down && axis == 'x') {
-     if (x > 0) {
-       pagination.goToPrevPage()
-     } else if (x < 0) {
-       pagination.goToNextPage()
-     }
-   }
-    })
+    if (down && axis == "x") {
+      if (x > 0) {
+        pagination.goToPrevPage();
+      } else if (x < 0) {
+        pagination.goToNextPage();
+      }
+    }
+  });
 
   const createDeckWithCards = useCallback(
     (params: { name: string; private: boolean }) => {
@@ -202,7 +197,10 @@ const Home: NextPageWithLayout = (
         onPrevPage={pagination.goToPrevPage}
       />
       <Loader isLoading={isLoading}>
-        <CardsGrid paginationState={pagination.paginationState} pokemons={pokemons}>
+        <CardsGrid
+          paginationState={pagination.paginationState}
+          pokemons={pokemons}
+        >
           {(pokemon) => (
             <FlipCard
               key={pokemon.id}

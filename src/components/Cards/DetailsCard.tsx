@@ -11,6 +11,7 @@ import { Pokemon as PrismaPokemon } from "@prisma/client";
 import { useSelectPokemons } from "../../hooks";
 import { Switcher } from "../Switcher";
 import { BlankCard } from "./BlankCard";
+import { useSession } from "next-auth/react";
 
 export const DetailsCard = memo(({
   pokemon,
@@ -24,6 +25,7 @@ export const DetailsCard = memo(({
   removeFromDeck?: (pokemon: Pokemon) => void
 }) => {
   const { pushPokemon, removePokemon } = useSelectPokemons();
+  const { status } = useSession();
   const pokemonInCurrentDeck = useMemo(
     () => !!pokemonsInDeck?.find(({ name }) => name == pokemon.name),
     [pokemonsInDeck, pokemon],
@@ -82,7 +84,7 @@ export const DetailsCard = memo(({
               onClick={() => removePokemon(pokemon)}
             />
           )
-        ) : !removeFromDeck && (
+        ) : !removeFromDeck && status == 'authenticated' && (
           <Add
             role="button"
             className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10"

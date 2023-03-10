@@ -2,10 +2,10 @@ import { NamedAPIResource, Pokemon } from "pokenode-ts";
 import { v4 } from "uuid";
 import { z } from "zod";
 
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const pokemonRouter = createTRPCRouter({
-  getPokemonList: protectedProcedure.input(
+  getPokemonList: publicProcedure.input(
     z.object({
       offset: z.number(),
       limit: z.number(),
@@ -29,14 +29,14 @@ export const pokemonRouter = createTRPCRouter({
     const pokemon = await ctx.pokemonApi.getPokemonByName(input.name);
     return pokemon;
   }),
-  getPokemonDetailedList: protectedProcedure.input(
+  getPokemonDetailedList: publicProcedure.input(
     z.string()
   ).query(async ({ input, ctx }) => {
     const pokemons = await ctx.prisma.pokemon.findMany({ where: { deckId: input } });
     const pokemonsInDeck: Pokemon[] = await Promise.all(pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)));
     return pokemonsInDeck;
   }),
-  getPokemonsByDeckId: protectedProcedure
+  getPokemonsByDeckId: publicProcedure 
     .input(z.string())
     .query(async ({ input, ctx }) => {
       return await ctx.prisma.pokemon.findMany({ where: { deckId: input } })

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 
 const useDebounce = <T extends unknown>(
   value: T,
@@ -12,7 +12,7 @@ const useDebounce = <T extends unknown>(
   }, [value]);
 };
 
-export const SearchBar = ({
+export const SearchBar = memo(({
   searchValue = "",
   placeholder = "Enter pokemon name...",
   onSearch,
@@ -38,4 +38,4 @@ export const SearchBar = ({
       onChange={(e) => setSearch(e.target.value)}
     />
   );
-};
+});

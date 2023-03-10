@@ -12,7 +12,7 @@ import { PageLoader } from "./PageLoader";
 import { twMerge } from "tailwind-merge";
 
 export const Header = ({ showFlip }: { showFlip: boolean }) => {
-  const { data } = useSession();
+  const { data, status } = useSession();
   const [signingOut, toggleSignOut] = useState(false);
   const router = useRouter();
   const {
@@ -35,37 +35,39 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
         isRefetching={signingOut}
        />
       <PageLoader />
+      {status == "authenticated" && <>
       <div role="button" className="text-white lg:hidden cursor-pointer
         hover:text-yellow-400 active:text-yellow-500 active:scale-90"
         onClick={() => toggleNavMenu(true)}>
           <BurgerMenu className="min-[580px]:w-20 min-[580px]:h-20 h-14 w-14" />
       </div>
       <div className={twMerge("gap-10 items-center lg:flex hidden",
-          showNavMenu && "absolute top-0 left-0 h-[100vh] w-[100vw] flex flex-col justify-center bg-purple-900 z-[100]")}
-          onClick={() => toggleNavMenu(false)}>
-        <HighlightedLink
-          href={{
-            pathname: "/home",
-          }}
-        >
-          Home
-        </HighlightedLink>
-        <HighlightedLink
-          href={{
-            pathname: "/decks",
-          }}
-        >
-          Decks
-        </HighlightedLink>
-        <HighlightedLink
-          href={{
-            pathname: "/pokemons",
-          }}
-        >
-          Pókemons
-        </HighlightedLink>
+        showNavMenu && "absolute top-0 left-0 h-[100vh] w-[100vw] flex flex-col justify-center bg-purple-900 z-[100]")}
+        onClick={() => toggleNavMenu(false)}>
+          <HighlightedLink
+            href={{
+              pathname: "/home",
+            }}
+          >
+            Home
+          </HighlightedLink>
+          <HighlightedLink
+            href={{
+              pathname: "/decks",
+            }}
+          >
+            Decks
+          </HighlightedLink>
+          <HighlightedLink
+            href={{
+              pathname: "/pokemons",
+            }}
+          >
+            Pókemons
+          </HighlightedLink>
       </div>
-      <div className="flex gap-4 items-center">
+      </>}
+      {status == "authenticated" && <div className="flex gap-4 items-center">
         {showFlip && <FlipButton/>}
         <span className="min-[580px]:text-6xl lg:text-4xl text-2xl">Hello, {data?.user?.name}!</span>
         <LogoutIcon
@@ -74,7 +76,8 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
           alt="logout"
           className="lg:w-8 lg:h-8 min-[580px]:w-14 min-[580px]:h-14 w-10 h-10 stroke-white hover:stroke-yellow-400 active:stroke-yellow-500 cursor-pointer"
         />
-      </div>
+      </div>}
+      {status == 'unauthenticated' && <HighlightedLink href={{ pathname: "/login" }}>Sigin In</HighlightedLink>}
     </div>
   );
 };
