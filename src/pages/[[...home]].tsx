@@ -7,7 +7,7 @@ import {
   InferGetServerSidePropsType,
 } from "next/types";
 import { Pokemon } from "pokenode-ts";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import superjson from "superjson";
 import { z } from "zod";
 
@@ -100,6 +100,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     limit: 15,
     offset: 15 * props.page,
   });
+  await ssg.deck.getEmptyUserDecks.prefetch({ numberOfEmptySlots: 20 });
   return {
     props: {
       trpcState: ssg.dehydrate(),
@@ -113,18 +114,24 @@ const Home: NextPageWithLayout<
 > = (props) => {
   const [_, showModal] = useModalState();
   const route = useRouter();
-  const session = useSession();
   const flipState = useFlipState();
   const pagination = usePagination(props?.page ?? 0, 15, 1275, "/home");
   const { pushMessage } = useMessageBus();
   const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
+  const { data: decks } = api.deck.getEmptyUserDecks.useQuery({ numberOfEmptySlots: 20 });
   const { mutateAsync: createDeck, isLoading: deckCreating } =
     api.deck.createDeck.useMutation();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
     searchQuery: props?.search,
     ...pagination.currentPageParams,
   });
+
+  useEffect(() => {
+      return () => { resetPokemons([]) }
+  }, []);
+  
+  const decksLength = useMemo(() => decks?.length ?? 0, [decks]);
 
   const drag = useDrag(({ down, axis, delta: [x] }) => {
     if (down && axis == "x") {
@@ -168,6 +175,7 @@ const Home: NextPageWithLayout<
         query: {
           page: route.query.page,
           search,
+          deckId: props.deckId
         },
       });
     },
@@ -180,10 +188,10 @@ const Home: NextPageWithLayout<
         <title>PokeDeck</title>
         <meta property="og:title" content="PokeDeck" key="title" />
       </Head>
-      {(session.data?.user?.numberOfDecks ?? 0) > 0 && (
+      {(props.deckId || decksLength > 0) && (
         <AddCards deckId={props.deckId} onSubmit={refetch} />
       )}
-      {(session.data?.user?.numberOfDecks ?? 0) == 0 && (
+      {decksLength == 0 && !props.deckId && (
         <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />
       )}
       <FixedButton onClick={showModal} />

@@ -29,7 +29,7 @@ export const AddCards = ({
   });
   const { data: userDecks, isLoading: decksLoading } =
     api.deck.getEmptyUserDecks.useQuery({
-      numberOfEmptySlots: pokemons.length,
+      numberOfEmptySlots: 20, 
     });
   const [showModal, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(deck);
@@ -76,7 +76,7 @@ export const AddCards = ({
         .then(onClose)
         .then(() => {
           router.push({
-            pathname: "/pokemons/deck/[deckId]",
+            pathname: "/pokemons/[deckId]",
             query: { deckId: selectedDeck.id },
           });
         })
@@ -96,22 +96,24 @@ export const AddCards = ({
                   notInteractive={true}
                   deck={selectedDeck}
                 />}
-                <div className="flex justify-start items-center">
-                  <div className="flex gap-5 flex-col">
-                    <p className="font-coiny text-2xl">Select deck:</p>
-                    <Select
-                      className="w-64"
-                      defaultValue={selectedDeck}
-                      isLoading={decksLoading}
-                      onChange={(value) => setSelectedDeck(value as Deck)}
-                      getOptionLabel={(deck) =>
-                        `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
-                      }
-                      isOptionSelected={(deck) => deck.id == selectedDeck?.id}
-                      options={userDecks}
-                    />
+                {(userDecks?.length ?? 0) > 0 &&
+                  <div className="flex justify-start items-center">
+                    <div className="flex gap-5 flex-col">
+                      <p className="font-coiny text-2xl">Select deck:</p>
+                      <Select
+                        className="w-64"
+                        defaultValue={selectedDeck}
+                        isLoading={decksLoading}
+                        onChange={(value) => setSelectedDeck(value as Deck)}
+                        getOptionLabel={(deck) =>
+                          `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
+                        }
+                        isOptionSelected={(deck) => deck.id == selectedDeck?.id}
+                        options={userDecks}
+                      />
+                    </div>
                   </div>
-                </div>
+                }
               </>
             </Loader>
           </div>
@@ -132,7 +134,7 @@ export const AddCards = ({
           </div>
           <Button
             isLoading={addCardsToDecks.isLoading}
-            className="bg-green-500 w-full"
+            className="bg-green-500 w-full h-12"
             disabled={!selectedDeck}
             onClick={updateDeck(onClose)}
           >

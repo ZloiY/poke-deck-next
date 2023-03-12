@@ -25,6 +25,7 @@ export const UserDecks = () => {
     fetchNextPage,
     isFetchingNextPage,
     isLoading,
+    isRefetching,
     refetch,
   } = api.deck.getUserDecks.useInfiniteQuery(
     { limit: 4 },
@@ -63,7 +64,12 @@ export const UserDecks = () => {
   return (
     <>
       <CreateDeck create={create} isLoading={createDeck.isLoading} />
-      <div className="border-2 rounded-xl border-purple-900 bg-purple-800/60 p-2 pb-0">
+      <div className="border-2 rounded-xl border-purple-900 bg-purple-800/60 p-2 pb-0 relative">
+        {(removeDeck.isLoading || createDeck.isLoading) && 
+          <div className="backdrop-blur-md flex justify-center items-center absolute top-0 left-0 w-full h-full z-50">
+            <Loader className="w-60 h-60 text-orange-500" isLoading/>
+          </div>
+        }
         <div className="flex justify-between items-center">
           <span className="font-coiny text-3xl">Your Decks:</span>
           <span className="font-coiny text-3xl font-normal">
@@ -73,15 +79,12 @@ export const UserDecks = () => {
         <div
           id="scroll-div"
           ref={parent}
-          className={twMerge(
-            "w-full h-[520px] flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent",
-            isLoading && "justify-center"
-          )}
+          className="w-full h-[520px] flex gap-5 overflow-x-scroll pb-4 scrollbar-thin scrollbar-thumb-purple-900 scrollbar-track-transparent"
         >
           <Loader className="w-60 h-60" isLoading={isLoading}>
             <InfiniteScroll
               hasMore={!!hasNextPage}
-              className="flex gap-5 w-full"
+              className="flex gap-5 w-full items-center scrollbar-none"
               dataLength={userDecks?.length ?? 0}
               next={fetchNextPage}
               loader={<Loader isLoading />}
