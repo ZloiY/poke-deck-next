@@ -29,7 +29,7 @@ export const AddCards = ({
   });
   const { data: userDecks, isLoading: decksLoading } =
     api.deck.getEmptyUserDecks.useQuery({
-      numberOfEmptySlots: pokemons.length,
+      numberOfEmptySlots: 20, 
     });
   const [showModal, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(deck);
@@ -76,7 +76,7 @@ export const AddCards = ({
         .then(onClose)
         .then(() => {
           router.push({
-            pathname: "/pokemons/deck/[deckId]",
+            pathname: "/pokemons/[deckId]",
             query: { deckId: selectedDeck.id },
           });
         })
@@ -132,7 +132,7 @@ export const AddCards = ({
           </div>
           <Button
             isLoading={addCardsToDecks.isLoading}
-            className="bg-green-500 w-full"
+            className="bg-green-500 w-full h-12"
             disabled={!selectedDeck}
             onClick={updateDeck(onClose)}
           >
