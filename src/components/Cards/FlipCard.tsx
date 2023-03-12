@@ -1,5 +1,3 @@
-import { Pokemon } from "pokenode-ts";
-import { Pokemon as PrismaPokemon } from "@prisma/client";
 import { memo, useEffect, useMemo, useState } from "react";
 
 import { a, useSpring } from "@react-spring/web";
@@ -10,7 +8,7 @@ import { PreviewCard } from "./PreviewCard";
 type FlipCardProps =
   Parameters<typeof DetailsCard>[0]
   & Parameters<typeof PreviewCard>[0]
-  & { selectedPokemons?: Pokemon[], keepFlipped?: FlipState }
+  & { keepFlipped?: FlipState }
 
 export const FlipCard = memo(
   ({
@@ -69,7 +67,12 @@ export const FlipCard = memo(
             rotateY: "180deg",
           }}
         >
-          <DetailsCard pokemon={pokemon} isSelected={isSelected} pokemonsInDeck={pokemonsInDeck} removeFromDeck={removeFromDeck} />
+          <DetailsCard
+            pokemon={pokemon}
+            selectedPokemons={selectedPokemons}
+            isSelected={isSelected}
+            pokemonsInDeck={pokemonsInDeck}
+            removeFromDeck={removeFromDeck} />
         </a.div>
       </div>
     );
