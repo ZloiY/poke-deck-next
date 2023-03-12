@@ -36,13 +36,15 @@ import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
+import { env } from "../env/client.mjs";
 
-const FixedButton = ({ onClick }: { onClick: () => void }) => {
+const FixedButton = ({ onClick, existingPokemonsLength }: { onClick: () => void, existingPokemonsLength: number }) => {
   const [entered, toggleEnter] = useState(false);
   const { pokemons } = useSelectPokemons();
 
   return pokemons.length > 0 ? (
     <div
+      role="button"
       onMouseEnter={() => toggleEnter(true)}
       onMouseLeave={() => toggleEnter(false)}
       className={`fixed right-2 bottom-2
@@ -54,7 +56,7 @@ const FixedButton = ({ onClick }: { onClick: () => void }) => {
       {entered ? (
         <Check className="opacity-0 text-white hover:opacity-100 h-full w-full m-2" />
       ) : (
-        <p>{pokemons.length}</p>
+        <p className="text-lg">{pokemons.length + existingPokemonsLength}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}</p>
       )}
     </div>
   ) : null;
@@ -194,7 +196,7 @@ const Home: NextPageWithLayout<
       {decksLength == 0 && !props.deckId && (
         <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />
       )}
-      <FixedButton onClick={showModal} />
+      <FixedButton onClick={showModal} existingPokemonsLength={pokemonsInDeck?.length ?? 0}/>
       <div className="flex relative justify-center items-center -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>

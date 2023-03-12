@@ -12,24 +12,31 @@ import { useSelectPokemons } from "../../hooks";
 import { Switcher } from "../Switcher";
 import { BlankCard } from "./BlankCard";
 import { useSession } from "next-auth/react";
+import { env } from "../../env/client.mjs";
 
 export const DetailsCard = memo(({
   pokemon,
   isSelected = false,
   pokemonsInDeck = [],
+  selectedPokemons = [],
   removeFromDeck,
 }: {
   pokemon: Pokemon;
   pokemonsInDeck?: PrismaPokemon[];
+  selectedPokemons?: Pokemon[];
   isSelected?: boolean;
   removeFromDeck?: (pokemon: Pokemon) => void
 }) => {
   const { pushPokemon, removePokemon } = useSelectPokemons();
   const { status } = useSession();
-  const pokemonInCurrentDeck = useMemo(
-    () => !!pokemonsInDeck?.find(({ name }) => name == pokemon.name),
-    [pokemonsInDeck, pokemon],
+  const pokemonAdded = useMemo(
+    () => !!selectedPokemons.find(({ name }) => name == pokemon.name),
+    [selectedPokemons, pokemon],
   );
+
+  const isDeckFull = useMemo(() =>
+    selectedPokemons.length + pokemonsInDeck.length == +env.NEXT_PUBLIC_DECK_MAX_SIZE
+    , [selectedPokemons, pokemonsInDeck]);
 
   const sprites = useMemo(
     () =>
@@ -77,14 +84,14 @@ export const DetailsCard = memo(({
       )}
     >
         {isSelected ? (
-          !pokemonInCurrentDeck && (
+          pokemonAdded && (
             <Remove
               role="button"
               className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-red-500 hover:text-red-400 z-10"
               onClick={() => removePokemon(pokemon)}
             />
           )
-        ) : !removeFromDeck && status == 'authenticated' && (
+        ) : !removeFromDeck && status == 'authenticated' && !isDeckFull && (
           <Add
             role="button"
             className="absolute top-2 left-2 h-7 w-7 cursor-pointer text-white hover:text-yellow-500 z-10"
