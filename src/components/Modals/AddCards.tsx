@@ -96,22 +96,24 @@ export const AddCards = ({
                   notInteractive={true}
                   deck={selectedDeck}
                 />}
-                <div className="flex justify-start items-center">
-                  <div className="flex gap-5 flex-col">
-                    <p className="font-coiny text-2xl">Select deck:</p>
-                    <Select
-                      className="w-64"
-                      defaultValue={selectedDeck}
-                      isLoading={decksLoading}
-                      onChange={(value) => setSelectedDeck(value as Deck)}
-                      getOptionLabel={(deck) =>
-                        `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
-                      }
-                      isOptionSelected={(deck) => deck.id == selectedDeck?.id}
-                      options={userDecks}
-                    />
+                {(userDecks?.length ?? 0) > 0 &&
+                  <div className="flex justify-start items-center">
+                    <div className="flex gap-5 flex-col">
+                      <p className="font-coiny text-2xl">Select deck:</p>
+                      <Select
+                        className="w-64"
+                        defaultValue={selectedDeck}
+                        isLoading={decksLoading}
+                        onChange={(value) => setSelectedDeck(value as Deck)}
+                        getOptionLabel={(deck) =>
+                          `${deck.name} ${deck.deckLength}/${env.NEXT_PUBLIC_DECK_MAX_SIZE}`
+                        }
+                        isOptionSelected={(deck) => deck.id == selectedDeck?.id}
+                        options={userDecks}
+                      />
+                    </div>
                   </div>
-                </div>
+                }
               </>
             </Loader>
           </div>
