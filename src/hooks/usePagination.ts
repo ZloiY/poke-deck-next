@@ -41,6 +41,7 @@ export const usePagination = (page: number, limit: number, totalLength: number, 
       route.push({
         pathname: `${rootRoute}/[page]`,
         query: {
+          deckId: route.query.deckId,
           search,
           page: page + 1,
         },
@@ -55,6 +56,7 @@ export const usePagination = (page: number, limit: number, totalLength: number, 
       route.push({
         pathname: `${rootRoute}/[page]`,
         query: {
+          deckId: route.query.deckId,
           search,
           page: page - 1,
         }
