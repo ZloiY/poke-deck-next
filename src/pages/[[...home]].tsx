@@ -172,14 +172,16 @@ const Home: NextPageWithLayout<
 
   const updateQuery = useCallback(
     (search: string) => {
-      route.replace({
-        pathname: "/home/[page]",
-        query: {
-          page: route.query.page,
-          search,
-          deckId: props.deckId
-        },
-      });
+      if (search?.length > 0) {
+        route.replace({
+          pathname: "/home/[page]",
+          query: {
+            page: route.query.page,
+            search,
+            deckId: props.deckId
+          },
+        });
+      }
     },
     [route],
   );
