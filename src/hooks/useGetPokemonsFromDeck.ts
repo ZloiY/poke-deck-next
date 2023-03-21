@@ -16,5 +16,5 @@ export const useGetPokemonsFromDeck = () => {
     }
   }, []);
 
-  return api.pokemon.getPokemonsByDeckId.useQuery(deckId);
+  return api.pokemon.getPokemonsByDeckId.useQuery(deckId, { enabled: deckId.length > 0 });
 }

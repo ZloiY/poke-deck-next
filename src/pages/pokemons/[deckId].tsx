@@ -1,9 +1,8 @@
-import { useAtom } from "jotai";
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
+import type { GetServerSidePropsContext, InferGetServerSidePropsType } from "next";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { Pokemon } from "pokenode-ts";
-import { useEffect, useMemo, useState } from "react";
+import type { Pokemon } from "pokenode-ts";
+import { useEffect, useState } from "react";
 import superjson from "superjson";
 import { twMerge } from "tailwind-merge";
 import { z } from "zod";
@@ -22,7 +21,7 @@ import { appRouter } from "../../server/api/root";
 import { createInnerTRPCContext } from "../../server/api/trpc";
 import { getServerAuthSession } from "../../server/auth";
 import { api } from "../../utils/api";
-import { NextPageWithLayout } from "../_app";
+import type { NextPageWithLayout } from "../_app";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const parseQuery = z
@@ -38,7 +37,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       transformer: superjson,
     });
 
-    ssg.pokemon.getPokemonDetailedList.prefetch(parseQuery.data.deckId);
+    await ssg.pokemon.getPokemonDetailedList.prefetch(parseQuery.data.deckId);
     return {
       props: {
         deckId: parseQuery.data.deckId,
@@ -114,7 +113,7 @@ const SelectedDeck: NextPageWithLayout<
       pokemonName: pokemon.name,
     });
     pushMessage(message);
-    refetch();
+    await refetch();
   };
 
   return (
@@ -133,6 +132,7 @@ const SelectedDeck: NextPageWithLayout<
               <FlipCard
                 keepFlipped={flipState}
                 pokemon={pokemon}
+                //eslint-disable-next-line @typescript-eslint/no-misused-promises
                 removeFromDeck={removePokemonFromDeck}
               />
             </a.div>

@@ -1,4 +1,4 @@
-import { NamedAPIResource, Pokemon } from "pokenode-ts";
+import type { NamedAPIResource, Pokemon } from "pokenode-ts";
 import { v4 } from "uuid";
 import { z } from "zod";
 

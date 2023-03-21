@@ -18,6 +18,8 @@
   "extends": ["next/core-web-vitals", "plugin:@typescript-eslint/recommended"],
   "rules": {
     "@typescript-eslint/consistent-type-imports": "warn",
-    "react/display-name": ["none"]
+    "@typescript-eslint/no-floating-promises": "warn"
+    "@typescript-eslint/no-misused-promises": "off",
+    "react/display-name": "off" 
   }
 }

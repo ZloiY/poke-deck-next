@@ -1,5 +1,4 @@
 import { atom } from "jotai";
-import { useSession } from "next-auth/react";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import {
@@ -37,6 +36,7 @@ import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
 import { env } from "../env/client.mjs";
+import { useSession } from "next-auth/react";
 
 const FixedButton = ({ onClick, existingPokemonsLength }: { onClick: () => void, existingPokemonsLength: number }) => {
   const [entered, toggleEnter] = useState(false);
@@ -102,7 +102,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     limit: 15,
     offset: 15 * props.page,
   });
-  await ssg.deck.getEmptyUserDecks.prefetch({ numberOfEmptySlots: 20 });
   return {
     props: {
       trpcState: ssg.dehydrate(),
@@ -117,11 +116,13 @@ const Home: NextPageWithLayout<
   const [_, showModal] = useModalState();
   const route = useRouter();
   const flipState = useFlipState();
+  const session = useSession();
   const pagination = usePagination(props?.page ?? 0, 15, 1275, "/home");
   const { pushMessage } = useMessageBus();
   const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
-  const { data: decks } = api.deck.getEmptyUserDecks.useQuery({ numberOfEmptySlots: 20 });
+  const { data: decks } = api.deck.getEmptyUserDecks
+    .useQuery({ numberOfEmptySlots: 20 }, { enabled: session.status == 'authenticated' });
   const { mutateAsync: createDeck, isLoading: deckCreating } =
     api.deck.createDeck.useMutation();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
