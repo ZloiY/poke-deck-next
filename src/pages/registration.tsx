@@ -21,7 +21,7 @@ type RegistrationForm = {
   repeatPassword: string;
 };
 
-export async function getStaticProps(context: GetServerSidePropsContext) {
+export function getStaticProps(context: GetServerSidePropsContext) {
   setNewMessages([]);
   return {
     props: {},
@@ -63,7 +63,7 @@ export default function Registration() {
             state: "Success",
             message: "You successfully signed in",
           });
-          router.push("/home");
+          router.push("/home").catch(() => console.log("Couldn't go to the home"));
         } else {
           pushMessage({
             id: v4(),
