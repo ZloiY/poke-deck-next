@@ -54,7 +54,12 @@ const OtherUserDeck: NextPageWithLayout<
   const { data: deck } = api.deck.getDeckById.useQuery(props.deckId);
 
   return (
-    <div className={twMerge("mt-5 flex flex-col gap-5", isLoading && "items-center justify-center")}>
+    <div
+      className={twMerge(
+        "mt-5 flex flex-col gap-5",
+        isLoading && "items-center justify-center",
+      )}
+    >
       <Head>
         <title>PokeDeck deck</title>
         <meta property="og:title" content="PokeDeck deck" key="title" />

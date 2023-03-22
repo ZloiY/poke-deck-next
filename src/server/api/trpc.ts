@@ -16,17 +16,27 @@
  * processing a request
  *
  */
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
 import { PokemonClient } from "pokenode-ts";
+import superjson from "superjson";
+import { ZodError } from "zod";
 
+/**
+ * 2. INITIALIZATION
+ *
+ * This is where the trpc api is initialized, connecting the context and
+ * transformer
+ */
+import { TRPCError, initTRPC } from "@trpc/server";
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
+
+import { Token } from "../../utils/token";
 import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
 
 const pokemonApi = new PokemonClient();
 
 type CreateContextOptions = {
-  session: Session | null;
+  session: Token | null;
 };
 
 /**
@@ -42,7 +52,7 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
-    pokemonApi
+    pokemonApi,
   };
 };
 
@@ -53,7 +63,6 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
-
   // Get the session from the server using the unstable_getServerSession wrapper function
   const session = await getServerAuthSession({ req, res });
 
@@ -61,16 +70,6 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
     session,
   });
 };
-
-/**
- * 2. INITIALIZATION
- *
- * This is where the trpc api is initialized, connecting the context and
- * transformer
- */
-import { initTRPC, TRPCError } from "@trpc/server";
-import superjson from "superjson";
-import { ZodError } from "zod";
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
@@ -80,10 +79,10 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
       data: {
         ...shape.data,
         zodError:
-          error.code == 'BAD_REQUEST' && error.cause instanceof ZodError
-          ? error.cause.flatten()
-          : null
-      }
+          error.code == "BAD_REQUEST" && error.cause instanceof ZodError
+            ? error.cause.flatten()
+            : null,
+      },
     };
   },
 });
@@ -115,13 +114,13 @@ export const publicProcedure = t.procedure;
  * procedure
  */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session || !ctx.session.user) {
+  if (!ctx.session || !ctx.session.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
   return next({
     ctx: {
       // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      session: { ...ctx.session, user: ctx.session },
     },
   });
 });

@@ -1,14 +1,11 @@
 import { NextPage } from "next";
-import { type Session } from "next-auth";
-import { SessionProvider, useSession } from "next-auth/react";
 import { type AppProps, type AppType } from "next/app";
-import { useEffect, useState } from "react";
 
 import { Coiny, Fredoka, Modak } from "@next/font/google";
 
+import { PageLoader } from "../components/PageLoader";
 import "../styles/globals.css";
 import { api } from "../utils/api";
-import { PageLoader } from "../components/PageLoader";
 
 const coiny = Coiny({
   weight: "400",
@@ -35,19 +32,20 @@ type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
 };
 
-const MyApp: AppType<{ session: Session | null }> = ({
+const MyApp: AppType = ({
   Component,
   pageProps: { session, ...pageProps },
 }: AppPropsWithLayout) => {
   const getLayout = Component.getLayout ?? ((page) => page);
 
   return (
-    <main id="main"
+    <main
+      id="main"
       className={`${coiny.variable} ${modak.variable} ${fredoka.variable} font-fredoka text-white`}
-    >   <PageLoader/>
-        <SessionProvider session={session}>
-          {getLayout(<Component {...pageProps} />)}
-        </SessionProvider>
+    >
+      {" "}
+      <PageLoader />
+      {getLayout(<Component {...pageProps} />)}
     </main>
   );
 };

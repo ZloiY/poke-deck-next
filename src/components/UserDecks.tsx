@@ -65,11 +65,11 @@ export const UserDecks = () => {
     <>
       <CreateDeck create={create} isLoading={createDeck.isLoading} />
       <div className="border-2 rounded-xl border-purple-900 bg-purple-800/60 p-2 pb-0 relative">
-        {(removeDeck.isLoading || createDeck.isLoading) && 
+        {(removeDeck.isLoading || createDeck.isLoading) && (
           <div className="backdrop-blur-md flex justify-center items-center absolute top-0 left-0 w-full h-full z-50">
-            <Loader className="w-60 h-60 text-orange-500" isLoading/>
+            <Loader className="w-60 h-60 text-orange-500" isLoading />
           </div>
-        }
+        )}
         <div className="flex justify-between items-center">
           <span className="font-coiny text-3xl">Your Decks:</span>
           <span className="font-coiny text-3xl font-normal">

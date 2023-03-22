@@ -1,5 +1,3 @@
-import next from "next";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useMemo, useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -10,6 +8,7 @@ import Private from "@icons/private.svg";
 import { Deck } from "@prisma/client";
 import { a, config, useSprings } from "@react-spring/web";
 
+import { useAuth } from "../../../hooks/useAuth";
 import { api } from "../../../utils/api";
 import { Loader } from "../../Loader";
 import { PreviewCard } from "../PreviewCard";
@@ -42,7 +41,7 @@ export const FilledDeckCard = ({
     api.pokemon.getPokemonsByDeckId.useQuery(deck.id);
   const [isHovered, toggleHovered] = useState(false);
   const router = useRouter();
-  const session = useSession();
+  const { session } = useAuth();
 
   const firstSixOrLess = useMemo(
     () => (pokemons ? getFirstSix(pokemons) : []),
@@ -98,7 +97,7 @@ export const FilledDeckCard = ({
   };
 
   const goToTheDeck = () => {
-    if (session.data?.user?.id == deck.userId) {
+    if (session?.id == deck.userId) {
       router.push({
         pathname: "/pokemons/[deckId]",
         query: { deckId: deck.id },

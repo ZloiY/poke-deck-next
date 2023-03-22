@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import { useEffect } from "react";
-import { setNewMessages } from "../hooks/useMessageBus";
 
+import { setNewMessages } from "../hooks/useMessageBus";
 import { Header } from "./Header";
 import { NotificationsPopups } from "./NotificationPopup";
 

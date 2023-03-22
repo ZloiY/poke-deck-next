@@ -63,7 +63,9 @@ export default function Registration() {
             state: "Success",
             message: "You successfully signed in",
           });
-          router.push("/home").catch(() => console.log("Couldn't go to the home"));
+          router
+            .push("/home")
+            .catch(() => console.log("Couldn't go to the home"));
         } else {
           pushMessage({
             id: v4(),
@@ -158,7 +160,11 @@ export default function Registration() {
                   "You should repeat your 'password'",
               })}
             />
-            <Button className="text-2xl h-12" isLoading={createUser.isLoading || createUser.isSuccess} type="submit">
+            <Button
+              className="text-2xl h-12"
+              isLoading={createUser.isLoading || createUser.isSuccess}
+              type="submit"
+            >
               Register
             </Button>
             <span>

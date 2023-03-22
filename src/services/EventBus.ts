@@ -9,7 +9,7 @@ export class EventBus<T extends { id: string | number | symbol }> {
     this.map = new Map();
     initialValues?.forEach((value) => {
       this.map.set(value.id, value);
-    })
+    });
   }
 
   private onChange = () => {
@@ -17,14 +17,14 @@ export class EventBus<T extends { id: string | number | symbol }> {
     this.mapChangeSubs.forEach((callback) => {
       callback(values);
     });
-  }
+  };
 
   subscribe = (callback: Subscriber<T>): Unsubscribe => {
-    this.mapChangeSubs.set(callback, callback)
+    this.mapChangeSubs.set(callback, callback);
     return () => {
       this.mapChangeSubs.delete(callback);
-    }
-  }
+    };
+  };
 
   push = (value: T) => {
     if (!this.map.has(value.id)) {
@@ -33,12 +33,12 @@ export class EventBus<T extends { id: string | number | symbol }> {
     } else {
       throw new Error("This values already exist");
     }
-  }
+  };
 
   reset = () => {
     this.map.clear();
     this.onChange();
-  }
+  };
 
   setNewValues = (values: T[]) => {
     this.map.clear();
@@ -46,7 +46,7 @@ export class EventBus<T extends { id: string | number | symbol }> {
       this.map.set(value.id, value);
     });
     this.onChange();
-  }
+  };
 
   deleteById = (value: T) => {
     if (this.map.has(value.id)) {
@@ -55,5 +55,5 @@ export class EventBus<T extends { id: string | number | symbol }> {
     } else {
       throw new Error("Item with such id doesn't exist");
     }
-  }
+  };
 }

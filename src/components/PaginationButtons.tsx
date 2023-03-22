@@ -11,14 +11,13 @@ export const PaginationButtons = ({
   showNext: boolean;
   showPrev: boolean;
 }>) => {
-
   const nextClicked = () => {
     onNextPage?.();
-  } 
+  };
 
   const prevClicked = () => {
     onPrevPage?.();
-  }
+  };
 
   return (
     <>

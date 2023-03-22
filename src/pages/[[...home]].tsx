@@ -21,6 +21,7 @@ import { Loader } from "../components/Loader";
 import { AddCards, CreateDeck } from "../components/Modals";
 import { PaginationButtons } from "../components/PaginationButtons";
 import { SearchBar } from "../components/SearchBar";
+import { env } from "../env/client.mjs";
 import {
   setNewSelectedPokemonStorage,
   useFlipState,
@@ -30,15 +31,20 @@ import {
   usePagination,
   useSelectPokemons,
 } from "../hooks";
+import { useAuth } from "../hooks/useAuth";
 import { appRouter } from "../server/api/root";
 import { createInnerTRPCContext } from "../server/api/trpc";
 import { getServerAuthSession } from "../server/auth";
 import { api } from "../utils/api";
 import { NextPageWithLayout } from "./_app";
-import { env } from "../env/client.mjs";
-import { useSession } from "next-auth/react";
 
-const FixedButton = ({ onClick, existingPokemonsLength }: { onClick: () => void, existingPokemonsLength: number }) => {
+const FixedButton = ({
+  onClick,
+  existingPokemonsLength,
+}: {
+  onClick: () => void;
+  existingPokemonsLength: number;
+}) => {
   const [entered, toggleEnter] = useState(false);
   const { pokemons } = useSelectPokemons();
 
@@ -56,7 +62,10 @@ const FixedButton = ({ onClick, existingPokemonsLength }: { onClick: () => void,
       {entered ? (
         <Check className="opacity-0 text-white hover:opacity-100 h-full w-full m-2" />
       ) : (
-        <p className="text-lg">{pokemons.length + existingPokemonsLength}/{env.NEXT_PUBLIC_DECK_MAX_SIZE}</p>
+        <p className="text-lg">
+          {pokemons.length + existingPokemonsLength}/
+          {env.NEXT_PUBLIC_DECK_MAX_SIZE}
+        </p>
       )}
     </div>
   ) : null;
@@ -116,13 +125,15 @@ const Home: NextPageWithLayout<
   const [_, showModal] = useModalState();
   const route = useRouter();
   const flipState = useFlipState();
-  const session = useSession();
+  const { session } = useAuth();
   const pagination = usePagination(props?.page ?? 0, 15, 1275, "/home");
   const { pushMessage } = useMessageBus();
   const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
-  const { data: decks } = api.deck.getEmptyUserDecks
-    .useQuery({ numberOfEmptySlots: 20 }, { enabled: session.status == 'authenticated' });
+  const { data: decks } = api.deck.getEmptyUserDecks.useQuery(
+    { numberOfEmptySlots: 20 },
+    { enabled: !!session },
+  );
   const { mutateAsync: createDeck, isLoading: deckCreating } =
     api.deck.createDeck.useMutation();
   const { data: pokemons, isLoading } = api.pokemon.getPokemonList.useQuery({
@@ -131,9 +142,11 @@ const Home: NextPageWithLayout<
   });
 
   useEffect(() => {
-      return () => { resetPokemons([]) }
+    return () => {
+      resetPokemons([]);
+    };
   }, []);
-  
+
   const decksLength = useMemo(() => decks?.length ?? 0, [decks]);
 
   const drag = useDrag(({ down, axis, delta: [x] }) => {
@@ -179,7 +192,7 @@ const Home: NextPageWithLayout<
           query: {
             page: route.query.page,
             search,
-            deckId: props.deckId
+            deckId: props.deckId,
           },
         });
       }
@@ -199,7 +212,10 @@ const Home: NextPageWithLayout<
       {decksLength == 0 && !props.deckId && (
         <CreateDeck create={createDeckWithCards} isLoading={deckCreating} />
       )}
-      <FixedButton onClick={showModal} existingPokemonsLength={pokemonsInDeck?.length ?? 0}/>
+      <FixedButton
+        onClick={showModal}
+        existingPokemonsLength={pokemonsInDeck?.length ?? 0}
+      />
       <div className="flex relative justify-center items-center -mt-5">
         <SearchBar searchValue={props?.search ?? ""} onSearch={updateQuery} />
       </div>

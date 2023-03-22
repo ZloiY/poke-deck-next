@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type LoadingState = "Started" | "Finished" | "Hold";
 
@@ -38,4 +38,4 @@ export const useLoadingState = () => {
   }, [loadingState]);
 
   return loadingState;
-}
+};

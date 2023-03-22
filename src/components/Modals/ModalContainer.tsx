@@ -1,10 +1,10 @@
 import { atom, useAtom } from "jotai";
 import { ReactNode } from "react";
 import ReactModal from "react-modal";
+import { twMerge } from "tailwind-merge";
 
 import Close from "@icons/close.svg";
 import { a, config, useSpring } from "@react-spring/web";
-import { twMerge } from "tailwind-merge";
 
 export const isModalShown = atom(false);
 
@@ -19,7 +19,7 @@ export const ModalContainer = ({
   children: (onClose: () => void) => ReactNode;
   onClose?: () => void;
   title?: string;
-  anotherAtom?: typeof isModalShown,
+  anotherAtom?: typeof isModalShown;
 }) => {
   const [modalState, toggleModal] = useAtom(anotherAtom ?? isModalShown);
 
@@ -56,16 +56,21 @@ export const ModalContainer = ({
     >
       <a.div
         style={style}
-        className={twMerge(title && "bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0 shadow-[0_0_20px_5px] shadow-purple-500")}
+        className={twMerge(
+          title &&
+            "bg-purple-900 text-white rounded-xl flex flex-col relative opacity-0 shadow-[0_0_20px_5px] shadow-purple-500",
+        )}
       >
-        {title && <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
-          <span className="text-2xl font-coiny">{title}</span>
-          <Close
-            role="button"
-            className="cursor-pointer w-8 h-8 hover:text-yellow-400"
-            onClick={onRequestClose}
-          />
-        </div>}
+        {title && (
+          <div className="flex justify-between mb-2 p-3 border-b-2 border-yellow-500">
+            <span className="text-2xl font-coiny">{title}</span>
+            <Close
+              role="button"
+              className="cursor-pointer w-8 h-8 hover:text-yellow-400"
+              onClick={onRequestClose}
+            />
+          </div>
+        )}
         {children(onRequestClose)}
       </a.div>
     </ReactModal>
