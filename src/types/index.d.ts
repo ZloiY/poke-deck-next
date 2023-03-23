@@ -1,4 +1,10 @@
-type FlipState = 'Preview' | 'Details';
+type FlipState = "Preview" | "Details";
+
+type User = {
+  id: string;
+  name: string;
+  numberOfDecks: number;
+};
 
 type CreateDeckParams = {
   name: string;
@@ -6,9 +12,9 @@ type CreateDeckParams = {
 };
 
 type Message = {
-  id: string,
-  state: 'Success' | 'Failure',
-  message: string,
-}
+  id: string;
+  state: "Success" | "Failure";
+  message: string;
+};
 
 type PaginationState = "Initial" | "Next" | "Prev";

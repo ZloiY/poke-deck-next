@@ -5,9 +5,15 @@ import Loader from "@icons/loader.svg";
 
 import { ModalContainer } from "./ModalContainer";
 
-const refetchStateAtom = atom(false)
+const refetchStateAtom = atom(false);
 
-export const Refetch = ({ isRefetching, anotherAtom }: { isRefetching: boolean, anotherAtom?: typeof refetchStateAtom }) => {
+export const Refetch = ({
+  isRefetching,
+  anotherAtom,
+}: {
+  isRefetching: boolean;
+  anotherAtom?: typeof refetchStateAtom;
+}) => {
   const [_, toggleModal] = useAtom(anotherAtom ?? refetchStateAtom);
 
   useEffect(() => {

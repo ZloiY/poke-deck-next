@@ -1,19 +1,11 @@
-import { withAuth } from "next-auth/middleware";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export default withAuth(
-  function middleware(req) { },
-  {
-    callbacks: {
-      authorized({ req, token }) {
-        if (req.url.includes("/home")) {
-          return true;
-        } else {
-          return !!token;
-        }
-      },
-    }
+export function middleware(req: NextRequest) {
+  const authorization = req.headers.get("Authorization");
+  if (authorization) {
+    return NextResponse.next();
   }
-)
+  return NextResponse.redirect(new URL("/home", req.url));
+}
 
-export const config = { matcher: ['/home/:path*', '/decks/:path*', '/pokemons/:path*'] };
+export const config = { matcher: ["/decks/:path*", "/pokemons/:path*"] };

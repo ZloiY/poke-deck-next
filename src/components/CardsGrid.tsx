@@ -1,23 +1,25 @@
 import { Pokemon } from "pokenode-ts";
 import { ReactElement, useEffect } from "react";
+import { twMerge } from "tailwind-merge";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { a, config, useSpring } from "@react-spring/web";
 
 import { useLoadingState } from "../hooks";
-import { twMerge } from "tailwind-merge";
 
 export const cardGridStyles = `grid gap-y-10 gap-x-5 min-[1880px]:grid-cols-6 2xl:grid-cols-5 xl:grid-cols-4lg
-lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 items-center justify-items-center`
+lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 items-center justify-items-center`;
 
 export const CardsGrid = <P extends Pokemon>({
   pokemons = [],
   paginationState,
-  children
+  children,
 }: {
   pokemons?: P[];
   paginationState: PaginationState;
-  children: <T extends { pokemon: Pokemon }>(pokemon: Pokemon) => ReactElement<T>
+  children: <T extends { pokemon: Pokemon }>(
+    pokemon: Pokemon,
+  ) => ReactElement<T>;
 }) => {
   const loadingState = useLoadingState();
   const [parent, toggleAnimation] = useAutoAnimate({
@@ -83,7 +85,7 @@ export const CardsGrid = <P extends Pokemon>({
         ref={parent}
         className={twMerge("w-full mt-5", cardGridStyles)}
       >
-        {pokemons?.map((pokemon) => (children(pokemon)))}
+        {pokemons?.map((pokemon) => children(pokemon))}
       </a.div>
     </div>
   );

@@ -1,40 +1,21 @@
-import { GetServerSidePropsContext } from "next";
-import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ReactEventHandler, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { v4 } from "uuid";
 
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
 import { NotificationsPopups } from "../components/NotificationPopup";
 import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
-import { setNewMessages } from "../hooks/useMessageBus";
-import { getServerAuthSession } from "../server/auth";
+import { setAccessToken, setSession } from "../services/authStorage";
+import { api } from "../utils/api";
 
 type LoginForm = {
   username: string;
   password: string;
 };
-
-export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const session = await getServerAuthSession(context);
-  setNewMessages([]);
-  if (session?.expires && new Date() < new Date(session.expires)) {
-    return {
-      redirect: {
-        destination: "/home",
-      },
-    };
-  }
-
-  return {
-    props: {},
-  };
-}
 
 export default function Login() {
   const {
@@ -47,7 +28,7 @@ export default function Login() {
       password: "",
     },
   });
-  const router = useRouter();
+  const login = api.auth.signIn.useMutation();
   const { pushMessage } = useMessageBus();
   const [isLoginIn, toggleLogin] = useState(false);
 
@@ -55,33 +36,18 @@ export default function Login() {
     (event) =>
       handleSubmit(async (form) => {
         toggleLogin(true);
-        try {
-          const message = await signIn("credentials", {
-            ...form,
-            redirect: false,
-          });
-          if (message?.ok) {
-            pushMessage({
-              id: v4(),
-              state: "Success",
-              message: "You successfully logged in",
-            });
-            router.push("/home");
-          } else {
-            pushMessage({
-              id: v4(),
-              state: "Failure",
-              message: "You've entered wrong credentials",
-            });
-            toggleLogin(false);
-          }
-        } catch (err) {
-          throw err;
+        const response = await login.mutateAsync(form);
+        const { payload, ...message } = response;
+        pushMessage(message);
+        if (payload) {
+          const { access_token, ...session } = payload;
+          setAccessToken(access_token);
+          setSession(session);
+          location.assign("/home");
         }
-      })(event)
-        .catch((error) => {
-          console.log(error);
-        }),
+      })(event).catch((error) => {
+        console.log(error);
+      }),
     [],
   );
 
@@ -124,7 +90,11 @@ export default function Login() {
                 required: "You should enter password",
               })}
             />
-            <Button className="text-2xl py-2 h-12" isLoading={isLoginIn} type="submit">
+            <Button
+              className="text-2xl py-2 h-12"
+              isLoading={isLoginIn}
+              type="submit"
+            >
               Log In
             </Button>
             <span>

@@ -101,7 +101,9 @@ export const OtherUsersDecks = () => {
               ))}
             </div>
           ) : (
-            <div className="mt-[25%] w-full text-center font-coiny text-2xl">Sorry there are no other users decks</div>
+            <div className="mt-[25%] w-full text-center font-coiny text-2xl">
+              Sorry there are no other users decks
+            </div>
           )}
         </div>
       </Loader>

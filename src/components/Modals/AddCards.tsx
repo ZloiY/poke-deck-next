@@ -29,7 +29,7 @@ export const AddCards = ({
   });
   const { data: userDecks, isLoading: decksLoading } =
     api.deck.getEmptyUserDecks.useQuery({
-      numberOfEmptySlots: 20, 
+      numberOfEmptySlots: 20,
     });
   const [showModal, toggleModal] = useAtom(isModalShown);
   const [selectedDeck, setSelectedDeck] = useState(deck);
@@ -91,12 +91,14 @@ export const AddCards = ({
           <div className="flex gap-10 w-full px-1">
             <Loader className="text-white" isLoading={isLoading}>
               <>
-                {selectedDeck && <DeckCard
-                  className="w-32 h-52 border-yellow-500 border-2"
-                  notInteractive={true}
-                  deck={selectedDeck}
-                />}
-                {(userDecks?.length ?? 0) > 0 &&
+                {selectedDeck && (
+                  <DeckCard
+                    className="w-32 h-52 border-yellow-500 border-2"
+                    notInteractive={true}
+                    deck={selectedDeck}
+                  />
+                )}
+                {(userDecks?.length ?? 0) > 0 && (
                   <div className="flex justify-start items-center">
                     <div className="flex gap-5 flex-col">
                       <p className="font-coiny text-2xl">Select deck:</p>
@@ -113,7 +115,7 @@ export const AddCards = ({
                       />
                     </div>
                   </div>
-                }
+                )}
               </>
             </Loader>
           </div>

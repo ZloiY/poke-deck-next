@@ -20,7 +20,7 @@ export const serverSchema = z.object({
     process.env.VERCEL ? z.string() : z.string().url(),
   ),
   DECK_MAX_SIZE: z.string().regex(/[1-9]+[0-9]*/),
-  USER_MAX_DECKS: z.string().regex(/[1-9]+[0-9]*/)
+  USER_MAX_DECKS: z.string().regex(/[1-9]+[0-9]*/),
 });
 
 /**
@@ -34,7 +34,7 @@ export const serverEnv = {
   NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
   NEXTAUTH_URL: process.env.NEXTAUTH_URL,
   DECK_MAX_SIZE: process.env.DECK_MAX_SIZE,
-  USER_MAX_DECKS: process.env.USER_MAX_DECKS
+  USER_MAX_DECKS: process.env.USER_MAX_DECKS,
 };
 
 /**
@@ -44,7 +44,7 @@ export const serverEnv = {
  */
 export const clientSchema = z.object({
   NEXT_PUBLIC_DECK_MAX_SIZE: z.string().regex(/[1-9]+[0-9]*/),
-  NEXT_PUBLIC_USER_MAX_DECKS: z.string().regex(/[1-9]+[0-9]*/)
+  NEXT_PUBLIC_USER_MAX_DECKS: z.string().regex(/[1-9]+[0-9]*/),
 });
 
 /**
@@ -55,5 +55,5 @@ export const clientSchema = z.object({
  */
 export const clientEnv = {
   NEXT_PUBLIC_DECK_MAX_SIZE: process.env.NEXT_PUBLIC_DECK_MAX_SIZE,
-  NEXT_PUBLIC_USER_MAX_DECKS: process.env.NEXT_PUBLIC_USER_MAX_DECKS
+  NEXT_PUBLIC_USER_MAX_DECKS: process.env.NEXT_PUBLIC_USER_MAX_DECKS,
 };

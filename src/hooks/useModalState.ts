@@ -1,6 +1,7 @@
-import { useAtom } from "jotai"
+import { useAtom } from "jotai";
 import { useCallback, useEffect } from "react";
-import { isModalShown } from "../components/Modals/ModalContainer"
+
+import { isModalShown } from "../components/Modals/ModalContainer";
 
 export const useModalState = (showOnMount?: boolean) => {
   const [modalState, toggleModal] = useAtom(isModalShown);
@@ -16,4 +17,4 @@ export const useModalState = (showOnMount?: boolean) => {
   }, []);
 
   return [modalState, showModal] as const;
-}
+};

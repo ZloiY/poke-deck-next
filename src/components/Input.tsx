@@ -1,4 +1,9 @@
-import { type InputHTMLAttributes, forwardRef, useState, useEffect } from "react";
+import {
+  type InputHTMLAttributes,
+  forwardRef,
+  useEffect,
+  useState,
+} from "react";
 import { twMerge } from "tailwind-merge";
 
 import EyeClose from "@icons/eye-close.svg";
@@ -32,9 +37,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
     useEffect(() => {
       if (showPassword) {
-        setType('text')
+        setType("text");
       } else {
-        setType(type)
+        setType(type);
       }
     }, [showPassword, type]);
 
@@ -63,14 +68,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           />
           {type == "password" && (
             <div className="absolute h-full w-1/12 top-0 right-0 pr-2 text-black transition-opacity duration-200">
-                <EyeOpen
-                  className={twMerge("h-full w-full top-0 cursor-pointer ml-auto transition-opacity duration-200", showPassword && "opacity-100", !showPassword && "opacity-0")}
-                  onClick={() => toggle((state) => !state)}
-                />
-                <EyeClose
-                  className={twMerge("absolute py-2 pr-2 h-full w-full top-0 cursor-pointer ml-auto transition-opacity duration-200", !showPassword && "opacity-100", showPassword && "opacity-0")}
-                  onClick={() => toggle((state) => !state)}
-                />
+              <EyeOpen
+                className={twMerge(
+                  "h-full w-full top-0 cursor-pointer ml-auto transition-opacity duration-200",
+                  showPassword && "opacity-100",
+                  !showPassword && "opacity-0",
+                )}
+                onClick={() => toggle((state) => !state)}
+              />
+              <EyeClose
+                className={twMerge(
+                  "absolute py-2 pr-2 h-full w-full top-0 cursor-pointer ml-auto transition-opacity duration-200",
+                  !showPassword && "opacity-100",
+                  showPassword && "opacity-0",
+                )}
+                onClick={() => toggle((state) => !state)}
+              />
             </div>
           )}
         </div>

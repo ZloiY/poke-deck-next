@@ -100,7 +100,10 @@ const Decks: NextPageWithLayout<
         <meta property="og:title" content="User decks" key="title" />
       </Head>
       <Refetch
-        isRefetching={!isLoading && (removeDeck.isLoading || createDeck.isLoading || isRefetching)}
+        isRefetching={
+          !isLoading &&
+          (removeDeck.isLoading || createDeck.isLoading || isRefetching)
+        }
         anotherAtom={refetchModalAtom}
       />
       <CreateDeck create={addDeck} />
