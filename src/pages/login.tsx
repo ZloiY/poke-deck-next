@@ -9,7 +9,7 @@ import { Input } from "../components/Input";
 import { NotificationsPopups } from "../components/NotificationPopup";
 import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
-import { setAccessToken, setSession } from "../hooks/useAuth";
+import { setAccessToken, setSession } from "../services/authStorage";
 import { api } from "../utils/api";
 
 type LoginForm = {
@@ -28,7 +28,6 @@ export default function Login() {
       password: "",
     },
   });
-  const router = useRouter();
   const login = api.auth.signIn.useMutation();
   const { pushMessage } = useMessageBus();
   const [isLoginIn, toggleLogin] = useState(false);
@@ -44,7 +43,7 @@ export default function Login() {
           const { access_token, ...session } = payload;
           setAccessToken(access_token);
           setSession(session);
-          router.push("/home");
+          location.assign("/home");
         }
       })(event).catch((error) => {
         console.log(error);

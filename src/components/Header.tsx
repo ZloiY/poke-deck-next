@@ -5,7 +5,8 @@ import { twMerge } from "tailwind-merge";
 import LogoutIcon from "@icons/logout.svg";
 import BurgerMenu from "@icons/menu-burger.svg";
 
-import { resetAccessToken, resetSession, useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
+import { resetAccessToken, resetSession } from "../services/authStorage";
 import { FlipButton } from "./FlipButton";
 import { HighlightedLink } from "./HiglightedLink";
 import { PageLoader } from "./PageLoader";
@@ -24,7 +25,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const onSignOut = () => {
     resetSession();
     resetAccessToken();
-    router.push("/home");
+    location.assign("/home");
   };
 
   return (

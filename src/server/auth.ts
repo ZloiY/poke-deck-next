@@ -1,7 +1,7 @@
 import { type GetServerSidePropsContext } from "next";
 
 import { env } from "../env/server.mjs";
-import { setAccessToken, setSession } from "../hooks/useAuth";
+import { setAccessToken, setSession } from "../services/authStorage";
 import { createToken, getToken, isTokenExpired } from "../utils/token";
 
 /**

@@ -85,20 +85,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       .string()
       .optional()
       .transform((value) => value ?? null),
-    page: z
+    home: z
       .string()
-      .optional()
-      .transform((value) => (value ? +value : 0)),
+      .array()
+      .transform((pair) => (pair[1] ? +pair[1] : 0)),
   });
   const result = schema.safeParse(context.query);
   const props: z.infer<typeof schema> = {
     search: null,
-    page: 0,
+    home: 0,
     deckId: null,
   };
   if (result.success) {
     props.search = result.data.search;
-    props.page = result.data.page;
+    props.home = result.data.home;
     props.deckId = result.data.deckId;
   }
   const ssg = createProxySSGHelpers({
@@ -109,7 +109,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
   await ssg.pokemon.getPokemonList.prefetch({
     searchQuery: props.search,
     limit: 15,
-    offset: 15 * props.page,
+    offset: 15 * props.home,
   });
   return {
     props: {
@@ -126,7 +126,7 @@ const Home: NextPageWithLayout<
   const route = useRouter();
   const flipState = useFlipState();
   const { session } = useAuth();
-  const pagination = usePagination(props?.page ?? 0, 15, 1275, "/home");
+  const pagination = usePagination(props?.home ?? 0, 15, 1275, "/home");
   const { pushMessage } = useMessageBus();
   const { pokemons: selectedPokemons, resetPokemons } = useSelectPokemons();
   const { data: pokemonsInDeck, refetch } = useGetPokemonsFromDeck();
@@ -188,9 +188,8 @@ const Home: NextPageWithLayout<
     (search: string) => {
       if (search?.length > 0) {
         route.replace({
-          pathname: "/home/[page]",
+          pathname: `/home/${props.home}`,
           query: {
-            page: route.query.page,
             search,
             deckId: props.deckId,
           },

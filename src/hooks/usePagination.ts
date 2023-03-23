@@ -43,11 +43,10 @@ export const usePagination = (
     if (hasNextPage) {
       setPaginationState("Next");
       route.push({
-        pathname: `${rootRoute}/[page]`,
+        pathname: `${rootRoute}/${page + 1}`,
         query: {
           deckId: route.query.deckId,
           search,
-          page: page + 1,
         },
       });
     }
@@ -58,11 +57,10 @@ export const usePagination = (
     if (hasPrevPage) {
       setPaginationState("Prev");
       route.push({
-        pathname: `${rootRoute}/[page]`,
+        pathname: `${rootRoute}/${page - 1}`,
         query: {
           deckId: route.query.deckId,
           search,
-          page: page - 1,
         },
       });
     }
