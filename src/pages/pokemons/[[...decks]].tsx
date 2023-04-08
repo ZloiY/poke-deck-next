@@ -38,6 +38,9 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       },
     };
   }
+  return {
+    props: {}
+  }
 }
 
 const refetchModalAtom = atom(false);

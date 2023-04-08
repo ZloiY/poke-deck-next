@@ -1,11 +1,9 @@
 import { GetServerSidePropsContext } from "next";
-import { signIn } from "next-auth/react";
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ReactEventHandler, useCallback } from "react";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { v4 } from "uuid";
 
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
@@ -14,6 +12,7 @@ import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
 import { setNewMessages } from "../hooks/useMessageBus";
 import { api } from "../utils/api";
+import { clientLogin } from "../utils/login";
 
 type RegistrationForm = {
   username: string;
@@ -50,28 +49,18 @@ export default function Registration() {
       .mutateAsync(data)
       .then((message) => {
         pushMessage(message);
-        return signIn("credentials", {
+        return clientLogin({
           username: data.username,
           password: data.password,
-          redirect: false,
         });
-      })
-      .then((signInResponse) => {
-        if (signInResponse?.ok) {
-          pushMessage({
-            id: v4(),
-            state: "Success",
-            message: "You successfully signed in",
-          });
-          router
-            .push("/home")
-            .catch(() => console.log("Couldn't go to the home"));
-        } else {
-          pushMessage({
-            id: v4(),
-            state: "Failure",
-            message: "Couldn't sign you up",
-          });
+       })
+      .then((validatedMessage) => {
+        if (validatedMessage.success) {
+          const { payload, ...message } = validatedMessage.data;
+          pushMessage(message);
+          if (message.state == "Success") {
+            router.push("/home");
+          }
         }
       })
       .catch(pushMessage);
@@ -163,6 +152,7 @@ export default function Registration() {
             <Button
               className="text-2xl h-12"
               isLoading={createUser.isLoading || createUser.isSuccess}
+              disabled={createUser.isLoading || createUser.isSuccess}
               type="submit"
             >
               Register

@@ -25,6 +25,7 @@ export const Header = ({ showFlip }: { showFlip: boolean }) => {
   const onSignOut = () => {
     resetSession();
     resetAccessToken();
+    document.cookie = `poke-deck-next-cookie=; Expires=${new Date(0)}`
     location.assign("/home");
   };
 

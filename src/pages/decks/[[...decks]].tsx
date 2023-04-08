@@ -28,10 +28,11 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         trpcState: ssg.dehydrate(),
       },
     };
+  } else {
+    return {
+      props: {},
+    };
   }
-  return {
-    props: {},
-  };
 }
 
 const Decks: NextPageWithLayout = (

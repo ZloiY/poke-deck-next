@@ -1,11 +1,13 @@
+import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 
-import { accessTokenStorage, sessionStorage } from "../services/authStorage";
+import { accessTokenStorage, resetAccessToken, resetSession, sessionStorage } from "../services/authStorage";
 import type { Token } from "../utils/token";
 
 export const useAuth = () => {
   const [session, setSession] = useState<Token | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const unsub1 = accessTokenStorage.subscribe(setAccessToken);
@@ -15,6 +17,14 @@ export const useAuth = () => {
       unsub2();
     };
   }, []);
+
+  useEffect(() => {
+    if ((session?.exp ?? 0) < Date.now()) {
+      resetSession();
+      resetAccessToken();
+      router.reload();
+    }
+  }, [session]);
 
   return { session, accessToken, setAccessToken, setSession };
 };
