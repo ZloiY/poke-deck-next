@@ -36,7 +36,7 @@ export const SearchBar = memo(
     placeholder:italic placeholder:font-light placeholder:text-purple-900/75 placeholder:text-2xl"
         value={search}
         placeholder={placeholder}
-        onInput={(e) => setSearch(e.target.value)}
+        onInput={(e) => setSearch(e.currentTarget.value)}
       />
     );
   },

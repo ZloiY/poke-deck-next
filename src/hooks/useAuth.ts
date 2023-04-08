@@ -19,7 +19,7 @@ export const useAuth = () => {
   }, []);
 
   useEffect(() => {
-    if (session?.exp < Date.now()) {
+    if ((session?.exp ?? 0) < Date.now()) {
       resetSession();
       resetAccessToken();
       router.reload();
