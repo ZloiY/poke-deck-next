@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef, useState } from "react";
+import { memo, useEffect, useState } from "react";
 
 const useDebounce = <T extends unknown>(
   value: T,
