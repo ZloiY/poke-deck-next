@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { twMerge } from "tailwind-merge";
 
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 

@@ -32,6 +32,7 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { Token } from "../../utils/token";
 import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
+import { resetAccessToken, resetSession } from "../../services/authStorage";
 
 const pokemonApi = new PokemonClient();
 

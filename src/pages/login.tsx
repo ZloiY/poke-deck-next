@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { type ReactEventHandler, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 import { Button } from "../components/Button";
 import { Input } from "../components/Input";
@@ -11,6 +12,7 @@ import { Welcome } from "../components/Welcome";
 import { useMessageBus } from "../hooks";
 import { setAccessToken, setSession } from "../services/authStorage";
 import { api } from "../utils/api";
+import { clientLogin } from "../utils/login";
 
 type LoginForm = {
   username: string;
@@ -28,23 +30,25 @@ export default function Login() {
       password: "",
     },
   });
-  const login = api.auth.signIn.useMutation();
   const { pushMessage } = useMessageBus();
+  const router = useRouter();
   const [isLoginIn, toggleLogin] = useState(false);
 
   const onSubmit = useCallback<ReactEventHandler>(
     (event) =>
       handleSubmit(async (form) => {
         toggleLogin(true);
-        const response = await login.mutateAsync(form);
-        const { payload, ...message } = response;
-        pushMessage(message);
-        if (payload) {
-          const { access_token, ...session } = payload;
-          setAccessToken(access_token);
-          setSession(session);
-          location.assign("/home");
+        const validatedMessage = await clientLogin(form);
+        if (validatedMessage.success) {
+          const { payload, accessToken, ...message } = validatedMessage.data;
+          pushMessage(message);
+          if (message.state == "Success") {
+            setAccessToken(accessToken!);
+            setSession(payload!);
+            router.push("/home");           
+          }
         }
+        toggleLogin(false);
       })(event).catch((error) => {
         console.log(error);
       }),
@@ -93,6 +97,7 @@ export default function Login() {
             <Button
               className="text-2xl py-2 h-12"
               isLoading={isLoginIn}
+              disabled={isLoginIn}
               type="submit"
             >
               Log In

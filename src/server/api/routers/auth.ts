@@ -7,7 +7,6 @@ import {
   Token,
   createToken,
   decodeToken,
-  getToken,
 } from "../../../utils/token";
 import { createTRPCRouter, publicProcedure } from "../trpc";
 
@@ -18,7 +17,7 @@ const alphabet = [
   [97, 122],
 ] as const;
 
-const passwordRegEx = /[\w(@|#|$|&)+]{6}/g;
+const passwordRegEx = /[\w(!|@|#|$|&)+]{8,}/g;
 
 const saltGeneration = () => {
   const charAlphabet = alphabet
