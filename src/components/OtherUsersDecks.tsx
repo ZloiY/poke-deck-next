@@ -81,7 +81,8 @@ export const OtherUsersDecks = () => {
               className="h-full relative text-center text-3xl"
               style={{ width: `${virtualColumn.getTotalSize()}px` }}
             >
-              {virtualColumn.getVirtualItems().map((virtualItem) => (
+              {virtualColumn.getVirtualItems().map((virtualItem) =>
+              virtualItem.index < decks.length && (
                 <div
                   key={virtualItem.index}
                   className="h-full"
