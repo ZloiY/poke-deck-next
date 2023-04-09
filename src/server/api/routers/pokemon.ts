@@ -27,7 +27,19 @@ export const pokemonRouter = createTRPCRouter({
       }
       return await Promise.all(
         pokemons.map(({ name }) => ctx.pokemonApi.getPokemonByName(name)),
-      );
+      ).then((pokemons) => pokemons
+        .map((pokemon) => {
+          const { name, id, stats, height, weight, sprites, abilities } = pokemon;
+          return {
+             id,
+             name,
+             stats,
+             height,
+             weight,
+             sprites,
+             abilities
+           } as Pokemon
+        }))
     }),
   getPokemonInfo: protectedProcedure
     .input(
